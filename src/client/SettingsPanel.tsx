@@ -645,6 +645,9 @@ export function SettingsPanel({ open, onClose, onSave }: Props) {
               <div className="hint" style={{ marginBottom: 10 }}>
                 {t('settings.fieldMappingHint')}
               </div>
+              <div className="hint hint-warning" style={{ marginBottom: 12 }}>
+                ⚠ {t('settings.fieldMappingTemplateReminder')}
+              </div>
 
               <div className="form-group">
                 <label>{t('settings.sourceIpField')}</label>

@@ -952,6 +952,18 @@ body {
   margin-top: 4px;
 }
 
+/* Amber warning hint — used for cross-section reminders the user should
+   not skip (e.g. updating templates after remapping a field). */
+.hint.hint-warning {
+  font-size: 12px;
+  color: #f0b04a;
+  background: rgba(240, 176, 74, 0.08);
+  border: 1px solid rgba(240, 176, 74, 0.25);
+  border-radius: 6px;
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+
 .template-preview-label {
   font-size: 11px;
   color: var(--text-secondary);
