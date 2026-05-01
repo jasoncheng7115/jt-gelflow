@@ -317,9 +317,18 @@ seed_config() {
 }
 
 # ---- CLI install -------------------------------------------------------------
+# Use a symlink, not a copy. Without this, /usr/local/bin/jt-gelflow froze at
+# whatever version install.sh shipped on first run — bug fixes to the CLI
+# script wouldn't take effect via `jt-gelflow update` because the running
+# binary was the old copy. Symlink → CLI always tracks the repo file.
 install_cli() {
-  install -m 0755 "$INSTALL_DIR/bin/jt-gelflow" "$CLI_DST"
-  ok "CLI installed → $CLI_DST"
+  chmod 0755 "$INSTALL_DIR/bin/jt-gelflow"
+  if [ -L "$CLI_DST" ] && [ "$(readlink -f "$CLI_DST")" = "$INSTALL_DIR/bin/jt-gelflow" ]; then
+    return  # already correct
+  fi
+  rm -f "$CLI_DST"  # clear stale regular file or wrong-target symlink
+  ln -s "$INSTALL_DIR/bin/jt-gelflow" "$CLI_DST"
+  ok "CLI symlinked → $CLI_DST → $INSTALL_DIR/bin/jt-gelflow"
 }
 
 # ---- systemd unit ------------------------------------------------------------
