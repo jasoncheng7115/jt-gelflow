@@ -177,14 +177,48 @@ Key sections:
 
 ### Field mapping
 
-| Field | Description |
-|-------|-------------|
-| `src_field` / `dst_field` | Source / destination IP field name in the GELF payload |
-| `proto_field` | Protocol field name |
-| `value_field` | Numeric field controlling particle density and edge thickness |
-| `value_transform` | `none` (default), `log`, or `sqrt` |
-| `node_label_template` | Template applied to both source and destination nodes |
-| `edge_label_template` | Template applied to flow edges |
+The dashboard works out of the box if your GELF messages use the canonical field names (`source_ip`, `destination_ip`, `protocol_name`, `network_bytes`, `source_ip_geolocation`, `source_ip_country_code`, ...). Pipelines that emit non-canonical names — Suricata IDS, custom enrichment, vendor exports — need to map those names through the settings panel.
+
+**Five sections of the settings panel touch field names. Changing one almost always means revisiting another.**
+
+| Settings section | What it controls | Default fields |
+|---|---|---|
+| **Field Mapping** | Source / destination IP, protocol, PTR, country code | `source_ip`, `destination_ip`, `protocol_name`, `source_ip_ptr`, `destination_ip_ptr`, `source_ip_country_code`, `destination_ip_country_code` |
+| **Value Field** | Numeric field whose sum drives flow weight (bytes / count) | `network_bytes` |
+| **Label Templates** | Strings rendered on each node and edge — referenced by `{field}` syntax | `{source_ip_ptr\|\|source_ip}`, `{protocol_name}:{destination_port\|0}` |
+| **GeoIP** | Lat/lng field used to plot 2D Map / 3D Globe points | `source_ip_geolocation`, `destination_ip_geolocation` |
+| **Zones** | Internal / external CIDRs, top-N caps, per-view filter rules | `192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12` |
+
+#### What to watch when remapping
+
+The settings panel surfaces these as separate sections, but they reference each other. If you only update Field Mapping, the canvas will silently break in subtle ways:
+
+- **Label Templates still reference old field names.** `{source_ip}` in the template won't resolve once you rename `src_field` to `suricata_srcip` — node boxes render empty (we now fall back to the raw IP, but the template loses any PTR / fancy formatting). Fix: rewrite the templates to your new field names too.
+- **GeoIP fields are independent of Field Mapping.** Renaming `src_field` does **not** rename `geoip.source_field`. The 2D Map / 3D Globe will keep looking for `source_ip_geolocation` and show no points until you update the GeoIP section.
+- **Country and PTR are paired.** Country uses two GELF fields (`src_country_field` + `dst_country_field`) but a single column header. Same for PTR — change both sides if you rename either.
+- **No length field?** Some sources (Suricata IDS, audit logs) don't ship a packet-byte field. Set `value_field` to a name that doesn't exist in your messages, leave `value_default` at `1`, and every event contributes 1 unit — the dashboard becomes an event-count visualisation. The Sankey hover tooltip already shows the events total.
+
+#### Worked example: Suricata
+
+Suricata's filebeat module emits `suricata_srcip`, `suricata_dstip`, etc. To map it through:
+
+| Settings field | Value |
+|---|---|
+| `src_field` | `suricata_srcip` |
+| `dst_field` | `suricata_dstip` |
+| `proto_field` | `suricata_protocol` |
+| `src_ptr_field` | `suricata_srcip_ptr` (or whatever your enrichment adds — leave blank if none) |
+| `dst_ptr_field` | `suricata_dstip_ptr` |
+| `src_country_field` | `suricata_srcip_country_code` |
+| `dst_country_field` | `suricata_dstip_country_code` |
+| `value_field` | `__events__` (any non-existent name → counts events) |
+| `value_default` | `1` |
+| `node_label_template` | `{suricata_srcip_ptr\|\|suricata_srcip}` |
+| `edge_label_template` | `{suricata_protocol}:{suricata_dstport\|0}` |
+| `geoip.source_field` | `suricata_srcip_geolocation` |
+| `geoip.destination_field` | `suricata_dstip_geolocation` |
+
+After saving, all four views (Flow, 2D Map, 3D Globe, Sankey) should populate. If a view stays blank, open the **Discovered Fields** section in settings to confirm the field name actually appears on incoming messages.
 
 ### Template syntax
 

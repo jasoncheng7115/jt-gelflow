@@ -9,7 +9,7 @@
   <meta property="og:description" content="即時 GELF 網路流量視覺化 — 流量圖 / 2D 地圖 / 3D 地球 / 桑基圖。">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=1.5.0-12">
+  <link rel="stylesheet" href="style.css?v=1.5.0-13">
 </head>
 <body>
 
@@ -26,6 +26,7 @@
     <a href="#install">安裝</a>
     <a href="#modes">檢視</a>
     <a href="#features">功能</a>
+    <a href="#mapping">欄位對應</a>
     <a href="#hotkeys">快速鍵</a>
     <a href="#screenshots">截圖</a>
     <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
@@ -163,6 +164,41 @@ python3 run.py</code></pre>
     <div class="feature"><h4>多語系</h4><p>UI 與設定皆支援 English / 繁體中文。</p></div>
     <div class="feature"><h4>systemd 服務</h4><p>已套用權限隔離的 service 檔，搭配 CLI 一行升級／解除安裝。</p></div>
   </div>
+</section>
+
+<section id="mapping">
+  <h2>欄位名稱不一樣？對應就好。</h2>
+  <p class="subhead">Pipeline 沒用標準 GELF 欄位名（Suricata、自家加工、廠商輸出）— 在五個設定區塊裡對應過去。改其中一個常常要連帶改另一個。</p>
+  <div class="mapping-grid">
+    <div class="mapping-card">
+      <h4>欄位對應</h4>
+      <p>來源 / 目的 IP、協定、PTR、國碼。</p>
+      <p class="muted-line">預設：<code class="kbd">source_ip</code> · <code class="kbd">destination_ip</code> · <code class="kbd">protocol_name</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>數值欄位</h4>
+      <p>每筆流量加總的數值欄位（位元組 / 計數）。沒長度欄位？填個訊息中不存在的名稱、預設值留 1，整個 dashboard 變成事件計數。</p>
+      <p class="muted-line">預設：<code class="kbd">network_bytes</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>標籤範本</h4>
+      <p>節點與連線文字，用 <code class="kbd">{field}</code> 引用。「欄位對應」改了，這裡 <strong>同時</strong> 要改成新的欄位名。</p>
+      <p class="muted-line">範例：<code class="kbd">{suricata_srcip_ptr||suricata_srcip}</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>GeoIP / 地理定位</h4>
+      <p>2D 地圖 / 3D 地球的座標欄位。<strong>跟欄位對應獨立</strong> — 改 <code class="kbd">src_field</code> 不會自動改這裡。</p>
+      <p class="muted-line">預設：<code class="kbd">source_ip_geolocation</code> · <code class="kbd">destination_ip_geolocation</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>區域設定</h4>
+      <p>內外網 CIDR、Top-N 限制、各檢視套用範圍。</p>
+      <p class="muted-line">預設內網：<code class="kbd">192.168.0.0/16</code> · <code class="kbd">10.0.0.0/8</code> · <code class="kbd">172.16.0.0/12</code></p>
+    </div>
+  </div>
+  <p class="mapping-cta">
+    完整 Suricata 範例與注意事項 → <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/README_zh-TW.md#%E6%AC%84%E4%BD%8D%E5%B0%8D%E6%87%89" target="_blank" rel="noopener">README · 欄位對應</a>
+  </p>
 </section>
 
 <section id="hotkeys">

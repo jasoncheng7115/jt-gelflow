@@ -177,14 +177,48 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
 
 ### 欄位對應
 
-| 欄位 | 說明 |
-|------|------|
-| `src_field` / `dst_field` | GELF 訊息中代表來源／目的地 IP 的欄位名稱 |
-| `proto_field` | 協定欄位名稱 |
-| `value_field` | 數值欄位（控制粒子密度與線條粗細） |
-| `value_transform` | `none`（預設）／`log` / `sqrt` |
-| `node_label_template` | 節點標籤範本（同時套用於來源與目的地節點） |
-| `edge_label_template` | 邊（連線）標籤範本 |
+訊息若使用標準 GELF 欄位名（`source_ip` / `destination_ip` / `protocol_name` / `network_bytes` / `source_ip_geolocation` / `source_ip_country_code` …），預設就會跑。Pipeline 改用其他命名（Suricata IDS、自家加工、廠商輸出）需要在設定面板裡把那些名稱對應過來。
+
+**設定面板有 5 個區塊都涉及欄位名稱，動其中一個常常要連動修另一個。**
+
+| 設定區塊 | 控制什麼 | 預設欄位 |
+|---|---|---|
+| **欄位對應 (Field Mapping)** | 來源/目的 IP、協定、PTR、國碼 | `source_ip`, `destination_ip`, `protocol_name`, `source_ip_ptr`, `destination_ip_ptr`, `source_ip_country_code`, `destination_ip_country_code` |
+| **數值欄位 (Value Field)** | 加總後決定流量權重的數值欄位（位元組／計數） | `network_bytes` |
+| **標籤範本 (Label Templates)** | 節點與連線顯示文字，用 `{field}` 引用 | `{source_ip_ptr\|\|source_ip}`, `{protocol_name}:{destination_port\|0}` |
+| **GeoIP / 地理定位** | 2D 地圖／3D 地球的座標欄位 | `source_ip_geolocation`, `destination_ip_geolocation` |
+| **區域設定 (Zones)** | 內外網 CIDR、Top-N 限制、各檢視套用範圍 | `192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12` |
+
+#### 改欄位時的注意事項
+
+設定面板把它們分開放，但彼此互相引用。只改了「欄位對應」其他都不動的話，畫面會悄悄壞掉、不會報錯：
+
+- **標籤範本還在引用舊欄位名**：把 `src_field` 改成 `suricata_srcip` 之後，範本裡的 `{source_ip}` 解不出來，節點標籤就會空白（後端會 fallback 到原始 IP，但 PTR 之類的就消失了）。修法：把範本也改成新的欄位名。
+- **GeoIP 欄位是獨立的**：改了 `src_field` 不會自動改 `geoip.source_field`。2D 地圖／3D 地球會繼續找 `source_ip_geolocation`，沒這個欄位就一個點也不出現，要去 GeoIP 區另外改。
+- **國碼跟 PTR 是兩兩成對的**：國碼用兩個 GELF 欄位（`src_country_field` + `dst_country_field`）但只有一個欄位顯示名稱。PTR 同樣兩邊都有；改了一邊另一邊也要改。
+- **沒有長度欄位？** 某些來源（Suricata IDS、稽核 log）不會送封包大小。把 `value_field` 填一個訊息中不存在的名稱，預設值維持 `1`，每個事件就貢獻 1 個單位 — 整個 dashboard 變成「事件計數」視覺化。桑基圖 hover 時的 tooltip 本來就會顯示 events 總數。
+
+#### 範例：Suricata
+
+Suricata 的 filebeat module 會送 `suricata_srcip`、`suricata_dstip` 等等。對應方式：
+
+| 設定欄位 | 值 |
+|---|---|
+| `src_field` | `suricata_srcip` |
+| `dst_field` | `suricata_dstip` |
+| `proto_field` | `suricata_protocol` |
+| `src_ptr_field` | `suricata_srcip_ptr`（看你的加工 pipeline 是否有產出，沒產出就留空） |
+| `dst_ptr_field` | `suricata_dstip_ptr` |
+| `src_country_field` | `suricata_srcip_country_code` |
+| `dst_country_field` | `suricata_dstip_country_code` |
+| `value_field` | `__events__`（任何不存在的名稱 → 變成事件計數） |
+| `value_default` | `1` |
+| `node_label_template` | `{suricata_srcip_ptr\|\|suricata_srcip}` |
+| `edge_label_template` | `{suricata_protocol}:{suricata_dstport\|0}` |
+| `geoip.source_field` | `suricata_srcip_geolocation` |
+| `geoip.destination_field` | `suricata_dstip_geolocation` |
+
+存檔後四種檢視（流量圖、2D 地圖、3D 地球、桑基圖）都應該有畫面。如果某個檢視還是空白，打開設定的「已探索欄位」區看看那個欄位名實際有沒有從訊息裡進來。
 
 ### 範本語法
 

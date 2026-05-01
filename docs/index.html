@@ -9,7 +9,7 @@
   <meta property="og:description" content="Real-time GELF network traffic visualization — Flow / 2D Map / 3D Globe.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=1.5.0-12">
+  <link rel="stylesheet" href="style.css?v=1.5.0-13">
 </head>
 <body>
 
@@ -26,6 +26,7 @@
     <a href="#install">Install</a>
     <a href="#modes">Views</a>
     <a href="#features">Features</a>
+    <a href="#mapping">Mapping</a>
     <a href="#hotkeys">Hotkeys</a>
     <a href="#screenshots">Screenshots</a>
     <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
@@ -164,6 +165,41 @@ python3 run.py</code></pre>
     <div class="feature"><h4>i18n</h4><p>English / 繁體中文 across UI and settings.</p></div>
     <div class="feature"><h4>systemd unit</h4><p>Hardened service file, one-command install &amp; updates via the bundled CLI.</p></div>
   </div>
+</section>
+
+<section id="mapping">
+  <h2>Bring your own field names.</h2>
+  <p class="subhead">Pipelines that don't ship canonical GELF names — Suricata, custom enrichment, vendor exports — map through five settings sections. Change one and you usually need to revisit another.</p>
+  <div class="mapping-grid">
+    <div class="mapping-card">
+      <h4>Field Mapping</h4>
+      <p>Source / destination IP, protocol, PTR, country code.</p>
+      <p class="muted-line">Defaults: <code class="kbd">source_ip</code> · <code class="kbd">destination_ip</code> · <code class="kbd">protocol_name</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>Value Field</h4>
+      <p>Numeric field summed per flow (bytes / count). No length field? Type a non-existent name and leave Default at 1 — the dashboard switches to event counting.</p>
+      <p class="muted-line">Default: <code class="kbd">network_bytes</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>Label Templates</h4>
+      <p>Strings rendered on each node / edge using <code class="kbd">{field}</code>. Renaming a Field Mapping field <strong>also</strong> means rewriting the templates that reference it.</p>
+      <p class="muted-line">Example: <code class="kbd">{suricata_srcip_ptr||suricata_srcip}</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>GeoIP</h4>
+      <p>Lat/lng field used by 2D Map / 3D Globe. <strong>Independent of Field Mapping</strong> — renaming <code class="kbd">src_field</code> does not rename this.</p>
+      <p class="muted-line">Defaults: <code class="kbd">source_ip_geolocation</code> · <code class="kbd">destination_ip_geolocation</code></p>
+    </div>
+    <div class="mapping-card">
+      <h4>Zones</h4>
+      <p>Internal / external CIDRs, top-N caps, per-view filter rules.</p>
+      <p class="muted-line">Default internal: <code class="kbd">192.168.0.0/16</code> · <code class="kbd">10.0.0.0/8</code> · <code class="kbd">172.16.0.0/12</code></p>
+    </div>
+  </div>
+  <p class="mapping-cta">
+    Full Suricata example + gotchas → <a href="https://github.com/jasoncheng7115/jt-gelflow#field-mapping" target="_blank" rel="noopener">README · Field mapping</a>
+  </p>
 </section>
 
 <section id="hotkeys">

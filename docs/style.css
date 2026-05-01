@@ -575,6 +575,48 @@ footer .row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap
   font-size: 12px;
 }
 
+/* Field mapping cards */
+.mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.mapping-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.mapping-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.mapping-card p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}
+.mapping-card p:last-child { margin-bottom: 0; }
+.mapping-card .muted-line {
+  font-size: 12px;
+  opacity: 0.85;
+}
+.mapping-card code.kbd { font-size: 11.5px; }
+.mapping-cta {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.mapping-cta a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
+
 /* Hotkeys grid */
 .hotkeys {
   display: grid;
