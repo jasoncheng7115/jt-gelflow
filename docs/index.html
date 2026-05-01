@@ -9,7 +9,7 @@
   <meta property="og:description" content="Real-time GELF network traffic visualization — Flow / 2D Map / 3D Globe.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=1.5.0-9">
+  <link rel="stylesheet" href="style.css?v=1.5.0-10">
 </head>
 <body>
 
@@ -26,6 +26,7 @@
     <a href="#install">Install</a>
     <a href="#modes">Views</a>
     <a href="#features">Features</a>
+    <a href="#hotkeys">Hotkeys</a>
     <a href="#screenshots">Screenshots</a>
     <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
     <a href="index_zh-TW.html" class="lang">繁體中文</a>
@@ -71,12 +72,18 @@
       <button class="tab active" data-target="tab-linux" type="button">Linux (one-line)</button>
       <button class="tab" data-target="tab-manual" type="button">Manual</button>
     </div>
-    <pre id="tab-linux"><button class="copy-btn" data-copy="linux">copy</button><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
-    <pre id="tab-manual" hidden><button class="copy-btn" data-copy="manual">copy</button><code id="cmd-manual">git clone https://github.com/jasoncheng7115/jt-gelflow.git /opt/jt-gelflow
+    <div class="code-block">
+      <button class="copy-btn" data-copy="linux">copy</button>
+      <pre id="tab-linux"><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
+    </div>
+    <div class="code-block" hidden id="tab-manual-wrap">
+      <button class="copy-btn" data-copy="manual">copy</button>
+      <pre id="tab-manual"><code id="cmd-manual">git clone https://github.com/jasoncheng7115/jt-gelflow.git /opt/jt-gelflow
 cd /opt/jt-gelflow
 pip install -r requirements.txt
 npm install &amp;&amp; npm run build
 python3 run.py</code></pre>
+    </div>
     <dl class="post-note">
       <dt>URL</dt>
       <dd><code class="kbd">http://&lt;server-ip&gt;:8099</code> <span class="muted">(installer prints the exact URL)</span></dd>
@@ -151,6 +158,21 @@ python3 run.py</code></pre>
   </div>
 </section>
 
+<section id="hotkeys">
+  <h2>Hotkeys</h2>
+  <p class="subhead">Drive the whole UI from the keyboard — no menu hunting.</p>
+  <div class="hotkeys">
+    <div class="hk"><div class="hk-keys"><span class="kbd">1</span></div><div class="hk-desc">Switch to Flow</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">2</span></div><div class="hk-desc">Switch to 2D Map</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">3</span></div><div class="hk-desc">Switch to 3D Globe</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">4</span></div><div class="hk-desc">Switch to Sankey</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">Space</span></div><div class="hk-desc">Pause / resume</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">+</span> <span class="kbd">−</span></div><div class="hk-desc">Zoom in / out</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">0</span></div><div class="hk-desc">Reset zoom</div></div>
+    <div class="hk"><div class="hk-keys"><span class="kbd">↑</span> <span class="kbd">↓</span> <span class="kbd">←</span> <span class="kbd">→</span></div><div class="hk-desc">Pan canvas</div></div>
+  </div>
+</section>
+
 <section id="screenshots">
   <h2>Screenshots</h2>
   <p class="subhead">All four views, same data stream.</p>
@@ -195,13 +217,15 @@ python3 run.py</code></pre>
 </footer>
 
 <script>
-  // Tab switcher
+  // Tab switcher — toggles the .code-block wrapper, not the inner <pre>,
+  // so the copy button (positioned on the wrapper) is shown/hidden too.
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      document.querySelectorAll('.install pre').forEach(pre => pre.hidden = true);
-      document.getElementById(tab.dataset.target).hidden = false;
+      document.querySelectorAll('.install .code-block').forEach(b => b.hidden = true);
+      const targetPre = document.getElementById(tab.dataset.target);
+      if (targetPre) targetPre.closest('.code-block').hidden = false;
     });
   });
   // Copy buttons

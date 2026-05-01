@@ -223,6 +223,11 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
+/* Wrap the <pre> so the copy button can position relative to a non-scrolling
+   parent. Without this, scrolling the pre horizontally would drag the button
+   along with the code text. */
+.install .code-block { position: relative; }
+.install .code-block[hidden] { display: none; }
 .install pre {
   background: var(--bg-elev);
   border: 1px solid var(--border);
@@ -231,11 +236,11 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   padding: 18px 20px;
   overflow-x: auto;
   font-size: 14px;
-  position: relative;
+  margin: 0;
 }
 .install pre code { color: var(--text); }
-.install pre .copy-btn {
-  position: absolute; top: 12px; right: 12px;
+.install .code-block .copy-btn {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
   background: var(--surface);
   color: var(--text-dim);
   border: 1px solid var(--border);
@@ -244,7 +249,7 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   font-size: 12px;
   cursor: pointer;
 }
-.install pre .copy-btn:hover { color: var(--accent); }
+.install .code-block .copy-btn:hover { color: var(--accent); }
 .install .post-note {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -557,6 +562,37 @@ footer .row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap
   border-radius: 4px;
   font-family: ui-monospace, monospace;
   font-size: 12px;
+}
+
+/* Hotkeys grid */
+.hotkeys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.hk {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.hk-keys {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.hk-keys .kbd {
+  font-size: 13px;
+  padding: 4px 10px;
+  min-width: 28px;
+  text-align: center;
+}
+.hk-desc {
+  font-size: 14px;
+  color: var(--text-dim);
 }
 
 /* ─── Lightbox ─────────────────────────────────────────────────────────── */
