@@ -183,6 +183,16 @@ class FlowAggregator:
         dst_label = render_template(mapping.node_label_template, {**dst_message, "_node": "dst"})
         edge_label = render_template(mapping.edge_label_template, message)
 
+        # Fall back to the raw IP when the template evaluates to empty.
+        # Common cause: the user remapped src_field/dst_field to a custom GELF
+        # field name (e.g. suricata_srcip) but the default node_label_template
+        # still references the canonical {src_ip} / {dst_ip} which don't exist
+        # in their messages — leaving the canvas with empty node boxes.
+        if not src_label or not src_label.strip():
+            src_label = src
+        if not dst_label or not dst_label.strip():
+            dst_label = dst
+
         # Auto-append IP to label if they're different (helps identify nodes)
         if src_label and src_label != src and not src_label.endswith(f"\n({src})"):
             src_label = f"{src_label}\n({src})"
