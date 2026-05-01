@@ -55,6 +55,8 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   display: flex; align-items: center; gap: 10px;
   font-weight: 600; font-size: 16px; letter-spacing: 0.5px;
   color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .nav .brand .logo-dot {
   width: 12px; height: 12px; border-radius: 50%;
@@ -67,13 +69,30 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   50%      { opacity: 1;   box-shadow: 0 0 14px var(--accent-2); }
 }
 .nav .links { display: flex; gap: 18px; align-items: center; font-size: 14px; }
-.nav .links a { color: var(--text-dim); }
+.nav .links a { color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
 .nav .links a:hover { color: var(--accent); text-decoration: none; }
 .nav .lang {
   padding: 4px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 13px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Narrow viewports: tighten nav padding and let the link strip scroll
+   horizontally so the brand stays put and 繁體中文 isn't wrapped vertically. */
+@media (max-width: 640px) {
+  .nav { padding: 12px 16px; gap: 12px; }
+  .nav .links {
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    scrollbar-width: none;
+  }
+  .nav .links::-webkit-scrollbar { display: none; }
 }
 
 /* ───────── Hero ───────── */
