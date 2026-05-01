@@ -439,11 +439,17 @@ section .subhead {
   color: var(--text-dim);
 }
 
-/* Feature grid */
+/* Feature grid — 3x3 on desktop (9 cards), 2 cols on tablet, 1 col on mobile. */
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+}
+@media (max-width: 900px) {
+  .features { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .features { grid-template-columns: 1fr; }
 }
 .feature {
   padding: 18px;
