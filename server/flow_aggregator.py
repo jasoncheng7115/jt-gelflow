@@ -156,8 +156,18 @@ class FlowAggregator:
         # For destination node: create a mapped version where source_* -> destination_*
         dst_message = dict(message)
         # Auto-map destination fields to source field names for dst label template
-        # This allows template like {source_ip_ptr||source_ip} to work for both src and dst
+        # This allows template like {source_ip_ptr||source_ip} to work for both src and dst.
+        # The user-configurable mapping fields go FIRST so custom GELF schemas
+        # (e.g. Suricata's suricata_srcip / suricata_dstip) get swapped too —
+        # without this, dst_label rendered with the user's template would resolve
+        # against the original src value and the External node ended up showing
+        # the internal IP on top with the real external IP only in parens.
         field_mappings = [
+            (mapping.src_field, mapping.dst_field),
+            (mapping.src_ptr_field, mapping.dst_ptr_field),
+            (mapping.src_country_field, mapping.dst_country_field),
+            # Canonical GELF / GeoIP fields kept as fallback so default
+            # deployments still work for ports, city, geolocation, etc.
             ("source_ip", "destination_ip"),
             ("source_port", "destination_port"),
             ("source_ip_ptr", "destination_ip_ptr"),
@@ -167,6 +177,9 @@ class FlowAggregator:
             ("source_ip_geolocation", "destination_ip_geolocation"),
             ("source_ip_reserved_ip", "destination_ip_reserved_ip"),
         ]
+        # Drop any pair where one or both sides are blank (e.g. user left a
+        # ptr field empty); blank-keyed swaps would clobber unrelated entries.
+        field_mappings = [(s, d) for s, d in field_mappings if s and d]
         for src_field, dst_field in field_mappings:
             # Map both with and without underscore prefix
             for prefix in ["", "_"]:
