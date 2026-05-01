@@ -787,6 +787,10 @@ export function SettingsPanel({ open, onClose, onSave }: Props) {
               {expandedSections.valueField && (
               <div className="section-content">
 
+              <div className="hint" style={{ marginBottom: 10 }}>
+                {t('settings.valueFieldEventModeHint')}
+              </div>
+
               <div className="form-group">
                 <label>{t('settings.valueField')}</label>
                 <input
@@ -795,6 +799,7 @@ export function SettingsPanel({ open, onClose, onSave }: Props) {
                   onChange={e => handleChange('value_field', e.target.value)}
                   placeholder="e.g., bytes"
                 />
+                <div className="hint">{t('settings.valueFieldHint')}</div>
               </div>
 
               <div className="form-group">
