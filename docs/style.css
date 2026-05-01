@@ -555,11 +555,11 @@ footer .row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap
 
 /* ─── Lightbox ─────────────────────────────────────────────────────────── */
 .shot {
-  /* override default <button> chrome */
+  /* override default <button> chrome — but keep the inset padding from the
+     original .shot rule above so the screenshot doesn't hit the card edge. */
   font: inherit;
   width: 100%;
   text-align: left;
-  padding: 0;
   margin: 0;
 }
 .shot:focus-visible {
