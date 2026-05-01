@@ -9,7 +9,7 @@
   <meta property="og:description" content="即時 GELF 網路流量視覺化 — 流量圖 / 2D 地圖 / 3D 地球 / 桑基圖。">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=1.5.0-11">
+  <link rel="stylesheet" href="style.css?v=1.5.0-12">
 </head>
 <body>
 
@@ -72,10 +72,12 @@
       <button class="tab" data-target="tab-manual" type="button">手動安裝</button>
     </div>
     <p class="prereq-note">
-      需要先有 <code class="kbd">curl</code>。極簡 Linux 沒預裝就先補上：
+      <strong>必要套件。</strong>
+      安裝程式會自己抓 <code class="kbd">git</code>、<code class="kbd">python3</code> + <code class="kbd">pip</code>、<code class="kbd">nodejs</code> + <code class="kbd">npm</code>，但沒辦法替自己裝 <code class="kbd">curl</code>。極簡 Linux 沒預裝就先補上：<br>
       <code class="kbd">sudo apt install -y curl</code> ·
       <code class="kbd">sudo dnf install -y curl</code> ·
-      <code class="kbd">sudo pacman -S --noconfirm curl</code>
+      <code class="kbd">sudo pacman -S --noconfirm curl</code> ·
+      <code class="kbd">sudo zypper install -y curl</code>
     </p>
     <div class="code-block">
       <button class="copy-btn" data-copy="linux">複製</button>

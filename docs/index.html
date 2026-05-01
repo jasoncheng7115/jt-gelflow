@@ -9,7 +9,7 @@
   <meta property="og:description" content="Real-time GELF network traffic visualization — Flow / 2D Map / 3D Globe.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=1.5.0-11">
+  <link rel="stylesheet" href="style.css?v=1.5.0-12">
 </head>
 <body>
 
@@ -73,10 +73,12 @@
       <button class="tab" data-target="tab-manual" type="button">Manual</button>
     </div>
     <p class="prereq-note">
-      Need <code class="kbd">curl</code> first. If it's missing on a minimal Linux box:
+      <strong>Prerequisites.</strong>
+      The installer will pull <code class="kbd">git</code>, <code class="kbd">python3</code> + <code class="kbd">pip</code>, <code class="kbd">nodejs</code> + <code class="kbd">npm</code> on its own — but it can't bootstrap <code class="kbd">curl</code> itself. On a minimal Linux box where <code class="kbd">curl --version</code> says "command not found", install it first:<br>
       <code class="kbd">sudo apt install -y curl</code> ·
       <code class="kbd">sudo dnf install -y curl</code> ·
-      <code class="kbd">sudo pacman -S --noconfirm curl</code>
+      <code class="kbd">sudo pacman -S --noconfirm curl</code> ·
+      <code class="kbd">sudo zypper install -y curl</code>
     </p>
     <div class="code-block">
       <button class="copy-btn" data-copy="linux">copy</button>
