@@ -1,0 +1,49 @@
+{
+  "gelf_udp_port": 12201,
+  "gelf_tcp_port": 12202,
+  "http_port": 8099,
+  "field_cache_ttl_seconds": 300,
+  "field_cache_max_messages": 1000,
+  "flow_ttl_seconds": 5,
+  "default_view": "flow",
+  "mapping": {
+    "src_field": "source_ip",
+    "dst_field": "destination_ip",
+    "proto_field": "protocol_name",
+    "value_field": "network_bytes",
+    "value_default": 1,
+    "value_transform": "none",
+    "node_label_template": "{source_ip_ptr||source_ip}",
+    "edge_label_template": "{protocol_name}:{destination_port|0}"
+  },
+  "zones": {
+    "internal_cidrs": [
+      "192.168.0.0/16",
+      "10.0.0.0/8",
+      "172.16.0.0/12"
+    ],
+    "external_cidrs": [],
+    "internal_filter_ips": [],
+    "internal_filter_apply_to": ["flow"],
+    "min_traffic_threshold": 0,
+    "top_n_internal": 0,
+    "top_n_internal_apply_to": ["flow"],
+    "top_n_external": 50,
+    "top_n_external_apply_to": ["flow"],
+    "custom_zones": [],
+    "show_internal_traffic": false,
+    "show_traffic_value": false
+  },
+  "geoip": {
+    "source_field": "source_ip_geolocation",
+    "destination_field": "destination_ip_geolocation",
+    "hide_no_geo": true,
+    "internal_fallback_lat": 0,
+    "internal_fallback_lng": 0,
+    "auto_detect_location": true,
+    "map_brightness": 75,
+    "show_starfield": true,
+    "stats_top_n": 30,
+    "focus_zoom_level": 14
+  }
+}

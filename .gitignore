@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Node.js
+node_modules/
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+server.log
+
+# Temp / runtime
+tmp/
+.cache/
+
+# OS
+.DS_Store
+._*
+Thumbs.db
+
+# Local dev notes (private)
+SESSION_NOTES.md
+README_dev_notes.md
+.claude/
+CLAUDE.md
+
+# Runtime config — never tracked, derived from config.example.json on first install
+/config.json

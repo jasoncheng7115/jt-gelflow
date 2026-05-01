@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JT-GELFLOW — Real-time GELF Network Traffic Visualization</title>
+  <meta name="description" content="Self-hosted real-time network traffic visualization for GELF logs. Flow / 2D Map / 3D Globe modes. Apache 2.0.">
+  <meta property="og:title" content="JT-GELFLOW">
+  <meta property="og:description" content="Real-time GELF network traffic visualization — Flow / 2D Map / 3D Globe.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#top" class="brand">
+    <span class="logo-dot"></span>
+    <span>JT-GELFLOW</span>
+  </a>
+  <div class="links">
+    <a href="#demo">Demo</a>
+    <a href="#install">Install</a>
+    <a href="#modes">Views</a>
+    <a href="#features">Features</a>
+    <a href="#screenshots">Screenshots</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
+    <a href="index_zh-TW.html" class="lang">繁體中文</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <h1>Watch your network breathe.</h1>
+  <p class="tagline">
+    Real-time GELF network traffic visualization — Flow, 2D Map, and 3D Globe modes,
+    streaming over WebSocket at 10 fps.
+  </p>
+  <div class="promise-chips">
+    <span class="chip chip-cyan">Self-hosted</span>
+    <span class="chip chip-mint">Single Linux box</span>
+    <span class="chip chip-purple">Local Graylog</span>
+    <span class="chip chip-coral">No cloud</span>
+    <span class="chip chip-coral">No telemetry</span>
+    <span class="chip chip-amber">Apache 2.0</span>
+  </div>
+  <div class="ctas">
+    <a class="btn btn-primary" href="#install">Three-second install →</a>
+    <a class="btn btn-ghost" href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">View on GitHub</a>
+  </div>
+</header>
+
+<section id="demo" style="padding-top: 20px;">
+  <h2>See it move.</h2>
+  <p class="subhead">Live network traffic flowing across the four views.</p>
+  <div class="video-wrap">
+    <video controls preload="metadata"
+           src="demo.mp4"
+           playsinline>
+      Your browser doesn't support HTML5 video.
+      <a href="demo.mp4">Download the demo video</a>.
+    </video>
+  </div>
+</section>
+
+<section id="install">
+  <div class="install">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-target="tab-linux" type="button">Linux (one-line)</button>
+      <button class="tab" data-target="tab-manual" type="button">Manual</button>
+    </div>
+    <pre id="tab-linux"><button class="copy-btn" data-copy="linux">copy</button><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
+    <pre id="tab-manual" hidden><button class="copy-btn" data-copy="manual">copy</button><code id="cmd-manual">git clone https://github.com/jasoncheng7115/jt-gelflow.git /opt/jt-gelflow
+cd /opt/jt-gelflow
+pip install -r requirements.txt
+npm install &amp;&amp; npm run build
+python3 run.py</code></pre>
+    <dl class="post-note">
+      <dt>URL</dt>
+      <dd><code class="kbd">http://&lt;server-ip&gt;:8099</code> <span class="muted">(installer prints the exact URL)</span></dd>
+      <dt>Manage</dt>
+      <dd><code class="kbd">sudo jt-gelflow status / logs / update / uninstall</code></dd>
+    </dl>
+  </div>
+</section>
+
+<section id="modes">
+  <h2>Four views, one pipeline.</h2>
+  <p class="subhead">Switch with <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span>. Same data, different perspective.</p>
+  <div class="modes">
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="5" cy="6" r="3"/><circle cx="19" cy="6" r="3"/><circle cx="12" cy="18" r="3"/>
+          <path d="M5 9v1a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4V9"/><path d="M12 14v1"/>
+        </svg>
+      </div>
+      <h3>Flow</h3>
+      <p>2D animated particle flow. Force-directed layout, nodes split internal vs external. Particles travel proportional to traffic.</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19l-6 2V5l6-2m0 16l6-2m-6 2V3m6 14l6 2V3l-6-2m0 16V1"/>
+        </svg>
+      </div>
+      <h3>2D Map</h3>
+      <p>Mercator world map with traffic arcs from GeoIP coordinates. Drag to pan, scroll to zoom up to 16×.</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+          <path d="M2 12h20"/>
+        </svg>
+      </div>
+      <h3>3D Globe</h3>
+      <p>Interactive orthographic globe. Auto-rotate, drag to orient, scroll to zoom. Optional starfield backdrop.</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="2.4" height="16" rx="0.8"/>
+          <rect x="18.6" y="4" width="2.4" height="16" rx="0.8"/>
+          <path d="M5.4 7c4 0 8.6 4 13.2 4"/>
+          <path d="M5.4 13c4 0 8.6 4 13.2 4"/>
+        </svg>
+      </div>
+      <h3>Sankey</h3>
+      <p>Left-to-right bands from external to internal network. Toggle columns on/off (Country, PTR, Protocol). Hover lights up the entire flow chain. Column display names live in Field Mapping.</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <h2>Built for ops.</h2>
+  <p class="subhead">Everything you need to make a Graylog / Logstash / Filebeat firehose comprehensible at a glance.</p>
+  <div class="features">
+    <div class="feature"><h4>GELF UDP + TCP</h4><p>Standard GELF input on UDP 12201 / TCP 12202 with chunked &amp; gzip decoding.</p></div>
+    <div class="feature"><h4>Auto field discovery</h4><p>Fields from incoming logs are surfaced live in the settings panel with type inference.</p></div>
+    <div class="feature"><h4>Template engine</h4><p><code class="kbd">{a||b|default}</code> fallback chains for node and edge labels.</p></div>
+    <div class="feature"><h4>Zone classification</h4><p>Internal / External / Inbound / Outbound by configurable CIDRs, or fully custom zones.</p></div>
+    <div class="feature"><h4>Top-N + filter</h4><p>Per-view limits and IP whitelists keep the canvas readable on busy links.</p></div>
+    <div class="feature"><h4>Real-time search</h4><p>Filter by IP, port, protocol or keyword. Multi-term AND, <code class="kbd">-</code> excludes.</p></div>
+    <div class="feature"><h4>WebSocket 100 ms</h4><p>Tight loop, hash-based deduplication, dead-client cleanup.</p></div>
+    <div class="feature"><h4>i18n</h4><p>English / 繁體中文 across UI and settings.</p></div>
+    <div class="feature"><h4>systemd unit</h4><p>Hardened service file, one-command install &amp; updates via the bundled CLI.</p></div>
+  </div>
+</section>
+
+<section id="screenshots">
+  <h2>Screenshots</h2>
+  <p class="subhead">All four views, same data stream.</p>
+  <div class="shots">
+    <button class="shot" type="button" data-lightbox="screenshots/1_flow_en.png">
+      <img class="ss-img" src="screenshots/1_flow_en.png" alt="Flow view" loading="lazy">
+      <div class="label">Flow<small>2D animated particles, internal vs external split</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/2_2dmap_en.png">
+      <img class="ss-img" src="screenshots/2_2dmap_en.png" alt="2D Map view" loading="lazy">
+      <div class="label">2D Map<small>Mercator projection with arcs</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/3_3dmap_en.png">
+      <img class="ss-img" src="screenshots/3_3dmap_en.png" alt="3D Globe view" loading="lazy">
+      <div class="label">3D Globe<small>Orthographic projection, auto-rotate, starfield</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/5_sankey_en.png">
+      <img class="ss-img" src="screenshots/5_sankey_en.png" alt="Sankey view" loading="lazy">
+      <div class="label">Sankey<small>External → internal bands, toggleable columns, hover-chain highlight</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/4_fieldset_en.png">
+      <img class="ss-img" src="screenshots/4_fieldset_en.png" alt="Settings panel" loading="lazy">
+      <div class="label">Settings<small>Field auto-discovery and label templates</small></div>
+    </button>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screenshot preview">
+    <button class="lightbox-close" type="button" aria-label="Close">×</button>
+    <img class="lightbox-img" src="" alt="Full-size screenshot">
+  </div>
+</section>
+
+<footer>
+  <div class="row">
+    <a href="https://github.com/jasoncheng7115/jt-gelflow">GitHub</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/LICENSE">Apache 2.0</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">Changelog</a>
+    <a href="index_zh-TW.html">繁體中文</a>
+  </div>
+  <div>JT-GELFLOW v1.5.0 · © 2026 Jason Cheng (Jason Tools)</div>
+</footer>
+
+<script>
+  // Tab switcher
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.install pre').forEach(pre => pre.hidden = true);
+      document.getElementById(tab.dataset.target).hidden = false;
+    });
+  });
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = document.getElementById('cmd-' + btn.dataset.copy).innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        const orig = btn.innerText; btn.innerText = 'copied';
+        setTimeout(() => btn.innerText = orig, 1200);
+      } catch (e) {}
+    });
+  });
+
+  // Lightbox — click a screenshot tile to expand inline; Esc / X / outside click closes.
+  (function () {
+    const lb = document.getElementById('lightbox');
+    if (!lb) return;
+    const lbImg = lb.querySelector('.lightbox-img');
+    const closeBtn = lb.querySelector('.lightbox-close');
+    const open = (src) => {
+      lbImg.src = src;
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      lb.hidden = true;
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.shot[data-lightbox]').forEach(btn => {
+      btn.addEventListener('click', () => open(btn.dataset.lightbox));
+    });
+    closeBtn.addEventListener('click', close);
+    lb.addEventListener('click', e => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', e => { if (!lb.hidden && e.key === 'Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>

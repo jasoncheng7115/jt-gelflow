@@ -1,0 +1,27 @@
+[Unit]
+Description=JT-GELFLOW - Real-time GELF network traffic visualization
+Documentation=https://github.com/jasoncheng7115/jt-gelflow
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/jt-gelflow
+ExecStart=/usr/bin/python3 /opt/jt-gelflow/run.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/opt/jt-gelflow
+
+[Install]
+WantedBy=multi-user.target

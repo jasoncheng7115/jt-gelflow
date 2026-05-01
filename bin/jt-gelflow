@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# jt-gelflow CLI — manage the JT-GELFLOW service.
+#
+# Subcommands:
+#   start | stop | restart | status | logs
+#   update                     git pull, rebuild frontend, restart service
+#   uninstall [--purge]        remove install dir and systemd unit; --purge also removes config
+#
+# Requires: systemd, root (sudo) for service / write operations.
+
+set -euo pipefail
+
+INSTALL_DIR="${JT_GELFLOW_DIR:-/opt/jt-gelflow}"
+SERVICE_NAME="jt-gelflow"
+UNIT_PATH="/etc/systemd/system/${SERVICE_NAME}.service"
+CLI_PATH="/usr/local/bin/jt-gelflow"
+
+err() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\033[36m›\033[0m %s\n' "$*"; }
+ok() { printf '\033[32m✓\033[0m %s\n' "$*"; }
+
+require_root() {
+  if [ "$(id -u)" -ne 0 ]; then
+    err "This action requires root. Re-run with: sudo jt-gelflow $*"
+  fi
+}
+
+cmd_start()   { require_root start;   systemctl start "$SERVICE_NAME";   ok "started"; }
+cmd_stop()    { require_root stop;    systemctl stop "$SERVICE_NAME";    ok "stopped"; }
+cmd_restart() { require_root restart; systemctl restart "$SERVICE_NAME"; ok "restarted"; }
+
+cmd_status() {
+  systemctl status "$SERVICE_NAME" --no-pager || true
+}
+
+cmd_logs() {
+  journalctl -u "$SERVICE_NAME" -f --no-pager
+}
+
+cmd_update() {
+  require_root update
+  [ -d "$INSTALL_DIR/.git" ] || err "$INSTALL_DIR is not a git checkout. Reinstall via install.sh."
+
+  info "git pull"
+  git -C "$INSTALL_DIR" pull --ff-only
+
+  info "pip install -r requirements.txt"
+  # Try PEP-668 bypass first (Debian/Ubuntu mark system Python "externally
+  # managed" since 2024 — pip refuses without --break-system-packages).
+  # Older distros don't know that flag; fall through to plain pip.
+  if ! python3 -m pip install --break-system-packages --quiet -r "$INSTALL_DIR/requirements.txt" 2>/dev/null; then
+    python3 -m pip install --quiet -r "$INSTALL_DIR/requirements.txt"
+  fi
+
+  if command -v npm >/dev/null 2>&1; then
+    info "npm install + build"
+    (cd "$INSTALL_DIR" && npm install --no-audit --no-fund --silent && npm run build --silent)
+  else
+    info "npm not installed; skipping rebuild (the committed dist/ will be used)"
+  fi
+
+  info "restarting service"
+  systemctl restart "$SERVICE_NAME"
+  ok "update complete"
+}
+
+cmd_uninstall() {
+  require_root uninstall
+  local purge=0
+  if [ "${1:-}" = "--purge" ]; then purge=1; fi
+
+  if systemctl list-unit-files | grep -q "^${SERVICE_NAME}.service"; then
+    info "stopping + disabling service"
+    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    systemctl disable "$SERVICE_NAME" 2>/dev/null || true
+    rm -f "$UNIT_PATH"
+    systemctl daemon-reload
+  fi
+
+  if [ "$purge" -eq 1 ]; then
+    info "purging $INSTALL_DIR (including config)"
+    rm -rf "$INSTALL_DIR"
+  else
+    if [ -d "$INSTALL_DIR" ]; then
+      info "removing install dir contents but preserving config.json"
+      find "$INSTALL_DIR" -mindepth 1 -maxdepth 1 \
+        ! -name 'config.json' \
+        -exec rm -rf {} +
+    fi
+  fi
+
+  rm -f "$CLI_PATH"
+  ok "uninstall complete"
+  if [ "$purge" -eq 0 ] && [ -f "$INSTALL_DIR/config.json" ]; then
+    info "your config.json was preserved at $INSTALL_DIR/config.json"
+  fi
+}
+
+usage() {
+  cat <<EOF
+JT-GELFLOW service manager
+
+Usage:
+  jt-gelflow <command>
+
+Commands:
+  start              Start the service
+  stop               Stop the service
+  restart            Restart the service
+  status             Show service status
+  logs               Tail service logs (journalctl -f)
+  update             git pull + rebuild + restart
+  uninstall          Remove service + binaries (preserves config.json)
+  uninstall --purge  Same as above, but also delete config.json
+
+Service install dir: $INSTALL_DIR
+EOF
+}
+
+case "${1:-}" in
+  start)     cmd_start ;;
+  stop)      cmd_stop ;;
+  restart)   cmd_restart ;;
+  status)    cmd_status ;;
+  logs)      cmd_logs ;;
+  update)    cmd_update ;;
+  uninstall) shift; cmd_uninstall "${1:-}" ;;
+  -h|--help|help|"") usage ;;
+  *)         err "unknown command: $1 (try: jt-gelflow help)" ;;
+esac

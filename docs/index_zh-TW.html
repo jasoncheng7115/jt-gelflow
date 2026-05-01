@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JT-GELFLOW — 即時 GELF 網路流量視覺化</title>
+  <meta name="description" content="自架的即時 GELF 網路流量視覺化工具，提供 流量圖 / 2D 地圖 / 3D 地球 / 桑基圖 四種檢視模式。Apache 2.0 授權。">
+  <meta property="og:title" content="JT-GELFLOW">
+  <meta property="og:description" content="即時 GELF 網路流量視覺化 — 流量圖 / 2D 地圖 / 3D 地球 / 桑基圖。">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#top" class="brand">
+    <span class="logo-dot"></span>
+    <span>JT-GELFLOW</span>
+  </a>
+  <div class="links">
+    <a href="#demo">影片</a>
+    <a href="#install">安裝</a>
+    <a href="#modes">檢視</a>
+    <a href="#features">功能</a>
+    <a href="#screenshots">截圖</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
+    <a href="index.html" class="lang">English</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <h1>看見你的網路在呼吸。</h1>
+  <p class="tagline">
+    即時 GELF 網路流量視覺化：流量圖、2D 地圖、3D 地球、桑基圖 四種檢視。
+  </p>
+  <div class="promise-chips">
+    <span class="chip chip-cyan">單機自架</span>
+    <span class="chip chip-mint">一台 Linux</span>
+    <span class="chip chip-purple">本地 Graylog</span>
+    <span class="chip chip-coral">不上雲</span>
+    <span class="chip chip-coral">不送遙測</span>
+    <span class="chip chip-amber">Apache 2.0</span>
+  </div>
+  <div class="ctas">
+    <a class="btn btn-primary" href="#install">三秒安裝 →</a>
+    <a class="btn btn-ghost" href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">前往 GitHub</a>
+  </div>
+</header>
+
+<section id="demo" style="padding-top: 20px;">
+  <h2>看它跑起來。</h2>
+  <p class="subhead">即時流量在四種檢視間流動的真實畫面。</p>
+  <div class="video-wrap">
+    <video controls preload="metadata"
+           src="demo.mp4"
+           playsinline>
+      你的瀏覽器不支援 HTML5 影片標籤。
+      <a href="demo.mp4">下載影片檔</a>。
+    </video>
+  </div>
+</section>
+
+<section id="install">
+  <div class="install">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-target="tab-linux" type="button">Linux 一行安裝</button>
+      <button class="tab" data-target="tab-manual" type="button">手動安裝</button>
+    </div>
+    <pre id="tab-linux"><button class="copy-btn" data-copy="linux">複製</button><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
+    <pre id="tab-manual" hidden><button class="copy-btn" data-copy="manual">複製</button><code id="cmd-manual">git clone https://github.com/jasoncheng7115/jt-gelflow.git /opt/jt-gelflow
+cd /opt/jt-gelflow
+pip install -r requirements.txt
+npm install &amp;&amp; npm run build
+python3 run.py</code></pre>
+    <dl class="post-note">
+      <dt>網址</dt>
+      <dd><code class="kbd">http://&lt;伺服器-IP&gt;:8099</code> <span class="muted">（安裝完成會印出實際 URL）</span></dd>
+      <dt>管理</dt>
+      <dd><code class="kbd">sudo jt-gelflow status / logs / update / uninstall</code></dd>
+    </dl>
+  </div>
+</section>
+
+<section id="modes">
+  <h2>四種檢視，一條資料管線。</h2>
+  <p class="subhead">可用 <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span> 快速鍵切換，同樣的資料、不同的視角。</p>
+  <div class="modes">
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="5" cy="6" r="3"/><circle cx="19" cy="6" r="3"/><circle cx="12" cy="18" r="3"/>
+          <path d="M5 9v1a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4V9"/><path d="M12 14v1"/>
+        </svg>
+      </div>
+      <h3>流量圖</h3>
+      <p>2D 動態粒子流量圖。節點以力學模擬自動排版，內外部 IP 分區。粒子速度與密度反映實際流量。</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19l-6 2V5l6-2m0 16l6-2m-6 2V3m6 14l6 2V3l-6-2m0 16V1"/>
+        </svg>
+      </div>
+      <h3>2D 地圖</h3>
+      <p>麥卡托投影世界地圖，依 GeoIP 座標繪製流量弧線。可拖曳平移，滾輪縮放至 16 倍。</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+          <path d="M2 12h20"/>
+        </svg>
+      </div>
+      <h3>3D 地球</h3>
+      <p>互動式立體地球儀。可自動旋轉、拖曳定位、滾輪縮放，並可選擇開啟星空背景。</p>
+    </div>
+    <div class="mode">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="2.4" height="16" rx="0.8"/>
+          <rect x="18.6" y="4" width="2.4" height="16" rx="0.8"/>
+          <path d="M5.4 7c4 0 8.6 4 13.2 4"/>
+          <path d="M5.4 13c4 0 8.6 4 13.2 4"/>
+        </svg>
+      </div>
+      <h3>桑基圖</h3>
+      <p>由左至右呈現「外網 → 內網」的流量帶，粗細反映流量。欄位可開關（國別、PTR 反解、協定）。游標停在帶上會點亮整條鏈路。欄位顯示名稱整合於「欄位對應」設定。</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <h2>給網管 / Ops 用的工具。</h2>
+  <p class="subhead">把 Graylog 的 firehose 變成一眼看懂的畫面。</p>
+  <div class="features">
+    <div class="feature"><h4>GELF UDP + TCP</h4><p>標準 GELF 接收器，UDP 12201 / TCP 12202，支援 chunked 與 gzip。</p></div>
+    <div class="feature"><h4>欄位自動探索</h4><p>傳進來的訊息欄位會即時顯示在設定面板，並自動推論型別。</p></div>
+    <div class="feature"><h4>範本引擎</h4><p><code class="kbd">{a||b|default}</code> 多重 fallback，節點與邊標籤皆適用。</p></div>
+    <div class="feature"><h4>區域分類</h4><p>以 CIDR 分 Internal / External / Inbound / Outbound，亦支援完全自訂區域。</p></div>
+    <div class="feature"><h4>Top-N + 篩選</h4><p>每個檢視可獨立設定上限與 IP 白名單，繁忙網路也維持畫面清爽。</p></div>
+    <div class="feature"><h4>即時搜尋</h4><p>依 IP / port / protocol / 關鍵字過濾。多詞 AND，<code class="kbd">-</code> 為排除。</p></div>
+    <div class="feature"><h4>WebSocket 100 ms</h4><p>緊湊推送迴圈、hash 比對去重、自動清理未回應的 client。</p></div>
+    <div class="feature"><h4>多語系</h4><p>UI 與設定皆支援 English / 繁體中文。</p></div>
+    <div class="feature"><h4>systemd 服務</h4><p>已套用權限隔離的 service 檔，搭配 CLI 一行升級／解除安裝。</p></div>
+  </div>
+</section>
+
+<section id="screenshots">
+  <h2>畫面截圖</h2>
+  <p class="subhead">同一份資料在四種檢視下的呈現。</p>
+  <div class="shots">
+    <button class="shot" type="button" data-lightbox="screenshots/1_flow_zhtw.png">
+      <img class="ss-img" src="screenshots/1_flow_zhtw.png" alt="Flow 檢視" loading="lazy">
+      <div class="label">Flow<small>2D 粒子動畫，內外部 IP 分區</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/2_2dmap_zhtw.png">
+      <img class="ss-img" src="screenshots/2_2dmap_zhtw.png" alt="2D Map 檢視" loading="lazy">
+      <div class="label">2D 地圖<small>麥卡托投影 + 流量弧線</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/3_3dmap_zhtw.png">
+      <img class="ss-img" src="screenshots/3_3dmap_zhtw.png" alt="3D Globe 檢視" loading="lazy">
+      <div class="label">3D 地球<small>立體呈現、自動旋轉、星空背景</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/5_sankey_zhtw.png">
+      <img class="ss-img" src="screenshots/5_sankey_zhtw.png" alt="桑基圖檢視" loading="lazy">
+      <div class="label">桑基圖<small>外 → 內網流量帶、欄位可開關、hover 整條鏈路點亮</small></div>
+    </button>
+    <button class="shot" type="button" data-lightbox="screenshots/4_fieldset_zhtw.png">
+      <img class="ss-img" src="screenshots/4_fieldset_zhtw.png" alt="設定面板" loading="lazy">
+      <div class="label">設定<small>欄位自動探索與標籤範本</small></div>
+    </button>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="截圖預覽">
+    <button class="lightbox-close" type="button" aria-label="關閉">×</button>
+    <img class="lightbox-img" src="" alt="完整截圖">
+  </div>
+</section>
+
+<footer>
+  <div class="row">
+    <a href="https://github.com/jasoncheng7115/jt-gelflow">GitHub</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/LICENSE">Apache 2.0</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG_zh-TW.md">更新記錄</a>
+    <a href="index.html">English</a>
+  </div>
+  <div>JT-GELFLOW v1.5.0 · © 2026 Jason Cheng (Jason Tools)</div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.install pre').forEach(pre => pre.hidden = true);
+      document.getElementById(tab.dataset.target).hidden = false;
+    });
+  });
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = document.getElementById('cmd-' + btn.dataset.copy).innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        const orig = btn.innerText; btn.innerText = '已複製';
+        setTimeout(() => btn.innerText = orig, 1200);
+      } catch (e) {}
+    });
+  });
+
+  // Lightbox — 點縮圖內嵌彈出大圖；Esc / × / 點外面 → 關閉
+  (function () {
+    const lb = document.getElementById('lightbox');
+    if (!lb) return;
+    const lbImg = lb.querySelector('.lightbox-img');
+    const closeBtn = lb.querySelector('.lightbox-close');
+    const open = (src) => {
+      lbImg.src = src;
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      lb.hidden = true;
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.shot[data-lightbox]').forEach(btn => {
+      btn.addEventListener('click', () => open(btn.dataset.lightbox));
+    });
+    closeBtn.addEventListener('click', close);
+    lb.addEventListener('click', e => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', e => { if (!lb.hidden && e.key === 'Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>
