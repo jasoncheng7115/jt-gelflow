@@ -15,19 +15,29 @@ SERVICE_NAME="jt-gelflow"
 UNIT_PATH="/etc/systemd/system/${SERVICE_NAME}.service"
 CLI_PATH="/usr/local/bin/jt-gelflow"
 
+# Preserve the original argv so ensure_root can re-exec via sudo with the
+# exact same command line. Inside cmd_* the local "$@" only contains that
+# subcommand's tail (e.g. just '--purge'), so we can't rely on it here.
+ORIG_ARGS=("$@")
+
 err() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 info() { printf '\033[36m›\033[0m %s\n' "$*"; }
 ok() { printf '\033[32m✓\033[0m %s\n' "$*"; }
 
-require_root() {
-  if [ "$(id -u)" -ne 0 ]; then
-    err "This action requires root. Re-run with: sudo jt-gelflow $*"
+# If the user invoked us as a non-root account, re-run the script via sudo
+# with the original arguments so they don't have to remember the prefix.
+# Preserves env so JT_GELFLOW_DIR and friends survive the elevation.
+ensure_root() {
+  if [ "$(id -u)" -eq 0 ]; then return; fi
+  if ! command -v sudo >/dev/null 2>&1; then
+    err "needs root and 'sudo' is not installed. Run as root: jt-gelflow ${ORIG_ARGS[*]}"
   fi
+  exec sudo -E "$0" "${ORIG_ARGS[@]}"
 }
 
-cmd_start()   { require_root start;   systemctl start "$SERVICE_NAME";   ok "started"; }
-cmd_stop()    { require_root stop;    systemctl stop "$SERVICE_NAME";    ok "stopped"; }
-cmd_restart() { require_root restart; systemctl restart "$SERVICE_NAME"; ok "restarted"; }
+cmd_start()   { ensure_root; systemctl start "$SERVICE_NAME";   ok "started"; }
+cmd_stop()    { ensure_root; systemctl stop "$SERVICE_NAME";    ok "stopped"; }
+cmd_restart() { ensure_root; systemctl restart "$SERVICE_NAME"; ok "restarted"; }
 
 cmd_status() {
   systemctl status "$SERVICE_NAME" --no-pager || true
@@ -38,7 +48,7 @@ cmd_logs() {
 }
 
 cmd_update() {
-  require_root update
+  ensure_root
   [ -d "$INSTALL_DIR/.git" ] || err "$INSTALL_DIR is not a git checkout. Reinstall via install.sh."
 
   info "git pull"
@@ -81,7 +91,7 @@ cmd_update() {
 }
 
 cmd_uninstall() {
-  require_root uninstall
+  ensure_root
   local purge=0
   if [ "${1:-}" = "--purge" ]; then purge=1; fi
 
