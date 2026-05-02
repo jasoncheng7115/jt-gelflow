@@ -13,7 +13,7 @@
 | 保證 | 如何強制 |
 |------|----------|
 | **`config.json` 每次升級都保留** | `config.json` 已 `.gitignore`。`git pull` 不會動到。`install.sh` 在任何 reset 之前先救援 config，事後再放回。 |
-| **未知 config key 被容忍** | `Config.from_dict()` 用 `__dataclass_fields__` 過濾。schema 中已不存在的舊 key 會被靜默忽略，不會崩潰。 |
+| **未知 config key 會被容錯處理** | `Config.from_dict()` 用 `__dataclass_fields__` 過濾。schema 中已不存在的舊 key 會被靜默忽略，不會崩潰。 |
 | **Service 載入新 code** | `install.sh` 結尾用 `systemctl restart jt-gelflow.service`（不再只是 `enable --now`），確保跑著的 Python 程式被換掉。 |
 | **UDP/TCP port 重綁無資料遺失** | service 重啟；約 1 秒 downtime 期間飛行中的 GELF 訊息會掉（UDP 本就是 best-effort）。要零損失請挑低流量時段執行 `sudo jt-gelflow update`。 |
 
@@ -138,7 +138,7 @@ sudo systemctl restart jt-gelflow.service
 
 ---
 
-## 6. 回滾
+## 6. 回退到舊版
 
 回退到舊版：
 
@@ -178,7 +178,7 @@ sudo jt-gelflow uninstall --purge  # 連 config.json 一併刪除
 |------|------|------|
 | `fatal: Not possible to fast-forward, aborting.` | upstream 歷史不再從本地 commit 線性連通（force-push / re-init / 分支重組）。 | 用韌性升級：重跑 `install.sh`。 |
 | 升級後 service 還跑舊 code | v1.5.0 之前的 `install.sh` bug — 用 `enable --now`（已執行時是 no-op）。 | v1.5.0 已修。較舊安裝請在升級後 `sudo systemctl restart jt-gelflow.service`。 |
-| `Error loading config, using defaults: unexpected keyword argument 'X'` | v1.5.0 之前的 server — 嚴格 config 解析。 | v1.5.0+ 容忍未知 key。要消警告就手動把那個 key 從 `config.json` 移除。 |
+| `Error loading config, using defaults: unexpected keyword argument 'X'` | v1.5.0 之前的 server — 嚴格 config 解析。 | v1.5.0+ 對未知 key 做容錯處理。要消警告就手動把那個 key 從 `config.json` 移除。 |
 | 升級後瀏覽器仍是舊 UI | 快取住的 JS bundle（hash 不同）。 | 硬重新整理（`Ctrl+Shift+R` / `Cmd+Shift+R`）。 |
 | 設定頁的客製值消失 | config 沒留下 — 看 `journalctl -u jt-gelflow.service` 是否有 `Error loading config…`。 | 從第 3 節做的 `.before-DATE` 快照還原。 |
 

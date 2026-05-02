@@ -135,7 +135,7 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | J2 | All bilingual pairs match in section structure | quick `grep '^## '` count parity |
 | J3 | HTML pages parse | `python3 -c "from html.parser import HTMLParser; HTMLParser().feed(open(...).read())"` for both `docs/index*.html` |
 | J4 | No internal IPs in user-facing files | `grep -rE '192\.168\.[0-9]+\.[0-9]+'` on `*.md` `*.html` returns only RFC1918 documentation cases |
-| J5 | No mainland-CN-only words in zh-TW docs | targeted grep for `信息`/`軟件`/`默認`/`用戶`/`數據`/`服務器`/`緩存`/`屏幕` returns nothing in `*_zh-TW.md` and `index_zh-TW.html` |
+| J5 | No mainland-CN-only words in zh-TW docs | targeted grep for `信息`/`軟件`/`默認`/`用戶`/`數據`/`服務器`/`緩存`/`屏幕`/`回滾`/`容忍`/`高亮`/`帶寬`/`全局`/`函數`/`模塊`/`操作系統` returns nothing in `*_zh-TW.md` and `index_zh-TW.html` |
 | J6 | `package.json`, `App.tsx:VERSION`, `SettingsPanel.tsx:VERSION`, README headers, landing footers all on the same version | grep all five and diff |
 | J7 | CHANGELOG has an entry for this release | `grep "^## \[$(jq -r .version package.json)\]" CHANGELOG.md` |
 

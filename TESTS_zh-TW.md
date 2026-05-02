@@ -84,7 +84,7 @@
 | # | 測試 | 怎麼做 |
 |---|------|--------|
 | G1 | 6 個欄位 chip 都呈現 | 國別 / 來源 IP / 來源 IP 反解 / 協定 / 目的 IP / 目的 IP 反解 |
-| G2 | 來源 IP + 目的 IP 為必要、鎖定 | 點擊無作用、樣式為 `is-mandatory` |
+| G2 | 來源 IP + 目的 IP 為必要、鎖定 | 點選無作用、樣式為 `is-mandatory` |
 | G3 | 可選 chip 可開關 | 點選增加/移除自 `sankey_active_columns` 並 POST 設定 |
 | G4 | 欄位左右順序固定 | 不論勾選順序，layout 為 `country → ext_ip → ext_ip_ptr → protocol → int_ip → int_ip_ptr` |
 | G5 | 更新頻率拉桿 1–30s | 拉到 2 → 每 2 秒重排；拉到 30 → 幾乎不變 |
@@ -135,7 +135,7 @@
 | J2 | 雙語對應結構一致 | `grep '^## '` 計數對齊 |
 | J3 | HTML 頁面解析 | `python3 -c "from html.parser import HTMLParser; HTMLParser().feed(open(...).read())"` 對 `docs/index*.html` 兩份 |
 | J4 | 對外文件無內網 IP | `grep -rE '192\.168\.[0-9]+\.[0-9]+'` 對 `*.md` `*.html` 僅看到 RFC1918 範例 |
-| J5 | 繁中文件無大陸用語 | 對 `信息`/`軟件`/`默認`/`用戶`/`數據`/`服務器`/`緩存`/`屏幕` 在 `*_zh-TW.md` 與 `index_zh-TW.html` grep 為空 |
+| J5 | 繁中文件無大陸用語 | 對 `信息`/`軟件`/`默認`/`用戶`/`數據`/`服務器`/`緩存`/`屏幕`/`回滾`/`容忍`/`高亮`/`帶寬`/`全局`/`函數`/`模塊`/`操作系統` 在 `*_zh-TW.md` 與 `index_zh-TW.html` grep 為空 |
 | J6 | `package.json`、`App.tsx:VERSION`、`SettingsPanel.tsx:VERSION`、README header、landing footer 版本一致 | 全部 grep 後 diff |
 | J7 | CHANGELOG 有此版條目 | `grep "^## \[$(jq -r .version package.json)\]" CHANGELOG.md` |
 

@@ -66,7 +66,7 @@ sudo jt-gelflow update
 curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash
 ```
 
-`config.json` 已 `.gitignore`，每次升級都保留。完整 SOP（含升級前後檢查、版本鎖定、回滾）請見 [UPGRADE_zh-TW.md](UPGRADE_zh-TW.md)。
+`config.json` 已 `.gitignore`，每次升級都保留。完整 SOP（含升級前後檢查、版本鎖定、回退到舊版）請見 [UPGRADE_zh-TW.md](UPGRADE_zh-TW.md)。
 
 首次安裝請見 [INSTALL_zh-TW.md](INSTALL_zh-TW.md)。
 
