@@ -118,6 +118,7 @@ class Config:
             "default_view": self.default_view,
             "sankey_active_columns": list(self.sankey_active_columns),
             "sankey_window_seconds": self.sankey_window_seconds,
+            "sankey_width_mode": self.sankey_width_mode,
             "transition_effect": self.transition_effect,
             "mapping": asdict(self.mapping),
             "zones": asdict(self.zones),
