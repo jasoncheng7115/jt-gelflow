@@ -184,7 +184,7 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
 | 設定區塊 | 控制什麼 | 預設欄位 |
 |---|---|---|
 | **欄位對應 (Field Mapping)** | 來源/目的 IP、協定、PTR、國碼 | `source_ip`, `destination_ip`, `protocol_name`, `source_ip_ptr`, `destination_ip_ptr`, `source_ip_country_code`, `destination_ip_country_code` |
-| **數值欄位 (Value Field)** | 加總後決定流量權重的數值欄位（位元組／計數） | `network_bytes` |
+| **數值欄位 (Value Field)** | 加總後決定流量權重的數值欄位（位元組／封包長度／事件計數） | `network_bytes`（Graylog 預設）、`bytes`、`length`、`datalen`、`packet_size`、`byte_count`、`octets`（NetFlow）— 看你的 pipeline 實際送什麼 |
 | **標籤範本 (Label Templates)** | 節點與連線顯示文字，用 `{field}` 引用 | `{source_ip_ptr\|\|source_ip}`, `{protocol_name}:{destination_port\|0}` |
 | **GeoIP / 地理定位** | 2D 地圖／3D 地球的座標欄位 | `source_ip_geolocation`, `destination_ip_geolocation` |
 | **區域設定 (Zones)** | 內外網 CIDR、Top-N 限制、各檢視套用範圍 | `192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12` |
