@@ -2167,12 +2167,12 @@ body {
 .checkbox-label input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  min-width: 14px;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
   position: relative;
   transition: all 0.2s;
@@ -2188,13 +2188,18 @@ body {
   border-color: var(--accent);
 }
 
+/* Tick fills more of the box now that the box is 18×18 (was 14×14 with a
+   small 5×9 tick that hugged the upper-right corner — the user flagged it
+   looking too small to fill the frame). Centered roughly on the box centre
+   with width:6 / height:11 / left:5 / top:1 so the rotated tick reaches
+   from upper-right toward lower-left in a balanced way. */
 .checkbox-label input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
-  left: 4px;
-  top: 0px;
-  width: 5px;
-  height: 9px;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
   border: solid var(--bg-primary);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
