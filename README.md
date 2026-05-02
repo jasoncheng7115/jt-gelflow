@@ -261,6 +261,27 @@ JT-GELFLOW accepts standard GELF over UDP (`12201`) or TCP (`12202`) — chunked
 - **Filebeat** via Logstash
 - **Custom scripts** — anything that emits a JSON GELF payload terminated by a null byte (TCP) or fits in a UDP datagram
 
+### Configuring Graylog to forward into JT-GELFLOW
+
+The intended pipeline: Graylog ingests your normal logs (syslog, beats, anything), processes them, and forks a copy out to JT-GELFLOW as GELF UDP.
+
+1. **Graylog → System → Outputs → `Add new output`**
+2. Type: **`GELF Output`**
+3. Title: `JT-GELFLOW` (or anything you want)
+4. Configuration:
+   - **Transport protocol:** `UDP`
+   - **Destination host:** the IP of the JT-GELFLOW box (the URL the installer printed, **without** the port)
+   - **Destination port:** `12201`
+   - The other fields (queue size, batch, compression) can stay at defaults; chunked + gzipped GELF is fine.
+5. Save the output. Then attach it to a **stream** that contains the messages you want visualised (Streams → pick stream → `Manage Outputs` → check the new output).
+
+That's it — within seconds the JT-GELFLOW dashboard should start showing flows. If it doesn't:
+
+- `tcpdump -i any 'udp port 12201'` on the JT-GELFLOW box to confirm packets are arriving.
+- Open Settings → "Discovered Fields" in the dashboard to confirm your GELF field names match what the visualiser expects (Source IP, Destination IP, Protocol, GeoIP). If your fields are non-canonical (Suricata, vendor exports), use the Field Mapping section to point JT-GELFLOW at them — see the [Field mapping](#field-mapping) guide above for a worked example.
+
+> **Logstash users:** the equivalent is the `gelf` output plugin pointing at the same host on UDP `12201`. Filebeat doesn't speak GELF natively; route it through Logstash.
+
 Send a test event:
 
 ```bash

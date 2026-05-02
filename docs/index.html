@@ -75,12 +75,14 @@
     </div>
     <p class="prereq-note">
       <strong>Prerequisites.</strong>
-      The installer will pull <code class="kbd">git</code>, <code class="kbd">python3</code> + <code class="kbd">pip</code>, <code class="kbd">nodejs</code> + <code class="kbd">npm</code> on its own — but it can't bootstrap <code class="kbd">curl</code> itself. On a minimal Linux box where <code class="kbd">curl --version</code> says "command not found", install it first:<br>
-      <code class="kbd">sudo apt install -y curl</code> ·
-      <code class="kbd">sudo dnf install -y curl</code> ·
-      <code class="kbd">sudo pacman -S --noconfirm curl</code> ·
-      <code class="kbd">sudo zypper install -y curl</code>
+      The installer will pull <code class="kbd">git</code>, <code class="kbd">python3</code> + <code class="kbd">pip</code>, <code class="kbd">nodejs</code> + <code class="kbd">npm</code> on its own — but it can't bootstrap <code class="kbd">curl</code> itself. On a minimal Linux box where <code class="kbd">curl --version</code> says "command not found", install it first:
     </p>
+    <table class="prereq-table">
+      <tr><td>Debian / Ubuntu</td><td><code class="kbd">sudo apt install -y curl</code></td></tr>
+      <tr><td>RHEL / Fedora / Rocky / Alma</td><td><code class="kbd">sudo dnf install -y curl</code></td></tr>
+      <tr><td>Arch / Manjaro</td><td><code class="kbd">sudo pacman -S --noconfirm curl</code></td></tr>
+      <tr><td>openSUSE</td><td><code class="kbd">sudo zypper install -y curl</code></td></tr>
+    </table>
     <div class="code-block">
       <button class="copy-btn" data-copy="linux">copy</button>
       <pre id="tab-linux"><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
@@ -99,6 +101,11 @@ python3 run.py</code></pre>
       <dt>Manage</dt>
       <dd><code class="kbd">sudo jt-gelflow status / logs / update / uninstall</code></dd>
     </dl>
+    <p class="install-followup">
+      <strong>Then point Graylog at it.</strong>
+      Graylog → <em>System → Outputs → Add new output</em> → <code class="kbd">GELF Output</code>; transport <code class="kbd">UDP</code>, host = the JT-GELFLOW server's IP, port <code class="kbd">12201</code>; attach the output to the stream you want visualised.
+      Full step-by-step (incl. Logstash + Filebeat path) → <a href="https://github.com/jasoncheng7115/jt-gelflow#configuring-graylog-to-forward-into-jt-gelflow" target="_blank" rel="noopener">README · Sending data</a>
+    </p>
   </div>
 </section>
 

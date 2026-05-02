@@ -239,6 +239,43 @@ code, pre { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, 
   line-height: 1.7;
 }
 .install .prereq-note code.kbd { font-size: 12px; }
+.install .prereq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 12px;
+  margin-top: -6px;
+}
+.install .prereq-table td {
+  padding: 6px 12px;
+  border-top: 1px solid var(--border);
+  vertical-align: middle;
+}
+.install .prereq-table tr:first-child td { border-top: 0; }
+.install .prereq-table td:first-child {
+  color: var(--text-dim);
+  white-space: nowrap;
+  width: 1%;
+}
+.install .prereq-table code.kbd { font-size: 12px; }
+
+.install .install-followup {
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: rgba(0, 212, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+.install .install-followup strong { color: var(--text); }
+.install .install-followup em { font-style: normal; color: var(--text); }
+.install .install-followup a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+}
 .install pre {
   background: var(--bg-elev);
   border: 1px solid var(--border);

@@ -74,12 +74,14 @@
     </div>
     <p class="prereq-note">
       <strong>必要套件。</strong>
-      安裝程式會自己抓 <code class="kbd">git</code>、<code class="kbd">python3</code> + <code class="kbd">pip</code>、<code class="kbd">nodejs</code> + <code class="kbd">npm</code>，但沒辦法替自己裝 <code class="kbd">curl</code>。極簡 Linux 沒預裝就先補上：<br>
-      <code class="kbd">sudo apt install -y curl</code> ·
-      <code class="kbd">sudo dnf install -y curl</code> ·
-      <code class="kbd">sudo pacman -S --noconfirm curl</code> ·
-      <code class="kbd">sudo zypper install -y curl</code>
+      安裝程式會自己抓 <code class="kbd">git</code>、<code class="kbd">python3</code> + <code class="kbd">pip</code>、<code class="kbd">nodejs</code> + <code class="kbd">npm</code>，但沒辦法替自己裝 <code class="kbd">curl</code>。極簡 Linux 沒預裝就先補上：
     </p>
+    <table class="prereq-table">
+      <tr><td>Debian / Ubuntu</td><td><code class="kbd">sudo apt install -y curl</code></td></tr>
+      <tr><td>RHEL / Fedora / Rocky / Alma</td><td><code class="kbd">sudo dnf install -y curl</code></td></tr>
+      <tr><td>Arch / Manjaro</td><td><code class="kbd">sudo pacman -S --noconfirm curl</code></td></tr>
+      <tr><td>openSUSE</td><td><code class="kbd">sudo zypper install -y curl</code></td></tr>
+    </table>
     <div class="code-block">
       <button class="copy-btn" data-copy="linux">複製</button>
       <pre id="tab-linux"><code id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre>
@@ -98,6 +100,11 @@ python3 run.py</code></pre>
       <dt>管理</dt>
       <dd><code class="kbd">sudo jt-gelflow status / logs / update / uninstall</code></dd>
     </dl>
+    <p class="install-followup">
+      <strong>裝完接著到 Graylog 設輸出。</strong>
+      Graylog → <em>System → Outputs → Add new output</em> → 選 <code class="kbd">GELF Output</code>；Transport 選 <code class="kbd">UDP</code>、Destination host 填 JT-GELFLOW 主機 IP、port <code class="kbd">12201</code>；存檔後把這個 output 掛到要視覺化的 stream 上即可。
+      完整步驟（含 Logstash / Filebeat 路徑）→ <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/README_zh-TW.md#%E8%A8%AD%E5%AE%9A-graylog-%E6%8A%8A%E8%A8%8A%E6%81%AF%E4%B8%9F%E5%88%B0-jt-gelflow" target="_blank" rel="noopener">README · 設定 Graylog 把訊息丟到 JT-GELFLOW</a>
+    </p>
   </div>
 </section>
 
