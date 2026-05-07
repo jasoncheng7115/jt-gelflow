@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](UPGRADE.md) | [繁體中文](UPGRADE_zh-TW.md)
 
-This is the operations-grade upgrade procedure for **JT-GELFLOW v1.5.3+**. Version updates pull from the public GitHub repo.
+This is the operations-grade upgrade procedure for **JT-GELFLOW v1.5.4+**. Version updates pull from the public GitHub repo.
 
 ---
 
@@ -119,18 +119,18 @@ If the browser already had the page open: **hard-refresh** (`Ctrl+Shift+R` / `Cm
 If you want to lock to a particular release (e.g., for a regulated environment that doesn't auto-track `main`):
 
 ```bash
-JT_GELFLOW_BRANCH=v1.5.3 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.3/install.sh | sudo bash
+JT_GELFLOW_BRANCH=v1.5.4 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.4/install.sh | sudo bash
 ```
 
-(Replace `v1.5.3` with the tag of your choice.)
+(Replace `v1.5.4` with the tag of your choice.)
 
 For an existing checkout you want to pin:
 
 ```bash
 cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.3
+sudo git checkout v1.5.4
 sudo systemctl restart jt-gelflow.service
 ```
 

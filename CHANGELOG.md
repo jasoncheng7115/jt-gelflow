@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.4] — 2026-05-07
+
+Install-time fix for a real customer report on Ubuntu 26.
+
+### Fixed
+
+- **`curl | sudo bash` install hung at the systemd prompt** on Ubuntu 26 / Debian 13 (and any sudoers config with `Defaults use_pty`). Sudo creates a private pty for the child, so the script's `/dev/tty` is writable (the prompt appears) but unreadable — the user's keystrokes flow to a different pty and `read` blocks forever. Customer pressed Enter and nothing happened.
+
+### Changed
+
+- **`ask_yes_no` in `install.sh` now reads with a 60-second timeout.** When `/dev/tty` is unreadable in the `use_pty` scenario above, the prompt times out, prints a warning naming `JT_GELFLOW_YES=1` as the recommended skip, and proceeds with the supplied default. Install completes instead of hanging indefinitely.
+- **INSTALL.md / INSTALL_zh-TW.md** gain a troubleshooting row spelling out the symptom, the root cause, and the `JT_GELFLOW_YES=1` workaround.
+
+---
+
 ## [1.5.3] — 2026-05-02
 
 Sankey link-width semantics are now configurable, with a small UI tweak and docs to match.

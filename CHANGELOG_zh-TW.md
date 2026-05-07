@@ -6,6 +6,21 @@
 
 ---
 
+## [1.5.4] — 2026-05-07
+
+針對 Ubuntu 26 客戶實際回報的安裝卡關修正。
+
+### 修正
+
+- **`curl | sudo bash` 在 systemd 提示處卡住** — Ubuntu 26 / Debian 13（以及任何 sudoers 開了 `Defaults use_pty` 的設定）下，sudo 會替子程序開一個獨立 pty，腳本的 `/dev/tty` 寫得進去（提示有顯示）但讀不到 — 使用者的按鍵被 sudo 攔到另一個 pty，`read` 永遠拿不到輸入。客戶實際按了 Enter 沒反應。
+
+### 變更
+
+- **`install.sh` 的 `ask_yes_no` 加上 60 秒 timeout**。`/dev/tty` 讀不到時會逾時、印出警告並建議下次用 `JT_GELFLOW_YES=1` 跳過、然後以預設值繼續。安裝會走完，不會永遠卡住。
+- **INSTALL.md / INSTALL_zh-TW.md** 疑難排解表多一條：症狀、根本原因、`JT_GELFLOW_YES=1` 的繞過寫法都列上去。
+
+---
+
 ## [1.5.3] — 2026-05-02
 
 桑基圖線寬計算方式可設定，配上一處 UI 微調與文件更新。

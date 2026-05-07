@@ -30,12 +30,23 @@ err()   { printf '%serror:%s %s\n' "$RED" "$RESET" "$*" >&2; exit 1; }
 ok()    { printf '%s✓%s %s\n' "$GREEN" "$RESET" "$*"; }
 
 # Read interactive prompts from /dev/tty so `curl | bash` still works.
+# Read has a 60 s timeout so we don't hang forever when /dev/tty is writable
+# but unreadable — happens with `curl | sudo bash` on sudoers with `use_pty`
+# (Ubuntu 26 / Debian 13 default), where the script's /dev/tty resolves to a
+# private pty whose input is never fed by sudo. After the timeout, fall back
+# to the supplied default and tell the user how to skip the prompt next time.
 ask_yes_no() {
   local prompt="$1" default="${2:-y}" reply
   if [ "$ASSUME_YES" = "1" ]; then echo "$default"; return; fi
   if [ ! -e /dev/tty ]; then echo "$default"; return; fi
   printf '%s [%s/n] ' "$prompt" "$([ "$default" = "y" ] && echo Y || echo y)" > /dev/tty
-  IFS= read -r reply < /dev/tty || reply=""
+  if IFS= read -r -t 60 reply < /dev/tty; then
+    :
+  else
+    printf '\n%swarn:%s no input within 60 s — assuming "%s". Re-run with JT_GELFLOW_YES=1 to skip prompts entirely.\n' \
+      "$YELLOW" "$RESET" "$default" > /dev/tty
+    reply=""
+  fi
   reply="${reply:-$default}"
   case "$reply" in y|Y|yes|YES) echo "y" ;; *) echo "n" ;; esac
 }

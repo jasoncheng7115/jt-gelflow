@@ -32,7 +32,7 @@
 | B4 | 客戶 config 在重跑 `install.sh` 後保留 | 同 B3 但用安裝程式觸發 |
 | B5 | 向前相容：v1.5 之前帶 `sankey_stages` 的 config 不會炸 load | 把 `"sankey_stages": "ext_proto_int"` 注入 config.json、重啟服務、port 仍是 8099（沒掉回 8080），警告無害 |
 | B6 | ff-only 失敗時走韌性路徑 | 變動本地 git 歷史（`git reset --hard $(git rev-parse HEAD~1)` 後重新 init upstream 為不同歷史），重跑 install.sh — 應該救援 config + reset --hard + 還原 |
-| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.3 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.3` |
+| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.4 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.4` |
 
 ## C. 移除
 

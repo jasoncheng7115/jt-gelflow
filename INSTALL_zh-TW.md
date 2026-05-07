@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-本文件為 **JT-GELFLOW v1.5.3+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
+本文件為 **JT-GELFLOW v1.5.4+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
 
 ---
 
@@ -174,6 +174,7 @@ server {
 
 | 症狀 | 第一步檢查 |
 |------|-------------|
+| 安裝程式按 Enter 後卡在 `Install + enable jt-gelflow.service via systemd? [Y/n]` | 這是 `curl \| sudo bash` 撞上 sudo 的 `use_pty`（Ubuntu 26 / Debian 13 預設開）— `/dev/tty` 寫得進去但讀不到，使用者的按鍵被 sudo 攔在另一個 pty。改非互動模式重跑：`curl -fsSL .../install.sh \| sudo JT_GELFLOW_YES=1 bash`。另外從 v1.5.4 開始 read 有 60 秒 timeout，逾時會自動以預設值繼續。 |
 | `connection refused` | `sudo jt-gelflow status` — 服務啟動過嗎？看 `sudo jt-gelflow logs`。 |
 | 從別台連 8099 不通 | 防火牆（`ufw status`、`iptables -L INPUT`）。 |
 | HTTP 載入但 WebSocket Disconnected | 反向代理沒帶 `Upgrade` / `Connection` header，或 `proxy_read_timeout` 太短。 |

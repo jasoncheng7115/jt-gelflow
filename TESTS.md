@@ -32,7 +32,7 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | B4 | Customer config survives `install.sh` re-run | same as B3 but trigger via re-running installer |
 | B5 | Forward-compat: pre-v1.5 config with `sankey_stages` doesn't break load | inject `"sankey_stages": "ext_proto_int"` into config.json, restart service, server still binds port 8099 (no fallback to 8080), and warning is benign |
 | B6 | Resilient path takes over when ff-only fails | mutate local git history (`git reset --hard $(git rev-parse HEAD~1)` then re-init upstream as different history), re-run installer — should rescue config + reset --hard + restore |
-| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.3 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.3` |
+| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.4 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.4` |
 
 ## C. Uninstall
 

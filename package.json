@@ -1,6 +1,6 @@
 {
   "name": "jt-gelflow",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "GELF Flow Visualization - Animated particle flow map for network traffic",
   "type": "module",
   "scripts": {

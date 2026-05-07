@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-This is the operations-grade install procedure for **JT-GELFLOW v1.5.3+**. For a friendlier overview see [README.md](README.md).
+This is the operations-grade install procedure for **JT-GELFLOW v1.5.4+**. For a friendlier overview see [README.md](README.md).
 
 ---
 
@@ -223,6 +223,7 @@ Common gotchas:
 
 | Symptom | First check |
 |---------|-------------|
+| Installer hangs at `Install + enable jt-gelflow.service via systemd? [Y/n]` after pressing Enter | `curl \| sudo bash` collides with sudo's `use_pty` (Ubuntu 26 / Debian 13 default) — `/dev/tty` is writable but the user's keystrokes flow to a different pty so `read` never sees them. Re-run non-interactively: `curl -fsSL .../install.sh \| sudo JT_GELFLOW_YES=1 bash`. The script also auto-fallback-defaults after a 60-second read timeout starting v1.5.4. |
 | `connection refused` | `sudo jt-gelflow status` — was the service ever started? `sudo jt-gelflow logs`. |
 | Port 8099 unreachable from another host | Firewall (`ufw status`, `iptables -L INPUT`). |
 | HTTP loads but WebSocket disconnected | Reverse proxy is missing `Upgrade` / `Connection` headers, or `proxy_read_timeout` too short. |
