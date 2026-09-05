@@ -27,6 +27,9 @@ class MessageSample:
 class FieldDiscoveryCache:
     """Cache for discovering fields from incoming messages."""
 
+    # Ceiling on distinct discovered field names held at once.
+    MAX_FIELDS = 2000
+
     def __init__(self, max_messages: int = 1000, ttl_seconds: int = 300):
         self.fields: dict[str, FieldInfo] = {}
         self.messages: deque[MessageSample] = deque(maxlen=max_messages)
@@ -62,7 +65,7 @@ class FieldDiscoveryCache:
                 info.last_value = value  # Always update to latest
                 if len(info.samples) < 5:
                     info.samples.append(value)
-            else:
+            elif len(self.fields) < self.MAX_FIELDS:
                 self.fields[key] = FieldInfo(
                     name=key,
                     count=1,
@@ -71,6 +74,11 @@ class FieldDiscoveryCache:
                     samples=[value],
                     last_value=value,
                 )
+            # Past MAX_FIELDS, ignore unseen names rather than growing without
+            # bound: the TTL sweep below only reclaims names quiet for
+            # ttl_seconds, so a sender emitting randomised field names could
+            # otherwise expand this dict for the whole TTL window. Real GELF
+            # schemas are nowhere near this wide.
 
         # Clean up old fields
         cutoff = now - self.ttl_seconds

@@ -12,6 +12,12 @@ Restart=on-failure
 RestartSec=5
 StandardOutput=journal
 StandardError=journal
+# Python block-buffers stdout when it is a pipe, which the journal is. Without
+# this the security diagnostics added in v1.5.5 — dropped decompression bombs,
+# rejected cross-origin WebSockets, refused config values — sit in a 4 KB
+# buffer instead of reaching `jt-gelflow logs`, which on a quiet install can
+# mean the operator sees nothing at all.
+Environment=PYTHONUNBUFFERED=1
 # Don't make `systemctl restart` block for the systemd default 90s if the
 # Python shutdown stalls (e.g. browser still has a WebSocket open). 10s is
 # generous for a clean exit; anything longer gets a SIGKILL.
@@ -21,12 +27,21 @@ KillMode=mixed
 # Hardening
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=full
+ProtectSystem=strict
 ProtectHome=true
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true
 ReadWritePaths=/opt/jt-gelflow
+PrivateDevices=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+# Only the socket families the collector and HTTP server actually use.
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+# Backstop against unbounded growth from malformed or hostile GELF input.
+MemoryMax=1G
 
 [Install]
 WantedBy=multi-user.target

@@ -6,9 +6,8 @@ import signal
 from pathlib import Path
 
 from aiohttp import web, WSMsgType, ClientSession
-import aiohttp_cors
 
-from .config import load_config, get_config, update_config, update_mapping
+from .config import load_config, get_config, update_config, update_mapping, ConfigValueError
 from .template import render_template, validate_template
 from .field_discovery import field_cache
 from .flow_aggregator import flow_aggregator
@@ -17,6 +16,79 @@ from .gelf_collector import gelf_collector
 
 # WebSocket clients
 ws_clients: set[web.WebSocketResponse] = set()
+
+
+# The 2D Map / 3D Globe pull their country outlines from this CDN at runtime,
+# so CSP has to allow it. Keep this in sync with WORLD_MAP_URL in GlobeCanvas.tsx.
+_MAP_CDN = "https://unpkg.com"
+
+# 'unsafe-inline' for styles is required because the React components set
+# inline style={{...}} attributes throughout. Scripts get no such exemption —
+# the bundle is loaded as an external module from /assets.
+_CSP = (
+    "default-src 'self'; "
+    "script-src 'self'; "
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data:; "
+    f"connect-src 'self' {_MAP_CDN}; "
+    "object-src 'none'; "
+    "base-uri 'self'; "
+    "frame-ancestors 'none'"
+)
+
+_SECURITY_HEADERS = {
+    "Content-Security-Policy": _CSP,
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    # Stop other origins from embedding our responses as subresources.
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Cross-Origin-Opener-Policy": "same-origin",
+    # aiohttp otherwise advertises its own and Python's exact version.
+    "Server": "jt-gelflow",
+}
+
+
+@web.middleware
+async def security_headers_middleware(request: web.Request, handler):
+    """Attach security headers to every response.
+
+    Applied centrally rather than per-handler so static files, API responses
+    and the SPA shell are all covered — a header added in one handler and
+    forgotten in another is the usual way these regress.
+    """
+    response = await handler(request)
+    # WebSocket responses are already switched protocols; leave them alone.
+    if not isinstance(response, web.WebSocketResponse):
+        for key, value in _SECURITY_HEADERS.items():
+            response.headers[key] = value
+        # API payloads describe the monitored network — don't let a shared
+        # proxy or the browser cache hold on to them.
+        if request.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+def _origin_allowed(request: web.Request) -> bool:
+    """Whether a cross-origin-capable request may proceed.
+
+    Browsers attach Origin to WebSocket handshakes but the same-origin policy
+    does NOT cover WebSockets, so without this check any web page the operator
+    visits could open a socket and stream the live flow graph. Requests with no
+    Origin (curl, Graylog, health checks) are left alone — this guards against
+    browsers, not against clients that never had an origin to begin with.
+    """
+    origin = request.headers.get("Origin")
+    if not origin:
+        return True
+    host = request.headers.get("Host")
+    if not host:
+        return False
+    # Compare host:port, ignoring scheme — the server speaks plain HTTP but may
+    # sit behind a TLS-terminating reverse proxy sending https:// origins.
+    origin_host = origin.split("://", 1)[-1]
+    return origin_host == host
 
 
 # === REST API Handlers ===
@@ -44,12 +116,23 @@ async def post_config_handler(request: web.Request) -> web.Response:
             print(f"Internal filter IPs changed, flow graph cleared")
 
         return web.json_response(updated.to_dict())
+    except ConfigValueError as e:
+        # Naming the field is safe — the caller just sent it — and the Settings
+        # panel needs it to point at the offending input. Nothing is written:
+        # update_config validates before save_config runs.
+        print(f"Config update rejected: {e}")
+        return web.json_response(
+            {"error": f"Invalid value for '{e.key}'"}, status=400
+        )
     except Exception as e:
         import traceback
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        print(f"Config update error: {error_msg}")
+        # Full detail to the server log; a generic message to the caller, so a
+        # malformed request can't be used to map out internal structure.
+        print(f"Config update error: {type(e).__name__}: {e}")
         traceback.print_exc()
-        return web.json_response({"error": error_msg}, status=400)
+        return web.json_response(
+            {"error": "Invalid configuration payload"}, status=400
+        )
 
 
 async def get_mapping_handler(request: web.Request) -> web.Response:
@@ -165,6 +248,10 @@ async def get_detect_location_handler(request: web.Request) -> web.Response:
 
 async def websocket_handler(request: web.Request) -> web.WebSocketResponse:
     """WebSocket endpoint for real-time updates."""
+    if not _origin_allowed(request):
+        print(f"Rejected WebSocket from origin {request.headers.get('Origin')!r}")
+        return web.Response(status=403, text="cross-origin WebSocket rejected")
+
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -297,6 +384,11 @@ async def websocket_ping_loop():
 
 # === Static File Serving ===
 
+async def api_not_found_handler(request: web.Request) -> web.Response:
+    """404 for unknown /api/* paths, so they don't fall through to the SPA."""
+    return web.json_response({"error": "Not found"}, status=404)
+
+
 async def index_handler(request: web.Request) -> web.Response:
     """Serve index.html for SPA with no-cache headers."""
     client_path = Path(__file__).parent.parent / "dist" / "client" / "index.html"
@@ -333,17 +425,13 @@ async def static_file_handler(request: web.Request) -> web.Response:
 
 def create_app() -> web.Application:
     """Create the aiohttp application."""
-    app = web.Application()
+    app = web.Application(middlewares=[security_headers_middleware])
 
-    # Setup CORS
-    cors = aiohttp_cors.setup(app, defaults={
-        "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            expose_headers="*",
-            allow_headers="*",
-            allow_methods="*",
-        )
-    })
+    # No CORS setup: the frontend is served from this same origin, so it needs
+    # none. The previous wildcard config paired allow_credentials=True with
+    # origin "*", which makes aiohttp_cors echo back whatever Origin the caller
+    # sends — that turned every API response into something any website the
+    # operator visited could read.
 
     # API routes
     api_routes = [
@@ -362,10 +450,15 @@ def create_app() -> web.Application:
     ]
 
     for route in api_routes:
-        cors.add(app.router.add_route(route.method, route.path, route.handler))
+        app.router.add_route(route.method, route.path, route.handler)
 
     # WebSocket route
     app.router.add_get("/ws", websocket_handler)
+
+    # Unknown /api/* paths must 404 as JSON. Without this the SPA catch-all
+    # below swallows them and returns 200 + index.html, so a client can't tell
+    # a missing endpoint from a successful call.
+    app.router.add_route("*", "/api/{tail:.*}", api_not_found_handler)
 
     # Static files (production)
     client_path = Path(__file__).parent.parent / "dist" / "client"

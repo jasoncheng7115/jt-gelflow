@@ -32,7 +32,7 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | B4 | Customer config survives `install.sh` re-run | same as B3 but trigger via re-running installer |
 | B5 | Forward-compat: pre-v1.5 config with `sankey_stages` doesn't break load | inject `"sankey_stages": "ext_proto_int"` into config.json, restart service, server still binds port 8099 (no fallback to 8080), and warning is benign |
 | B6 | Resilient path takes over when ff-only fails | mutate local git history (`git reset --hard $(git rev-parse HEAD~1)` then re-init upstream as different history), re-run installer — should rescue config + reset --hard + restore |
-| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.4 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.4` |
+| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.5 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.5` |
 
 ## C. Uninstall
 
@@ -90,8 +90,8 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | G5 | Update-frequency slider 1–30s | drag to 2 → bands re-layout every 2s; drag to 30 → barely changes |
 | G6 | Update-frequency number input syncs with slider | typing 10 in number → slider thumb moves to 10 |
 | G7 | Top-N inline inputs auto-add 'sankey' to apply_to | set Top-N Ext = 5 inline → `zones.top_n_external_apply_to` includes `sankey` |
-| G8 | Hover band → entire chain highlights | from `dns.google. → 192.168.1.x` band, full path `US → 8.8.8.8 → dns.google → 192.168.1.x → dc1.jason.tools` lights up |
-| G9 | Hover node → all chains touching highlight | hover `192.168.1.105` node → every band into/out of it lights up |
+| G8 | Hover band → entire chain highlights | from `dns.google. → 10.0.0.x` band, full path `US → 8.8.8.8 → dns.google → 10.0.0.x → srv1.example.com` lights up |
+| G9 | Hover node → all chains touching highlight | hover `10.0.0.105` node → every band into/out of it lights up |
 | G10 | Per-ancestor band colours | with country column on, all bands from same country share a colour from the 10-colour palette |
 | G11 | Column headers render at top | each active column shows the configured display name centered above its node bar |
 | G12 | Headers come from `mapping.*_display` | edit Field Mapping → display name field → header updates after settings save |

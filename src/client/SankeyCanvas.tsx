@@ -396,7 +396,14 @@ export function SankeyCanvas({
   const headers: Record<SankeyColumn, string> = { ...DEFAULT_HEADERS, ...(columnHeaders || {}) };
   const { t } = useTranslation();
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; html: string } | null>(null);
+  // Tooltip carries STRUCTURED data, never an HTML string. Node labels are
+  // built from GELF message fields (ext_ip_ptr / int_ip_ptr / country), which
+  // any host that can reach the GELF listener controls — rendering them as
+  // HTML made a log message able to run script in the dashboard. React escapes
+  // these when they go through as text children; keep it that way.
+  const [tooltip, setTooltip] = useState<
+    { x: number; y: number; title: string; bytes: string | null; events: string } | null
+  >(null);
 
   // Imperative pattern: graph (which mutates every 100ms) lives in a ref so it
   // does NOT trigger re-renders. The 5s interval reads the latest graph and
@@ -620,22 +627,24 @@ export function SankeyCanvas({
     // alongside '1 event' is just confusing — drop the byte size and
     // leave the events count standing alone.
     const eventsOnly = (v: number, ev: number) => v === ev;
-    const linkTooltipHTML = (d: SLink) => {
+    const eventsLabelFor = (ev: number) =>
+      `${ev.toLocaleString()} ${ev === 1 ? 'event' : 'events'}`;
+    const linkTooltipData = (d: SLink) => {
       const sN = d.source as SNode;
       const tN = d.target as SNode;
-      const eventsLabel = `${d.events.toLocaleString()} ${d.events === 1 ? 'event' : 'events'}`;
-      const body = eventsOnly(d.value, d.events)
-        ? `<b>${eventsLabel}</b>`
-        : `<b>${formatBytes(d.value)}</b> &nbsp; · &nbsp; ${eventsLabel}`;
-      return `${sN.label} → ${tN.label}<br/>${body}`;
+      return {
+        title: `${sN.label} → ${tN.label}`,
+        bytes: eventsOnly(d.value, d.events) ? null : formatBytes(d.value),
+        events: eventsLabelFor(d.events),
+      };
     };
     const onLinkEnter = (event: any, d: SLink) => {
       const chain = connectedChain(d);
       dimAllLinksExcept(l => chain.has(l));
-      setTooltip({ x: event.offsetX, y: event.offsetY, html: linkTooltipHTML(d) });
+      setTooltip({ x: event.offsetX, y: event.offsetY, ...linkTooltipData(d) });
     };
     const onLinkMove = (event: any, d: SLink) => {
-      setTooltip({ x: event.offsetX, y: event.offsetY, html: linkTooltipHTML(d) });
+      setTooltip({ x: event.offsetX, y: event.offsetY, ...linkTooltipData(d) });
     };
     const onLinkLeave = () => {
       restoreAllLinks();
@@ -693,7 +702,7 @@ export function SankeyCanvas({
         }
         dimAllLinksExcept(l => chain.has(l));
       }
-      setTooltip({ x: event.offsetX, y: event.offsetY, html: nodeTooltipHTML(n) });
+      setTooltip({ x: event.offsetX, y: event.offsetY, ...nodeTooltipData(n) });
     };
     const nodeEventTotal = (n: SNode): number => {
       const inLinks  = ((n as any).targetLinks ?? []) as SLink[];
@@ -702,17 +711,17 @@ export function SankeyCanvas({
       const evOut = outLinks.reduce((s, l) => s + (l.events || 0), 0);
       return Math.max(evIn, evOut);
     };
-    const nodeTooltipHTML = (n: SNode) => {
+    const nodeTooltipData = (n: SNode) => {
       const ev = nodeEventTotal(n);
       const v = n.value ?? 0;
-      const eventsLabel = `${ev.toLocaleString()} ${ev === 1 ? 'event' : 'events'}`;
-      const body = eventsOnly(v, ev)
-        ? `<b>${eventsLabel}</b>`
-        : `<b>${formatBytes(v)}</b> &nbsp; · &nbsp; ${eventsLabel}`;
-      return `${n.label}<br/>${body}`;
+      return {
+        title: n.label,
+        bytes: eventsOnly(v, ev) ? null : formatBytes(v),
+        events: eventsLabelFor(ev),
+      };
     };
     const onNodeMove = (event: any, n: SNode) => {
-      setTooltip({ x: event.offsetX, y: event.offsetY, html: nodeTooltipHTML(n) });
+      setTooltip({ x: event.offsetX, y: event.offsetY, ...nodeTooltipData(n) });
     };
     const onNodeLeave = () => {
       restoreAllLinks();
@@ -885,8 +894,19 @@ export function SankeyCanvas({
             boxShadow: '0 8px 20px rgba(0,0,0,0.35)',
             whiteSpace: 'nowrap',
           }}
-          dangerouslySetInnerHTML={{ __html: tooltip.html }}
-        />
+        >
+          {tooltip.title}
+          <br />
+          {tooltip.bytes === null ? (
+            <b>{tooltip.events}</b>
+          ) : (
+            <>
+              <b>{tooltip.bytes}</b>
+              {'  ·  '}
+              {tooltip.events}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

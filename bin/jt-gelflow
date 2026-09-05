@@ -82,7 +82,9 @@ cmd_update() {
 
   if [ "$can_build" = "1" ]; then
     info "npm install + build"
-    (cd "$INSTALL_DIR" && npm install --no-audit --no-fund --silent && npm run build --silent)
+    # --ignore-scripts: cmd_update runs as root; don't let package lifecycle
+    # scripts run with those privileges. Audit output stays visible.
+    (cd "$INSTALL_DIR" && npm install --ignore-scripts --no-fund --silent && npm run build --silent)
   fi
 
   info "restarting service"

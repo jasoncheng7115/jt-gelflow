@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-本文件為 **JT-GELFLOW v1.5.4+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
+本文件為 **JT-GELFLOW v1.5.5+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
 
 ---
 

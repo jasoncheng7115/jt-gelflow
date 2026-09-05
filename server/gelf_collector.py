@@ -2,8 +2,8 @@
 
 import asyncio
 import json
-import gzip
 import struct
+import zlib
 from typing import Callable, Any
 
 from .config import get_config
@@ -24,7 +24,9 @@ class GELFProtocol:
         try:
             # Check for GZIP magic bytes
             if len(data) >= 2 and data[0] == 0x1f and data[1] == 0x8b:
-                data = gzip.decompress(data)
+                data = self._decompress_bounded(data)
+                if data is None:
+                    return None
 
             message = json.loads(data.decode("utf-8"))
 
@@ -39,6 +41,32 @@ class GELFProtocol:
             return normalized
         except Exception as e:
             print(f"GELF parse error: {e}")
+            return None
+
+    # A 64 KB UDP datagram of repetitive data gzips down from ~64 MB, so
+    # decompressing without a ceiling lets one unauthenticated packet allocate
+    # a thousand times its own size. Anything legitimately larger than this is
+    # not a log line.
+    MAX_DECOMPRESSED_SIZE = 8 * 1024 * 1024
+
+    # Upper bound on half-assembled chunked messages held at once.
+    MAX_PENDING_CHUNKED = 1000
+
+    def _decompress_bounded(self, data: bytes) -> bytes | None:
+        """Gunzip with a hard output cap. Returns None if the cap is exceeded."""
+        try:
+            decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            out = decompressor.decompress(data, self.MAX_DECOMPRESSED_SIZE)
+            # unconsumed_tail is non-empty exactly when the limit cut us off.
+            if decompressor.unconsumed_tail:
+                print(
+                    f"GELF message discarded: decompresses to more than "
+                    f"{self.MAX_DECOMPRESSED_SIZE} bytes"
+                )
+                return None
+            return out
+        except zlib.error as e:
+            print(f"GELF decompress error: {e}")
             return None
 
     def handle_chunked(self, data: bytes) -> bytes | None:
@@ -59,7 +87,22 @@ class GELFProtocol:
         seq_count = data[11]
         chunk_data = data[12:]
 
+        # Both values come straight off the wire. Without this check a packet
+        # claiming chunk 200 of a 2-chunk message indexes past the list and
+        # raises IndexError out of the datagram callback.
+        if seq_count == 0 or seq_num >= seq_count:
+            return None
+
         if message_id not in self.chunked_messages:
+            # Cap the reassembly table: each unseen message_id allocates an
+            # entry that only the 5-second sweep below reclaims, so a stream of
+            # single-chunk packets with random ids would otherwise grow freely.
+            if len(self.chunked_messages) >= self.MAX_PENDING_CHUNKED:
+                oldest = min(
+                    self.chunked_messages,
+                    key=lambda mid: self.chunked_messages[mid]["timestamp"],
+                )
+                del self.chunked_messages[oldest]
             self.chunked_messages[message_id] = {
                 "chunks": [None] * seq_count,
                 "total": seq_count,
@@ -67,6 +110,10 @@ class GELFProtocol:
             }
 
         entry = self.chunked_messages[message_id]
+        # A later packet may claim a different total than the one that created
+        # the entry; index against what was actually allocated.
+        if seq_num >= len(entry["chunks"]):
+            return None
         entry["chunks"][seq_num] = chunk_data
 
         # Check if complete
@@ -121,7 +168,12 @@ class GELFUDPProtocol(asyncio.DatagramProtocol, GELFProtocol):
         self.transport = transport
 
     def datagram_received(self, data: bytes, addr):
-        self.process_message(data)
+        # asyncio has no error path for an exception raised here — it just logs
+        # a traceback per packet, so one malformed sender can flood the journal.
+        try:
+            self.process_message(data)
+        except Exception as e:
+            print(f"GELF UDP message dropped from {addr}: {type(e).__name__}: {e}")
 
     def error_received(self, exc):
         print(f"UDP error: {exc}")

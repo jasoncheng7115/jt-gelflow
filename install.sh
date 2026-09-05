@@ -302,7 +302,11 @@ build_frontend() {
     return
   fi
   info "npm install (this may take a minute)"
-  (cd "$INSTALL_DIR" && npm install --no-audit --no-fund --silent)
+  # --ignore-scripts: this runs as root, and package lifecycle scripts would
+  # run as root too. Nothing in the dependency tree needs them to build.
+  # Audit output is left on so a known-vulnerable toolchain is visible here
+  # rather than silently installed.
+  (cd "$INSTALL_DIR" && npm install --ignore-scripts --no-fund --silent)
   info "npm run build"
   (cd "$INSTALL_DIR" && npm run build --silent)
   ok "frontend built"

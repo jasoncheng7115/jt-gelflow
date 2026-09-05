@@ -32,7 +32,7 @@
 | B4 | 客戶 config 在重跑 `install.sh` 後保留 | 同 B3 但用安裝程式觸發 |
 | B5 | 向前相容：v1.5 之前帶 `sankey_stages` 的 config 不會炸 load | 把 `"sankey_stages": "ext_proto_int"` 注入 config.json、重啟服務、port 仍是 8099（沒掉回 8080），警告無害 |
 | B6 | ff-only 失敗時走韌性路徑 | 變動本地 git 歷史（`git reset --hard $(git rev-parse HEAD~1)` 後重新 init upstream 為不同歷史），重跑 install.sh — 應該救援 config + reset --hard + 還原 |
-| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.4 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.4` |
+| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.5 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.5` |
 
 ## C. 移除
 
@@ -90,8 +90,8 @@
 | G5 | 更新頻率拉桿 1–30s | 拉到 2 → 每 2 秒重排；拉到 30 → 幾乎不變 |
 | G6 | 數字輸入框與拉桿同步 | 輸入 10 → 拉桿移到 10 |
 | G7 | 內嵌 Top-N 自動把 sankey 加進 apply_to | 設 Top-N Ext = 5 → `zones.top_n_external_apply_to` 含 `sankey` |
-| G8 | Hover 流量帶 → 整條鏈路點亮 | 從 `dns.google. → 192.168.1.x` 流量帶，整條 `US → 8.8.8.8 → dns.google → 192.168.1.x → dc1.jason.tools` 點亮 |
-| G9 | Hover 節點 → 所有經過的鏈路點亮 | hover `192.168.1.105` 節點 → 進出該節點的每條流量帶都亮 |
+| G8 | Hover 流量帶 → 整條鏈路點亮 | 從 `dns.google. → 10.0.0.x` 流量帶，整條 `US → 8.8.8.8 → dns.google → 10.0.0.x → srv1.example.com` 點亮 |
+| G9 | Hover 節點 → 所有經過的鏈路點亮 | hover `10.0.0.105` 節點 → 進出該節點的每條流量帶都亮 |
 | G10 | 依祖先分色 | 開啟 country 欄時，同一 country 的所有流量帶共用 10 色 palette 的同色 |
 | G11 | 各欄上方有標題 | 每個 active 欄位顯示設定的顯示名稱、置中於該欄節點 bar 之上 |
 | G12 | 標題來自 `mapping.*_display` | 編輯欄位對應的顯示名稱、儲存後標題更新 |

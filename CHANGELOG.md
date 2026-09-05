@@ -6,6 +6,47 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.5] — 2026-09-05
+
+Security release. A full audit — source review, dynamic testing against a local instance, and two OWASP ZAP passes — found that every network-facing surface was unauthenticated and that one of them could reach script execution in the operator's browser. Everything below was verified against a running instance, not just reasoned about.
+
+**Operators should upgrade.** No configuration changes are required, but see *Changed* for two behaviour changes.
+
+### Security
+
+- **Fixed stored XSS reachable from a single unauthenticated GELF packet.** The Sankey tooltip was assembled as an HTML string and injected with `dangerouslySetInnerHTML`. Its node labels come from GELF message fields — `ext_ip_ptr`, `int_ip_ptr` and `country` — which were passed through with only `.trim()`, so anything able to reach the GELF listener could put markup in a label and have it execute when the operator hovered a band. All three of those columns are on by default, so a stock install was exposed. The tooltip now carries structured data (`title` / `bytes` / `events`) rendered as React children, which escapes them. *Verified: payload injected over UDP 12201 still arrives as data in `/api/graph`, and the rebuilt bundle contains no `dangerouslySetInnerHTML` in application code.*
+- **Fixed CORS reflecting any origin with credentials.** `aiohttp_cors` was configured with origin `"*"` **and** `allow_credentials=True`, so it echoed back whatever `Origin` a caller sent alongside `Access-Control-Allow-Credentials: true`. Any website the operator visited could therefore read every API response — the full observed network topology — and POST configuration changes. CORS has been removed entirely; the frontend is served from the same origin and never needed it. *Verified: `Origin: https://evil.example` now receives no `Access-Control-*` headers at all.*
+- **Fixed cross-site WebSocket hijacking.** `/ws` called `ws.prepare()` with no `Origin` check, and WebSocket handshakes are not covered by the same-origin policy, so any page could open a socket and immediately receive the live flow graph the server pushes on connect. The handshake now rejects mismatched origins with 403. Requests carrying no `Origin` — Graylog, `curl`, health checks — are unaffected. *Verified: attacker origin gets 403; same-origin and no-origin connections still work.*
+- **Fixed unbounded gzip decompression.** `gzip.decompress()` ran with no output ceiling, so one 61 KB UDP datagram expanded to 60 MB — roughly 1028× amplification, and up to ~1 GB per message over TCP where the buffer allows 1 MB in. Decompression is now capped at 8 MB via `zlib.decompressobj`, and oversized messages are dropped with a log line. *Verified: three 60 MB bombs left RSS at 34.6 MB, against 44 MB from a single bomb before the fix.*
+- **Fixed out-of-bounds index in GELF chunk reassembly.** `seq_num` and `seq_count` were used straight off the wire, so a packet claiming chunk 200 of a 2-chunk message raised `IndexError` out of the asyncio datagram callback — one traceback per packet, usable to flood the journal. Sequence values are now validated, the reassembly table is capped at 1000 pending messages, and UDP receive wraps message handling in `try`/`except`. *Verified: four malformed chunk packets produce no traceback and the service stays up.*
+- **Added security response headers** on every response via middleware: `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Resource-Policy` and `Cross-Origin-Opener-Policy`. The CSP allows `https://unpkg.com` in `connect-src` because the 2D Map and 3D Globe fetch their country outlines from there at runtime. API responses also get `Cache-Control: no-store` so intermediaries don't retain network telemetry.
+- **Capped discovered-field growth.** The field-name dictionary had no ceiling and was only reclaimed by a TTL sweep, so a sender emitting randomised field names could grow it for the whole TTL window. Limited to 2000 distinct names.
+- **Hardened the systemd unit** — `ProtectSystem=strict` (was `full`), plus `PrivateDevices`, `RestrictNamespaces`, `RestrictRealtime`, `RestrictSUIDSGID`, `LockPersonality`, `RestrictAddressFamilies` limited to the socket families actually used, and `MemoryMax=1G` as a backstop against hostile input.
+- **Stopped npm lifecycle scripts running as root.** `install.sh` and `jt-gelflow update` both run `npm install` as root; they now pass `--ignore-scripts`. `--no-audit` was dropped so a known-vulnerable toolchain is visible at install time instead of silently installed.
+- **Stopped leaking exception detail and version information.** `POST /api/config` returned `TypeError: …`-style messages to the caller; it now logs the detail and returns a generic message. The `Server` header no longer advertises the exact Python and aiohttp versions.
+- **`config.json` is now written `0600`** instead of `0644`. It describes the deployment's network layout today and would hold any access token added later.
+- **Fixed one unauthenticated request being able to leave the service unable to start.** `POST /api/config` filtered unknown keys but never checked the *values* of known ones, so `{"http_port": -5}` — or a string, or an object — was accepted, written to `config.json`, and then raised out of `loop.create_server()` on the next start (`OverflowError: bind(): port must be 0-65535`). Under `Restart=on-failure` that is a permanent crash loop, and since the web UI never comes up there is no way to undo it short of hand-editing the file. Known keys are now type- and range-checked at both doors: the API refuses the write with `400` naming the offending field, and `load_config()` reverts an already-corrupted field to its default so an install that was hit by this recovers by itself. Unknown keys are still ignored, so older `config.json` files keep loading, and ranges are deliberately loose — only genuinely impossible values are rejected, because a tighter bound would silently rewrite a working setting on upgrade. *Verified: ten malformed payloads all rejected with nothing written to disk; a deliberately corrupted `config.json` still starts the server, which logs each field it reverted.*
+
+### Fixed
+
+- **Unknown `/api/*` paths returned `200` with the SPA's HTML** because the catch-all route swallowed them, so a client could not distinguish a missing endpoint from a successful call. They now return `404` with a JSON body.
+- **Server diagnostics never reached the journal.** The unit runs `python3 run.py` with output going to the journal — a pipe — so Python block-buffered stdout. Startup lines and every diagnostic added above (dropped decompression bombs, rejected cross-origin WebSockets, refused config values) sat in a 4 KB buffer instead of appearing in `jt-gelflow logs`; on a quiet install the operator could see nothing at all. The unit now sets `Environment=PYTHONUNBUFFERED=1`. *Verified: log lines appear while the process is still running, where previously they surfaced only after it exited.*
+
+### Changed
+
+- **CORS support is removed.** A frontend served from a *different* origin than the API — a separate Vite dev server, for instance — will no longer be able to call it directly. Use Vite's `server.proxy` for that setup.
+- **`aiohttp-cors` is no longer a dependency** and has been dropped from `requirements.txt`.
+
+### Known issues
+
+Three items from the audit are deliberately unchanged and still open:
+
+- **The API has no authentication and binds `0.0.0.0` by default.** Anyone who can reach port 8099 can read the observed topology and change configuration. The tool is intended for trusted networks; treat exposure beyond one as a misconfiguration until this is addressed.
+- **`/api/detect-location` calls `ip-api.com` over plaintext HTTP**, so the detected coordinates are modifiable in transit. The free tier offers no HTTPS endpoint.
+- **The 2D Map and 3D Globe fetch country outlines from `unpkg.com` at runtime**, which breaks in air-gapped deployments and discloses usage to a third party.
+
+---
+
 ## [1.5.4] — 2026-05-07
 
 Install-time fix for a real customer report on Ubuntu 26.

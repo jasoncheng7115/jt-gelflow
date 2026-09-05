@@ -6,6 +6,47 @@
 
 ---
 
+## [1.5.5] — 2026-09-05
+
+資安修正版。一次完整稽核 — 原始碼審查、對本機實例的動態測試、以及兩輪 OWASP ZAP 掃描 — 發現所有對外介面都沒有身分驗證，其中一條路徑更可以一路走到操作者瀏覽器執行 JavaScript。以下每一項都在實際執行的實例上驗證過，不是只做推論。
+
+**建議所有部署都升級。**不需要調整設定，但有兩項行為變更，請看「變更」段。
+
+### 資安
+
+- **修正只要一個未驗證 GELF 封包就能觸發的儲存型 XSS。**桑基圖的 tooltip 原本是把 HTML 字串拼出來，再用 `dangerouslySetInnerHTML` 注入。它的節點標籤來自 GELF 訊息欄位 — `ext_ip_ptr`、`int_ip_ptr` 與 `country` — 而這些值只經過 `.trim()` 就直接使用，因此任何能連到 GELF 接收埠的來源都能把標記塞進標籤，等操作者滑過流量帶時執行。這三個欄位預設全部啟用，所以預設安裝就會中招。tooltip 現在改帶結構化資料（`title` / `bytes` / `events`），以 React 子元素渲染，由 React 自動跳脫。*驗證：從 UDP 12201 注入的 payload 仍會以資料形式出現在 `/api/graph`，而重新建置的 bundle 中應用程式碼已無任何 `dangerouslySetInnerHTML`。*
+- **修正 CORS 回放任意來源並允許夾帶憑證。**`aiohttp_cors` 原本設定為來源 `"*"` **且** `allow_credentials=True`，因此會把呼叫端送來的 `Origin` 原樣回放，並附上 `Access-Control-Allow-Credentials: true`。這代表操作者瀏覽過的任何網站，都能讀取全部 API 回應（等於整份已觀測到的網路拓撲），並且能 POST 修改設定。CORS 已整段移除 — 前端與 API 同源，本來就不需要。*驗證：`Origin: https://evil.example` 現在完全收不到任何 `Access-Control-*` 標頭。*
+- **修正 WebSocket 跨站劫持。**`/ws` 直接呼叫 `ws.prepare()`，沒有檢查 `Origin`，而 WebSocket 握手不受同源政策約束，因此任何網頁都能開一條連線，並立刻收到伺服器在連上時主動推送的即時流量圖。握手現在會拒絕來源不符的請求並回 403。沒有帶 `Origin` 的請求（Graylog、`curl`、健康檢查）不受影響。*驗證：攻擊者來源得到 403；同源與無來源的連線都正常。*
+- **修正 gzip 解壓縮沒有上限。**`gzip.decompress()` 對輸出大小毫無限制，因此一個 61 KB 的 UDP datagram 可展開成 60 MB — 約 1028 倍放大；走 TCP 時緩衝區允許 1 MB 輸入，單一訊息最多可達約 1 GB。現在改用 `zlib.decompressobj` 限制在 8 MB，超過就丟棄並記錄一行日誌。*驗證：連送三顆 60 MB 的壓縮炸彈後 RSS 停在 34.6 MB；修正前單一顆就讓 RSS 衝到 44 MB。*
+- **修正 GELF 分塊重組的索引越界。**`seq_num` 與 `seq_count` 原本直接採用封包內容，因此一個宣稱「第 200 塊、共 2 塊」的封包會讓 asyncio 的收包 callback 拋出 `IndexError` — 每個封包都產生一次 traceback，可被用來灌爆日誌。現在會驗證序號、把重組表上限設為 1000 筆待組訊息，UDP 收包也用 `try`/`except` 包住。*驗證：四個畸形分塊封包不再產生任何 traceback，服務持續存活。*
+- **所有回應都加上資安標頭**，透過中介層統一套用：`Content-Security-Policy`、`X-Content-Type-Options`、`X-Frame-Options`、`Referrer-Policy`、`Permissions-Policy`、`Cross-Origin-Resource-Policy` 與 `Cross-Origin-Opener-Policy`。CSP 的 `connect-src` 放行 `https://unpkg.com`，因為 2D 地圖與 3D 地球會在執行期從該處抓取國界資料。API 回應另外加上 `Cache-Control: no-store`，避免中介設備留存網路遙測資料。
+- **限制欄位探索的成長上限。**欄位名稱字典原本沒有上限，只靠 TTL 清理回收，因此持續送出隨機欄位名稱的來源可以在整個 TTL 期間讓它不斷膨脹。現在限制為 2000 個相異名稱。
+- **強化 systemd unit** — `ProtectSystem=strict`（原為 `full`），並新增 `PrivateDevices`、`RestrictNamespaces`、`RestrictRealtime`、`RestrictSUIDSGID`、`LockPersonality`、把 `RestrictAddressFamilies` 限縮到實際使用的 socket 家族，以及 `MemoryMax=1G` 作為面對惡意輸入時的兜底。
+- **不再讓 npm lifecycle script 以 root 執行。**`install.sh` 與 `jt-gelflow update` 都是以 root 執行 `npm install`，現在一律加上 `--ignore-scripts`。同時拿掉 `--no-audit`，讓有已知漏洞的建置工具鏈在安裝當下就被看見，而不是靜悄悄裝進去。
+- **不再洩漏例外細節與版本資訊。**`POST /api/config` 原本會把 `TypeError: …` 這類訊息回給呼叫端，現在改為細節只寫入日誌、對外回通用訊息。`Server` 標頭也不再標示 Python 與 aiohttp 的確切版本。
+- **`config.json` 改以 `0600` 寫入**（原為 `0644`）。這個檔案目前記錄部署的網路配置，未來若加入存取權杖也會放在這裡。
+- **修正一個未驗證的請求就能讓服務再也起不來。**`POST /api/config` 只過濾未知的 key，從不檢查已知 key 的**值**，所以 `{"http_port": -5}`（或字串、或物件）會被接受、寫進 `config.json`，然後在下一次啟動時從 `loop.create_server()` 拋出（`OverflowError: bind(): port must be 0-65535`）。配上 `Restart=on-failure` 就是永久的 crash loop；而且因為 Web 介面根本起不來，除了手動編輯設定檔之外沒有別的辦法還原。現在已知的 key 在兩道門都做型別與範圍檢查：API 會拒絕寫入並回 `400`、指出是哪個欄位；`load_config()` 則會把已經被寫壞的欄位還原成預設值，讓中招的安裝自己復原。未知 key 仍然忽略，所以舊的 `config.json` 照樣載入；範圍也刻意放寬——只擋真正不可能的值，因為邊界訂太緊會在升級時默默改寫原本可用的設定。*驗證：十種畸形 payload 全部被拒絕且沒有任何內容寫入磁碟；刻意寫壞的 `config.json` 仍能啟動伺服器，並逐一記錄還原了哪些欄位。*
+
+### 修正
+
+- **不存在的 `/api/*` 路徑原本回 `200` 加上 SPA 的 HTML**，因為被 catch-all 路由吃掉，導致呼叫端無法區分「端點不存在」與「呼叫成功」。現在改回 `404` 與 JSON 內容。
+- **伺服器的診斷訊息從來沒進到 journal。**unit 以 `python3 run.py` 執行、輸出導向 journal（那是一條 pipe），因此 Python 對 stdout 採區塊緩衝。啟動訊息以及上面新增的每一項診斷（丟棄的壓縮炸彈、被拒絕的跨站 WebSocket、被擋下的設定值）都積在 4 KB 緩衝區裡，不會出現在 `jt-gelflow logs`；在流量安靜的安裝上，操作者可能什麼都看不到。unit 現在加上 `Environment=PYTHONUNBUFFERED=1`。*驗證：訊息在行程仍在執行時就會出現，先前必須等到行程結束才會吐出來。*
+
+### 變更
+
+- **移除 CORS 支援。**若前端是從與 API **不同**的來源提供（例如另外跑一個 Vite 開發伺服器），將無法再直接呼叫 API。這種情境請改用 Vite 的 `server.proxy`。
+- **`aiohttp-cors` 不再是相依套件**，已從 `requirements.txt` 移除。
+
+### 已知問題
+
+稽核中有三項是刻意維持現狀、尚未處理的：
+
+- **API 沒有任何身分驗證，且預設綁定 `0.0.0.0`。**任何能連到 8099 埠的人都能讀取已觀測到的拓撲並修改設定。本工具的定位是部署在受信任網路；在該範圍之外暴露，請一律視為設定錯誤，直到此問題被處理為止。
+- **`/api/detect-location` 以明文 HTTP 呼叫 `ip-api.com`**，因此偵測到的座標在傳輸過程中可被竄改。該服務的免費方案沒有 HTTPS 端點。
+- **2D 地圖與 3D 地球在執行期從 `unpkg.com` 抓取國界資料**，在離線／封閉網段會無法運作，也等於向第三方揭露使用行為。
+
+---
+
 ## [1.5.4] — 2026-05-07
 
 針對 Ubuntu 26 客戶實際回報的安裝卡關修正。
