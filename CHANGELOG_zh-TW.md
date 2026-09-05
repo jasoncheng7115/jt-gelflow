@@ -29,7 +29,7 @@
 
 ### 修正
 
-- **不存在的 `/api/*` 路徑原本回 `200` 加上 SPA 的 HTML**，因為被 catch-all 路由吃掉，導致呼叫端無法區分「端點不存在」與「呼叫成功」。現在改回 `404` 與 JSON 內容。
+- **不存在的 `/api/*` 路徑原本回 `200` 加上 SPA 的 HTML**，因為被 catch-all 路由吃掉，導致呼叫端無法區分「端點不存在」與「呼叫成功」。現在改回 `404` 與 JSON 內容。附帶影響：API 路由只註冊自己的動詞，所以 `HEAD /api/config` 現在也回 `404`，而先前會落到 SPA 的 catch-all 回 `200` 加 HTML。若有健康檢查用 `HEAD` 探測 API，請改用 `GET`。
 - **伺服器的診斷訊息從來沒進到 journal。**unit 以 `python3 run.py` 執行、輸出導向 journal（那是一條 pipe），因此 Python 對 stdout 採區塊緩衝。啟動訊息以及上面新增的每一項診斷（丟棄的壓縮炸彈、被拒絕的跨站 WebSocket、被擋下的設定值）都積在 4 KB 緩衝區裡，不會出現在 `jt-gelflow logs`；在流量安靜的安裝上，操作者可能什麼都看不到。unit 現在加上 `Environment=PYTHONUNBUFFERED=1`。*驗證：訊息在行程仍在執行時就會出現，先前必須等到行程結束才會吐出來。*
 
 ### 變更

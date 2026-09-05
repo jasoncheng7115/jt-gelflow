@@ -65,11 +65,28 @@ require_linux() {
   esac
 }
 
+# Reachability test that assumes nothing is installed. This runs BEFORE
+# install_deps — that ordering is deliberate, so a machine with no network
+# fails with one clear message instead of a confusing apt error halfway
+# through — but it means curl is not available yet on a minimal image, which
+# ships with neither curl nor wget. Fall back to a bash TCP connect, which
+# needs no packages at all.
+_can_reach() {
+  local h="$1"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS -m 5 -o /dev/null --head "https://$h"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -T 5 -t 1 --spider "https://$h"
+  else
+    (exec 3<>"/dev/tcp/$h/443") 2>/dev/null
+  fi
+}
+
 network_preflight() {
   info "checking network reachability"
   local hosts=("github.com" "registry.npmjs.org" "pypi.org")
   for h in "${hosts[@]}"; do
-    if ! curl -fsS -m 5 -o /dev/null --head "https://$h"; then
+    if ! _can_reach "$h"; then
       err "cannot reach https://$h — check network / DNS / proxy"
     fi
   done
@@ -321,10 +338,16 @@ seed_config() {
   local example="$INSTALL_DIR/config.example.json"
   if [ -f "$cfg" ]; then
     info "config.json exists — preserving (will not overwrite)"
+    # Content is left exactly as the operator left it; only the mode is
+    # tightened. Installs predating v1.5.5 have this at 0644 and the server
+    # only rewrites the mode when settings are next saved, so without this an
+    # upgraded box would keep a world-readable config indefinitely.
+    chmod 600 "$cfg"
     return
   fi
   if [ -f "$example" ]; then
     cp "$example" "$cfg"
+    chmod 600 "$cfg"
     info "seeded config.json from config.example.json"
   else
     warn "no config.example.json shipped — server will use built-in defaults until first save"

@@ -29,7 +29,7 @@ Security release. A full audit — source review, dynamic testing against a loca
 
 ### Fixed
 
-- **Unknown `/api/*` paths returned `200` with the SPA's HTML** because the catch-all route swallowed them, so a client could not distinguish a missing endpoint from a successful call. They now return `404` with a JSON body.
+- **Unknown `/api/*` paths returned `200` with the SPA's HTML** because the catch-all route swallowed them, so a client could not distinguish a missing endpoint from a successful call. They now return `404` with a JSON body. Note this also changes `HEAD` on a real endpoint — the API routes are registered for their own verb only, so `HEAD /api/config` now answers `404` where it previously fell through to the SPA and answered `200` with HTML. A health check probing the API with `HEAD` should use `GET`.
 - **Server diagnostics never reached the journal.** The unit runs `python3 run.py` with output going to the journal — a pipe — so Python block-buffered stdout. Startup lines and every diagnostic added above (dropped decompression bombs, rejected cross-origin WebSockets, refused config values) sat in a 4 KB buffer instead of appearing in `jt-gelflow logs`; on a quiet install the operator could see nothing at all. The unit now sets `Environment=PYTHONUNBUFFERED=1`. *Verified: log lines appear while the process is still running, where previously they surfaced only after it exited.*
 
 ### Changed
