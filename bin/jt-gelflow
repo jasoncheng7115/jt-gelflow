@@ -22,7 +22,36 @@ ORIG_ARGS=("$@")
 
 err() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 info() { printf '\033[36m›\033[0m %s\n' "$*"; }
+warn() { printf '\033[33mwarn:\033[0m %s\n' "$*"; }
 ok() { printf '\033[32m✓\033[0m %s\n' "$*"; }
+
+# Files that are user state and must survive a forced realignment. Kept in
+# sync with the list of the same name in install.sh.
+USER_STATE_FILES=(config.json)
+
+_rescue_user_state() {
+  local rescue_dir found=0
+  rescue_dir="$(mktemp -d)"
+  for f in "${USER_STATE_FILES[@]}"; do
+    if [ -f "$INSTALL_DIR/$f" ]; then
+      cp -a "$INSTALL_DIR/$f" "$rescue_dir/$f"
+      found=1
+    fi
+  done
+  if [ "$found" -eq 1 ]; then echo "$rescue_dir"; else rm -rf "$rescue_dir"; echo ""; fi
+}
+
+_restore_user_state() {
+  local rescue_dir="$1"
+  [ -n "$rescue_dir" ] && [ -d "$rescue_dir" ] || return 0
+  for f in "${USER_STATE_FILES[@]}"; do
+    if [ -f "$rescue_dir/$f" ]; then
+      cp -a "$rescue_dir/$f" "$INSTALL_DIR/$f"
+      info "preserved user $f"
+    fi
+  done
+  rm -rf "$rescue_dir"
+}
 
 # If the user invoked us as a non-root account, re-run the script via sudo
 # with the original arguments so they don't have to remember the prefix.
@@ -51,8 +80,28 @@ cmd_update() {
   ensure_root
   [ -d "$INSTALL_DIR/.git" ] || err "$INSTALL_DIR is not a git checkout. Reinstall via install.sh."
 
+  local branch
+  branch="$(git -C "$INSTALL_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"
+  # Detached HEAD means the operator pinned to a tag; realign onto main rather
+  # than trying to fast-forward a detached checkout.
+  [ "$branch" = "HEAD" ] && branch="main"
+
   info "git pull"
-  git -C "$INSTALL_DIR" pull --ff-only
+  if ! git -C "$INSTALL_DIR" pull --ff-only --quiet 2>/dev/null; then
+    # Fast-forward refused. The usual cause is upstream history having been
+    # rewritten, which strands the local HEAD on a commit that no longer exists
+    # upstream. install.sh has always recovered from this; without the same
+    # fallback here `jt-gelflow update` just aborts with "Not possible to
+    # fast-forward" and the operator has no route forward from the CLI at all.
+    warn "fast-forward refused — realigning with origin/$branch (settings preserved)"
+    local rescued
+    rescued="$(_rescue_user_state)"
+    git -C "$INSTALL_DIR" fetch --quiet origin "$branch"
+    git -C "$INSTALL_DIR" checkout --quiet "$branch" 2>/dev/null || true
+    git -C "$INSTALL_DIR" reset --hard --quiet "origin/$branch"
+    git -C "$INSTALL_DIR" clean -fdq -e config.json
+    _restore_user_state "$rescued"
+  fi
 
   info "pip install -r requirements.txt"
   # Try PEP-668 bypass first (Debian/Ubuntu mark system Python "externally

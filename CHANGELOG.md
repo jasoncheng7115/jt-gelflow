@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.6] — 2026-09-13
+
+Follow-up to the v1.5.5 security release. Two defects on the upgrade path, both found while verifying that release rather than reported by an operator.
+
+### Fixed
+
+- **`jt-gelflow update` had no recovery path when a fast-forward was refused.** The CLI ran a bare `git pull --ff-only`, so any divergence between the local checkout and upstream — most commonly upstream history having been rewritten — aborted with `fatal: Not possible to fast-forward, aborting.` and left no route forward from the CLI at all; the operator had to know to fall back to `install.sh`. `install.sh` has always recovered from exactly this case by rescuing user state, realigning hard with `origin/<branch>` and restoring it. `cmd_update` now does the same. `config.json` survives the realignment, and a detached `HEAD` — an install pinned to a tag — realigns onto `main` instead of trying to fast-forward a detached checkout. *Verified: an install stranded on rewritten history updates cleanly with its settings byte-for-byte intact, where it previously aborted.*
+- **A custom `JT_GELFLOW_DIR` install got a systemd unit pointing at `/opt/jt-gelflow`.** `install_service` copied `packaging/jt-gelflow.service` verbatim, but that file hardcodes the default path in `WorkingDirectory`, `ExecStart` and `ReadWritePaths` — so the service ran the wrong tree, or nothing at all. v1.5.5 made it worse: with `ProtectSystem=strict` the unit's `ReadWritePaths` no longer covered the real install directory, leaving the server unable to write its own `config.json`. All three directives are now rewritten to the actual install directory. This is a no-op for the default location, which covers every install that has not set `JT_GELFLOW_DIR`. *Verified: a unit generated for `/srv/custom-gelflow` carries that path in all three directives; the default path produces a byte-identical unit.*
+
+---
+
 ## [1.5.5] — 2026-09-05
 
 Security release. A full audit — source review, dynamic testing against a local instance, and two OWASP ZAP passes — found that every network-facing surface was unauthenticated and that one of them could reach script execution in the operator's browser. Everything below was verified against a running instance, not just reasoned about.

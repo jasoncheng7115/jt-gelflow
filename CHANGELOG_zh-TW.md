@@ -6,6 +6,17 @@
 
 ---
 
+## [1.5.6] — 2026-09-13
+
+v1.5.5 資安版的後續修正。兩個升級路徑上的缺陷，都是在驗證那個版本的過程中發現的，不是由使用者回報。
+
+### 修正
+
+- **`jt-gelflow update` 在無法快轉時沒有任何復原機制。**CLI 直接跑 `git pull --ff-only`，因此只要本地 checkout 與上游產生分歧——最常見的原因是上游歷史被改寫——就會以 `fatal: Not possible to fast-forward, aborting.` 中止，而且從 CLI 完全沒有別的路可走，操作者得自己知道要改用 `install.sh`。`install.sh` 一直都能處理這種情況：搶救使用者狀態、強制對齊 `origin/<branch>`、再還原回去。`cmd_update` 現在採用同一套做法。`config.json` 會完整存活，而 detached `HEAD`（釘在某個 tag 的安裝）會改為對齊到 `main`，不再嘗試對 detached checkout 做快轉。*驗證：原本會中止的安裝（卡在被改寫的歷史上）現在可以順利更新，設定內容逐位元組完全一致。*
+- **自訂 `JT_GELFLOW_DIR` 的安裝會拿到指向 `/opt/jt-gelflow` 的 systemd unit。**`install_service` 是把 `packaging/jt-gelflow.service` 原封不動複製，但那個檔案在 `WorkingDirectory`、`ExecStart` 與 `ReadWritePaths` 三處都寫死了預設路徑——結果服務啟動的是錯的目錄，或根本起不來。v1.5.5 讓情況更糟：改用 `ProtectSystem=strict` 之後，unit 的 `ReadWritePaths` 不再涵蓋真正的安裝目錄，伺服器連自己的 `config.json` 都寫不進去。現在這三個指令都會改寫成實際的安裝目錄。對預設路徑而言完全沒有作用，也就是所有沒有設定 `JT_GELFLOW_DIR` 的安裝都不受影響。*驗證：為 `/srv/custom-gelflow` 產生的 unit 三處都帶著該路徑；預設路徑產生的 unit 與原檔逐位元組相同。*
+
+---
+
 ## [1.5.5] — 2026-09-05
 
 資安修正版。一次完整稽核 — 原始碼審查、對本機實例的動態測試、以及兩輪 OWASP ZAP 掃描 — 發現所有對外介面都沒有身分驗證，其中一條路徑更可以一路走到操作者瀏覽器執行 JavaScript。以下每一項都在實際執行的實例上驗證過，不是只做推論。

@@ -387,7 +387,15 @@ install_service() {
     return
   fi
 
-  install -m 0644 "$INSTALL_DIR/packaging/jt-gelflow.service" "$UNIT_DST"
+  # The shipped unit hardcodes /opt/jt-gelflow in WorkingDirectory, ExecStart
+  # and ReadWritePaths. Copying it verbatim meant a JT_GELFLOW_DIR install got a
+  # unit pointing at a tree that may not even exist — and since v1.5.5's
+  # ProtectSystem=strict, ReadWritePaths would not cover the real install dir
+  # either, so the server could not write its own config.json. Rewrite the paths.
+  # No-op when INSTALL_DIR is the default.
+  sed "s|/opt/jt-gelflow|$INSTALL_DIR|g" \
+      "$INSTALL_DIR/packaging/jt-gelflow.service" > "$UNIT_DST"
+  chmod 0644 "$UNIT_DST"
   systemctl daemon-reload
   systemctl enable "$SERVICE_NAME" >/dev/null 2>&1 || true
   # Use restart, not start/enable-now — if the service is already running on a

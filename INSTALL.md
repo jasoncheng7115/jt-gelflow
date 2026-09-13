@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-This is the operations-grade install procedure for **JT-GELFLOW v1.5.5+**. For a friendlier overview see [README.md](README.md).
+This is the operations-grade install procedure for **JT-GELFLOW v1.5.6+**. For a friendlier overview see [README.md](README.md).
 
 ---
 
