@@ -6,6 +6,17 @@
 
 ---
 
+## [1.5.7] — 2026-09-14
+
+新增疑難排解頁面，並讓每一種安裝／升級失敗都指向它。
+
+### 新增
+
+- **安裝與升級疑難排解頁面**，中英各一份 — [troubleshooting_zh-TW.html](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html) / [troubleshooting.html](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html)。六個分類共 27 則，涵蓋安裝失敗、升級失敗、服務起不來、連不上介面、沒有資料，以及設定問題。每一則都寫出實際會印出的訊息、成因，以及可以直接複製執行的指令。頁面有針對問題與答案內容的即時搜尋、可點選並會跟著目前位置點亮的目錄，以及語言切換；網址帶 `?q=` 可預先填入搜尋關鍵字。
+- **`install.sh` 與 `jt-gelflow` 失敗時都會印出該網址。**兩個腳本都裝了 `EXIT` trap，因此任何非零結束都會出現這個指引，不再只限於走 `err()` 的路徑。`Ctrl+C` 與 `SIGTERM` 除外——離開 `jt-gelflow logs` 不是失敗。**語言依機器的語系決定**：`LC_ALL` / `LC_MESSAGES` / `LANG` 開頭是 `zh` 就連到繁體中文頁，其餘連英文頁。由於 `curl | sudo bash` 可能在環境變數被清空的情況下執行，判斷會再退而讀取 `/etc/default/locale` 與 `/etc/locale.conf`，最後才預設為英文。
+
+---
+
 ## [1.5.6] — 2026-09-13
 
 v1.5.5 資安版的後續修正。兩個升級路徑上的缺陷，都是在驗證那個版本的過程中發現的，不是由使用者回報。

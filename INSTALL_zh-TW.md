@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-本文件為 **JT-GELFLOW v1.5.6+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
+本文件為 **JT-GELFLOW v1.5.7+** 的 ops 等級安裝流程。功能總覽請見 [README_zh-TW.md](README_zh-TW.md)。
 
 ---
 
@@ -171,6 +171,8 @@ server {
 ---
 
 ## 7. 疑難排解
+
+> **可搜尋的版本：**同樣的內容（還有更多）放在[安裝與升級疑難排解](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html)。`install.sh` 與 `jt-gelflow` 失敗時會自動印出這個連結。
 
 | 症狀 | 第一步檢查 |
 |------|-------------|

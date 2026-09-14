@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install &amp; Upgrade Troubleshooting — JT-GELFLOW</title>
+  <meta name="description" content="Fixes for JT-GELFLOW install and upgrade failures: fast-forward errors, hung prompts, services that will not start, and empty dashboards.">
+  <meta property="og:title" content="Install &amp; Upgrade Troubleshooting — JT-GELFLOW">
+  <meta property="og:description" content="Fixes for JT-GELFLOW install and upgrade failures: fast-forward errors, hung prompts, services that will not start, and empty dashboards.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
+  <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
+  <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css?v=1.5.7">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="index.html" class="brand">
+    <span class="logo-dot"></span>
+    <span>JT-GELFLOW</span>
+  </a>
+  <div class="links" id="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#install">Install</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
+    <a href="troubleshooting_zh-TW.html" class="lang">繁體中文</a>
+  </div>
+</nav>
+
+<header class="ts-hero">
+  <h1>Install &amp; Upgrade Troubleshooting</h1>
+  <p class="ts-sub">Every error the installer and updater can print, what causes it, and the exact command that fixes it.</p>
+  <div class="ts-search-wrap">
+    <input id="ts-search" type="search" autocomplete="off" placeholder="Search an error message, symptom, or command…" aria-label="Search an error message, symptom, or command…">
+  </div>
+  <p class="ts-count" id="ts-count"></p>
+</header>
+
+<div class="ts-wrap">
+  <aside class="ts-toc">
+    <h2>Contents</h2>
+    <ol id="ts-toc-list">
+    <li data-for="install"><a href="#install">Install fails</a></li>
+    <li data-for="upgrade"><a href="#upgrade">Upgrade fails</a></li>
+    <li data-for="service"><a href="#service">Service will not start</a></li>
+    <li data-for="access"><a href="#access">Cannot reach the web interface</a></li>
+    <li data-for="data"><a href="#data">No data, or the wrong data</a></li>
+    <li data-for="config"><a href="#config">Settings and configuration</a></li>
+    </ol>
+  </aside>
+
+  <main class="ts-content" id="ts-content">
+  <section class="ts-section" id="install">
+    <h2><span class="ts-ico" aria-hidden="true">📦</span>Install fails</h2>
+    <p class="ts-lede">Problems running the one-line installer on a fresh machine.</p>
+    <details class="qa" data-text="the installer stops at install + enable jt-gelflow.service via systemd? [y/n] and pressing enter does nothing cause. curl | sudo bash collides with sudo&#x27;s use_pty default on ubuntu 26 / debian 13. sudo gives the child its own pty, so the script can write to /dev/tty but your keystrokes go to a different pty and read never sees them. fix. run it non-interactively: curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash since v1.5.4 the prompt also times out after 60 seconds and continues with the default, so waiting works too.">
+      <summary>The installer stops at <code>Install + enable jt-gelflow.service via systemd? [Y/n]</code> and pressing Enter does nothing<span class="ts-tag ts-tag-fixed">fixed in v1.5.4+</span></summary>
+      <div class="qa-body"><p><strong>Cause.</strong> <code>curl | sudo bash</code> collides with sudo's <code>use_pty</code> default on Ubuntu 26 / Debian 13. Sudo gives the child its own pty, so the script can write to <code>/dev/tty</code> but your keystrokes go to a different pty and <code>read</code> never sees them.</p><p><strong>Fix.</strong> Run it non-interactively:</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre><p>Since v1.5.4 the prompt also times out after 60 seconds and continues with the default, so waiting works too.</p></div>
+    </details>
+    <details class="qa" data-text="error: cannot reach https://github.com — check network / dns / proxy two different causes, and they look identical. before v1.5.6 the reachability check used curl before the installer had installed it, so a minimal image with no curl failed here even with perfect networking. upgrading to v1.5.6+ fixes that — the check now falls back to wget , then to a bash tcp connect. otherwise the network really is blocked. verify from the box itself: getent hosts github.com curl -si https://github.com | head -1 behind a corporate proxy, export it before running the installer: export https_proxy=http://proxy.example:3128 export http_proxy=$https_proxy">
+      <summary><code>error: cannot reach https://github.com — check network / DNS / proxy</code><span class="ts-tag ts-tag-fixed">fixed in v1.5.6+</span></summary>
+      <div class="qa-body"><p>Two different causes, and they look identical.</p><p><strong>Before v1.5.6</strong> the reachability check used <code>curl</code> before the installer had installed it, so a minimal image with no <code>curl</code> failed here even with perfect networking. Upgrading to v1.5.6+ fixes that — the check now falls back to <code>wget</code>, then to a bash TCP connect.</p><p><strong>Otherwise the network really is blocked.</strong> Verify from the box itself:</p><pre><code>getent hosts github.com
+curl -sI https://github.com | head -1</code></pre><p>Behind a corporate proxy, export it before running the installer:</p><pre><code>export https_proxy=http://proxy.example:3128
+export http_proxy=$https_proxy</code></pre></div>
+    </details>
+    <details class="qa" data-text="error: no supported package manager found (apt/dnf/yum/pacman/zypper) the installer bootstraps dependencies through your distro&#x27;s package manager and only knows those five. on anything else, install the prerequisites yourself and then run the installer — it skips whatever is already present: git , curl , python3 (3.10+) and python3-pip nodejs 18+ is optional — the repo ships a pre-built dist/">
+      <summary><code>error: no supported package manager found (apt/dnf/yum/pacman/zypper)</code></summary>
+      <div class="qa-body"><p>The installer bootstraps dependencies through your distro's package manager and only knows those five. On anything else, install the prerequisites yourself and then run the installer — it skips whatever is already present:</p><ul><li><code>git</code>, <code>curl</code>, <code>python3</code> (3.10+) and <code>python3-pip</code></li><li><code>nodejs</code> 18+ is <em>optional</em> — the repo ships a pre-built <code>dist/</code></li></ul></div>
+    </details>
+    <details class="qa" data-text="warn: node 18+ recommended, found 12.x — falling back to committed dist/ this is not an error and needs no action. vite 5 needs node 18+, and ubuntu 22.04&#x27;s apt ships node 12. the repository commits a pre-built dist/ for exactly this reason, so the installer uses it and you get the same frontend. you only need a newer node if you intend to modify the frontend source and rebuild.">
+      <summary><code>warn: Node 18+ recommended, found 12.x — falling back to committed dist/</code></summary>
+      <div class="qa-body"><p><strong>This is not an error and needs no action.</strong> Vite 5 needs Node 18+, and Ubuntu 22.04's apt ships Node 12. The repository commits a pre-built <code>dist/</code> for exactly this reason, so the installer uses it and you get the same frontend.</p><p>You only need a newer Node if you intend to modify the frontend source and rebuild.</p></div>
+    </details>
+    <details class="qa" data-text="error: needs root , or the install aborts on a permission error the installer writes to /opt , /usr/local/bin and /etc/systemd/system , so it needs root. note where sudo goes in the pipeline — it must apply to bash , not to curl : # correct curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash the jt-gelflow cli is friendlier — it re-executes itself through sudo automatically, so jt-gelflow restart works from a normal account.">
+      <summary><code>error: needs root</code>, or the install aborts on a permission error</summary>
+      <div class="qa-body"><p>The installer writes to <code>/opt</code>, <code>/usr/local/bin</code> and <code>/etc/systemd/system</code>, so it needs root. Note where <code>sudo</code> goes in the pipeline — it must apply to <code>bash</code>, not to <code>curl</code>:</p><pre><code># correct
+curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre><p>The <code>jt-gelflow</code> CLI is friendlier — it re-executes itself through sudo automatically, so <code>jt-gelflow restart</code> works from a normal account.</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="upgrade">
+    <h2><span class="ts-ico" aria-hidden="true">⬆</span>Upgrade fails</h2>
+    <p class="ts-lede">Problems running <code>jt-gelflow update</code> or re-running the installer.</p>
+    <details class="qa" data-text="fatal: not possible to fast-forward, aborting. cause. your local checkout and the upstream repository no longer share a straight line of history — usually because upstream history was rewritten, leaving your head on a commit that no longer exists there. fix, for any version. re-run the installer. it detects this exact case, rescues your config.json , realigns with upstream and restores your settings: curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash your settings are safe. config.json is rescued before the realignment and copied back afterwards — it is never overwritten by an upgrade. before v1.5.6 the cli ran a bare git pull --ff-only with no fallback, so jt-gelflow update simply stopped here. from v1.5.6 the cli recovers on its own and you will see warn: fast-forward refused — realigning with origin/main (settings preserved) instead.">
+      <summary><code>fatal: Not possible to fast-forward, aborting.</code><span class="ts-tag ts-tag-fixed">fixed in v1.5.6+</span></summary>
+      <div class="qa-body"><p><strong>Cause.</strong> Your local checkout and the upstream repository no longer share a straight line of history — usually because upstream history was rewritten, leaving your <code>HEAD</code> on a commit that no longer exists there.</p><p><strong>Fix, for any version.</strong> Re-run the installer. It detects this exact case, rescues your <code>config.json</code>, realigns with upstream and restores your settings:</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre><p><strong>Your settings are safe.</strong> <code>config.json</code> is rescued before the realignment and copied back afterwards — it is never overwritten by an upgrade.</p><p>Before v1.5.6 the CLI ran a bare <code>git pull --ff-only</code> with no fallback, so <code>jt-gelflow update</code> simply stopped here. From v1.5.6 the CLI recovers on its own and you will see <code>warn: fast-forward refused — realigning with origin/main (settings preserved)</code> instead.</p></div>
+    </details>
+    <details class="qa" data-text="error: /opt/jt-gelflow is not a git checkout. reinstall via install.sh. jt-gelflow update upgrades by pulling git history, so it needs the .git directory. this appears when the directory was copied rather than cloned, or .git was deleted. re-running the installer repairs it. your config.json is detected and preserved: curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash">
+      <summary><code>error: /opt/jt-gelflow is not a git checkout. Reinstall via install.sh.</code></summary>
+      <div class="qa-body"><p><code>jt-gelflow update</code> upgrades by pulling git history, so it needs the <code>.git</code> directory. This appears when the directory was copied rather than cloned, or <code>.git</code> was deleted.</p><p>Re-running the installer repairs it. Your <code>config.json</code> is detected and preserved:</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre></div>
+    </details>
+    <details class="qa" data-text="the upgrade succeeded but the browser still shows the old interface the browser is serving a cached javascript bundle. force-reload the page: windows / linux — ctrl+shift+r macos — cmd+shift+r confirm which version is actually running by opening settings — the version is shown at the bottom of the panel. compare it with: grep -m1 version /opt/jt-gelflow/package.json">
+      <summary>The upgrade succeeded but the browser still shows the old interface</summary>
+      <div class="qa-body"><p>The browser is serving a cached JavaScript bundle. Force-reload the page:</p><ul><li>Windows / Linux — <code>Ctrl+Shift+R</code></li><li>macOS — <code>Cmd+Shift+R</code></li></ul><p>Confirm which version is actually running by opening <strong>Settings</strong> — the version is shown at the bottom of the panel. Compare it with:</p><pre><code>grep -m1 version /opt/jt-gelflow/package.json</code></pre></div>
+    </details>
+    <details class="qa" data-text="will upgrading overwrite my settings? no. config.json is deliberately untracked by git; the repository ships config.example.json as the template, and the installer only copies it when no config.json exists. every destructive step rescues the file first and restores it afterwards. if you want a snapshot before upgrading anyway: sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%f) since v1.5.5 the file is stored with 0600 permissions, and re-running the installer tightens an older 0644 file without touching its contents.">
+      <summary>Will upgrading overwrite my settings?</summary>
+      <div class="qa-body"><p><strong>No.</strong> <code>config.json</code> is deliberately untracked by git; the repository ships <code>config.example.json</code> as the template, and the installer only copies it when no <code>config.json</code> exists. Every destructive step rescues the file first and restores it afterwards.</p><p>If you want a snapshot before upgrading anyway:</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>Since v1.5.5 the file is stored with <code>0600</code> permissions, and re-running the installer tightens an older <code>0644</code> file without touching its contents.</p></div>
+    </details>
+    <details class="qa" data-text="how do i pin to a specific version, or go back to an older one? install a tagged release by setting jt_gelflow_branch : jt_gelflow_branch=v1.5.7 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash or move an existing checkout: cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.7 sudo systemctl restart jt-gelflow.service a pinned checkout has a detached head . from v1.5.6, jt-gelflow update realigns it onto main rather than failing — so run it only when you want to stop tracking that tag.">
+      <summary>How do I pin to a specific version, or go back to an older one?</summary>
+      <div class="qa-body"><p>Install a tagged release by setting <code>JT_GELFLOW_BRANCH</code>:</p><pre><code>JT_GELFLOW_BRANCH=v1.5.7 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash</code></pre><p>Or move an existing checkout:</p><pre><code>cd /opt/jt-gelflow
+sudo git fetch --tags origin
+sudo git checkout v1.5.7
+sudo systemctl restart jt-gelflow.service</code></pre><p>A pinned checkout has a detached <code>HEAD</code>. From v1.5.6, <code>jt-gelflow update</code> realigns it onto <code>main</code> rather than failing — so run it only when you want to stop tracking that tag.</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="service">
+    <h2><span class="ts-ico" aria-hidden="true">⚙</span>Service will not start</h2>
+    <p class="ts-lede"><code>jt-gelflow status</code> shows failed, inactive, or a restart loop.</p>
+    <details class="qa" data-text="where do i look first? these two commands answer almost every start-up failure: sudo jt-gelflow status sudo journalctl -u jt-gelflow.service -n 200 --no-pager the journal carries the python traceback, which names the actual cause on its last line.">
+      <summary>Where do I look first?</summary>
+      <div class="qa-body"><p>These two commands answer almost every start-up failure:</p><pre><code>sudo jt-gelflow status
+sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code></pre><p>The journal carries the Python traceback, which names the actual cause on its last line.</p></div>
+    </details>
+    <details class="qa" data-text="overflowerror: bind(): port must be 0-65535 or oserror: int or string expected , restarting forever cause. config.json holds a port value that is not a usable port. before v1.5.5 the api accepted any value and wrote it to disk, so this could be triggered by a single bad request; the service then failed at the next start and, under restart=on-failure , looped. fix. edit the file and set sane ports: sudo nano /opt/jt-gelflow/config.json # &quot;http_port&quot;: 8099, &quot;gelf_udp_port&quot;: 12201, &quot;gelf_tcp_port&quot;: 12202 sudo systemctl restart jt-gelflow.service if the file is beyond repair, start over from the shipped template — this discards your settings: sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl restart jt-gelflow.service v1.5.5 closes the hole at both ends: the api now refuses an invalid value with 400 , and on start-up an out-of-range field falls back to its default instead of crashing, so an affected install recovers by itself on upgrade.">
+      <summary><code>OverflowError: bind(): port must be 0-65535</code> or <code>OSError: Int or String expected</code>, restarting forever<span class="ts-tag ts-tag-fixed">fixed in v1.5.5+</span></summary>
+      <div class="qa-body"><p><strong>Cause.</strong> <code>config.json</code> holds a port value that is not a usable port. Before v1.5.5 the API accepted any value and wrote it to disk, so this could be triggered by a single bad request; the service then failed at the next start and, under <code>Restart=on-failure</code>, looped.</p><p><strong>Fix.</strong> Edit the file and set sane ports:</p><pre><code>sudo nano /opt/jt-gelflow/config.json
+# "http_port": 8099, "gelf_udp_port": 12201, "gelf_tcp_port": 12202
+sudo systemctl restart jt-gelflow.service</code></pre><p>If the file is beyond repair, start over from the shipped template — this discards your settings:</p><pre><code>sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json
+sudo chmod 600 /opt/jt-gelflow/config.json
+sudo systemctl restart jt-gelflow.service</code></pre><p>v1.5.5 closes the hole at both ends: the API now refuses an invalid value with <code>400</code>, and on start-up an out-of-range field falls back to its default instead of crashing, so an affected install recovers by itself on upgrade.</p></div>
+    </details>
+    <details class="qa" data-text="oserror: [errno 98] address already in use another process holds 8099, 12201 or 12202. find it: sudo ss -tulpn | grep -e &#x27;:8099|:12201|:12202&#x27; then either stop that process, or move jt-gelflow by editing http_port / gelf_udp_port / gelf_tcp_port in /opt/jt-gelflow/config.json and restarting. remember to repoint your graylog gelf output if you change a gelf port. a stale copy of jt-gelflow itself is a common culprit — a manually started python3 run.py left running alongside the service.">
+      <summary><code>OSError: [Errno 98] Address already in use</code></summary>
+      <div class="qa-body"><p>Another process holds 8099, 12201 or 12202. Find it:</p><pre><code>sudo ss -tulpn | grep -E ':8099|:12201|:12202'</code></pre><p>Then either stop that process, or move JT-GELFLOW by editing <code>http_port</code> / <code>gelf_udp_port</code> / <code>gelf_tcp_port</code> in <code>/opt/jt-gelflow/config.json</code> and restarting. Remember to repoint your Graylog GELF Output if you change a GELF port.</p><p>A stale copy of JT-GELFLOW itself is a common culprit — a manually started <code>python3 run.py</code> left running alongside the service.</p></div>
+    </details>
+    <details class="qa" data-text="jt-gelflow logs shows nothing even though the service is running before v1.5.5 the unit ran python with its output going to the journal — a pipe — so python block-buffered stdout and held messages in a 4&amp;nbsp;kb buffer. on a quiet install nothing appeared until the buffer filled or the process exited. v1.5.5 adds environment=pythonunbuffered=1 to the unit. upgrade, then confirm: systemctl show jt-gelflow.service -p environment">
+      <summary><code>jt-gelflow logs</code> shows nothing even though the service is running<span class="ts-tag ts-tag-fixed">fixed in v1.5.5+</span></summary>
+      <div class="qa-body"><p>Before v1.5.5 the unit ran Python with its output going to the journal — a pipe — so Python block-buffered stdout and held messages in a 4&nbsp;KB buffer. On a quiet install nothing appeared until the buffer filled or the process exited.</p><p>v1.5.5 adds <code>Environment=PYTHONUNBUFFERED=1</code> to the unit. Upgrade, then confirm:</p><pre><code>systemctl show jt-gelflow.service -p Environment</code></pre></div>
+    </details>
+    <details class="qa" data-text="i installed with jt_gelflow_dir and the service points at /opt/jt-gelflow before v1.5.7 the installer copied the systemd unit verbatim, and that file hardcodes /opt/jt-gelflow in workingdirectory , execstart and readwritepaths — so a custom directory got a unit pointing somewhere else. since v1.5.5 tightened the unit to protectsystem=strict , the wrong readwritepaths also left the server unable to write its own config.json . upgrading to v1.5.7+ and re-running the installer rewrites all three directives. to check: grep -e &#x27;workingdirectory|execstart|readwritepaths&#x27; \ /etc/systemd/system/jt-gelflow.service installs at the default location were never affected.">
+      <summary>I installed with <code>JT_GELFLOW_DIR</code> and the service points at <code>/opt/jt-gelflow</code><span class="ts-tag ts-tag-fixed">fixed in v1.5.7+</span></summary>
+      <div class="qa-body"><p>Before v1.5.7 the installer copied the systemd unit verbatim, and that file hardcodes <code>/opt/jt-gelflow</code> in <code>WorkingDirectory</code>, <code>ExecStart</code> and <code>ReadWritePaths</code> — so a custom directory got a unit pointing somewhere else. Since v1.5.5 tightened the unit to <code>ProtectSystem=strict</code>, the wrong <code>ReadWritePaths</code> also left the server unable to write its own <code>config.json</code>.</p><p>Upgrading to v1.5.7+ and re-running the installer rewrites all three directives. To check:</p><pre><code>grep -E 'WorkingDirectory|ExecStart|ReadWritePaths' \
+  /etc/systemd/system/jt-gelflow.service</code></pre><p>Installs at the default location were never affected.</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="access">
+    <h2><span class="ts-ico" aria-hidden="true">🌐</span>Cannot reach the web interface</h2>
+    <p class="ts-lede">The service is running but the dashboard will not load.</p>
+    <details class="qa" data-text="connection refused on port 8099 work outward from the box. first, is it listening at all? sudo ss -tlnp | grep 8099 curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; http://127.0.0.1:8099/api/config a 200 locally means the server is fine and the problem is the network path — see the next entry. no listener means the service is not actually up; check sudo jt-gelflow status .">
+      <summary><code>connection refused</code> on port 8099</summary>
+      <div class="qa-body"><p>Work outward from the box. First, is it listening at all?</p><pre><code>sudo ss -tlnp | grep 8099
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8099/api/config</code></pre><p>A <code>200</code> locally means the server is fine and the problem is the network path — see the next entry. No listener means the service is not actually up; check <code>sudo jt-gelflow status</code>.</p></div>
+    </details>
+    <details class="qa" data-text="works locally but not from another machine a firewall is the usual answer. jt-gelflow binds 0.0.0.0 , so it is not the server. # ufw sudo ufw allow 8099/tcp sudo ufw allow 12201/udp sudo ufw allow 12202/tcp # firewalld sudo firewall-cmd --permanent --add-port=8099/tcp sudo firewall-cmd --reload open these deliberately. the api has no authentication — anyone who can reach 8099 can read your observed network topology and change the configuration. expose it only on a trusted network, or put it behind an authenticating reverse proxy.">
+      <summary>Works locally but not from another machine</summary>
+      <div class="qa-body"><p>A firewall is the usual answer. JT-GELFLOW binds <code>0.0.0.0</code>, so it is not the server.</p><pre><code># ufw
+sudo ufw allow 8099/tcp
+sudo ufw allow 12201/udp
+sudo ufw allow 12202/tcp
+
+# firewalld
+sudo firewall-cmd --permanent --add-port=8099/tcp
+sudo firewall-cmd --reload</code></pre><p><strong>Open these deliberately.</strong> The API has no authentication — anyone who can reach 8099 can read your observed network topology and change the configuration. Expose it only on a trusted network, or put it behind an authenticating reverse proxy.</p></div>
+    </details>
+    <details class="qa" data-text="the page loads but the status light stays red (websocket disconnected) behind a reverse proxy, the /ws upgrade needs to be passed through. for nginx: location / { proxy_pass http://127.0.0.1:8099; proxy_http_version 1.1; proxy_set_header upgrade $http_upgrade; proxy_set_header connection &quot;upgrade&quot;; proxy_set_header host $host; proxy_read_timeout 3600s; } a short proxy_read_timeout drops an idle socket and shows the same symptom. since v1.5.5 the handshake also rejects cross-origin connections with 403 . if your proxy rewrites host so that it no longer matches the origin the browser sends, the socket is refused — keep proxy_set_header host $host; as above.">
+      <summary>The page loads but the status light stays red (WebSocket disconnected)</summary>
+      <div class="qa-body"><p>Behind a reverse proxy, the <code>/ws</code> upgrade needs to be passed through. For nginx:</p><pre><code>location / {
+    proxy_pass http://127.0.0.1:8099;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_read_timeout 3600s;
+}</code></pre><p>A short <code>proxy_read_timeout</code> drops an idle socket and shows the same symptom.</p><p><strong>Since v1.5.5</strong> the handshake also rejects cross-origin connections with <code>403</code>. If your proxy rewrites <code>Host</code> so that it no longer matches the <code>Origin</code> the browser sends, the socket is refused — keep <code>proxy_set_header Host $host;</code> as above.</p></div>
+    </details>
+    <details class="qa" data-text="cors errors in the browser console after upgrading to v1.5.5 v1.5.5 removed cors entirely. it had been configured to reflect any origin while also allowing credentials, which let any website the operator visited read every api response and change the configuration. the bundled frontend is served from the same origin and never needed it, so a normal install is unaffected. if you serve the frontend separately — a vite dev server, for instance — proxy the api instead of calling it cross-origin: // vite.config.ts server: { proxy: { &#x27;/api&#x27;: &#x27;http://127.0.0.1:8099&#x27;, &#x27;/ws&#x27;: { target: &#x27;ws://127.0.0.1:8099&#x27;, ws: true }, }, }">
+      <summary>CORS errors in the browser console after upgrading to v1.5.5<span class="ts-tag ts-tag-warn">behaviour change</span></summary>
+      <div class="qa-body"><p>v1.5.5 removed CORS entirely. It had been configured to reflect <em>any</em> origin while also allowing credentials, which let any website the operator visited read every API response and change the configuration.</p><p>The bundled frontend is served from the same origin and never needed it, so a normal install is unaffected. If you serve the frontend separately — a Vite dev server, for instance — proxy the API instead of calling it cross-origin:</p><pre><code>// vite.config.ts
+server: {
+  proxy: {
+    '/api': 'http://127.0.0.1:8099',
+    '/ws':  { target: 'ws://127.0.0.1:8099', ws: true },
+  },
+}</code></pre></div>
+    </details>
+    <details class="qa" data-text="my monitoring check started returning 404 after v1.5.5 unknown /api/* paths now return 404 with a json body instead of falling through to the single-page app and returning 200 with html. a side effect is that api routes only answer their own verb, so a head probe returns 404 . use get for health checks: curl -fss -o /dev/null http://127.0.0.1:8099/api/config">
+      <summary>My monitoring check started returning 404 after v1.5.5<span class="ts-tag ts-tag-warn">behaviour change</span></summary>
+      <div class="qa-body"><p>Unknown <code>/api/*</code> paths now return <code>404</code> with a JSON body instead of falling through to the single-page app and returning <code>200</code> with HTML. A side effect is that API routes only answer their own verb, so a <code>HEAD</code> probe returns <code>404</code>.</p><p>Use <code>GET</code> for health checks:</p><pre><code>curl -fsS -o /dev/null http://127.0.0.1:8099/api/config</code></pre></div>
+    </details>
+  </section>
+  <section class="ts-section" id="data">
+    <h2><span class="ts-ico" aria-hidden="true">📊</span>No data, or the wrong data</h2>
+    <p class="ts-lede">The dashboard loads but the views stay empty or look wrong.</p>
+    <details class="qa" data-text="the interface works but no traffic ever appears check in this order. 1. are gelf messages arriving at all? send a test message from the box: printf &#x27;{&quot;version&quot;:&quot;1.1&quot;,&quot;host&quot;:&quot;test&quot;,&quot;short_message&quot;:&quot;t&quot;,&quot;source_ip&quot;:&quot;8.8.8.8&quot;,&quot;destination_ip&quot;:&quot;10.0.0.10&quot;,&quot;network_bytes&quot;:100}&#x27; \ | nc -u -w1 127.0.0.1 12201 if that node appears, the collector is fine and graylog is not reaching you — check its gelf output host, port and protocol, and your firewall. 2. do the field names match? this is the most common cause. open settings → field mapping and make sure src_field and dst_field are the field names your logs actually carry. settings → discovered fields lists what has genuinely been received, with sample values. 3. is a filter hiding everything? internal filter ips and top-n limits apply per view; an aggressive filter can empty a view completely.">
+      <summary>The interface works but no traffic ever appears</summary>
+      <div class="qa-body"><p>Check in this order.</p><p><strong>1. Are GELF messages arriving at all?</strong> Send a test message from the box:</p><pre><code>printf '{"version":"1.1","host":"test","short_message":"t","source_ip":"8.8.8.8","destination_ip":"10.0.0.10","network_bytes":100}' \
+  | nc -u -w1 127.0.0.1 12201</code></pre><p>If that node appears, the collector is fine and Graylog is not reaching you — check its GELF Output host, port and protocol, and your firewall.</p><p><strong>2. Do the field names match?</strong> This is the most common cause. Open <strong>Settings → Field Mapping</strong> and make sure <code>src_field</code> and <code>dst_field</code> are the field names your logs actually carry. <strong>Settings → Discovered Fields</strong> lists what has genuinely been received, with sample values.</p><p><strong>3. Is a filter hiding everything?</strong> Internal Filter IPs and Top-N limits apply per view; an aggressive filter can empty a view completely.</p></div>
+    </details>
+    <details class="qa" data-text="all internal addresses sit on one dot on the 2d map and 3d globe this is expected. private addresses have no public geolocation, so they all fall back to the single coordinate pair in settings → geoip ( internal_fallback_lat / internal_fallback_lng ). for a multi-site network, enrich the logs upstream so each internal address arrives with its own location. a graylog pipeline rule can set source_ip_geolocation per subnet, and jt-gelflow will use it in preference to the fallback.">
+      <summary>All internal addresses sit on one dot on the 2D Map and 3D Globe</summary>
+      <div class="qa-body"><p>This is expected. Private addresses have no public geolocation, so they all fall back to the single coordinate pair in <strong>Settings → GeoIP</strong> (<code>internal_fallback_lat</code> / <code>internal_fallback_lng</code>).</p><p>For a multi-site network, enrich the logs upstream so each internal address arrives with its own location. A Graylog pipeline rule can set <code>source_ip_geolocation</code> per subnet, and JT-GELFLOW will use it in preference to the fallback.</p></div>
+    </details>
+    <details class="qa" data-text="the sankey view is empty, or every band is the same width empty usually means the columns it needs are not populated. sankey requires an external and an internal address; if your zone cidrs do not classify traffic correctly, nothing pairs up. check settings → zones → internal cidrs . uniform width means there is no byte field to weigh the bands with. when value_field is missing from every message, each flow contributes value_default (1), so width equals event count. either point value_field at the field that carries byte counts, or set settings → sankey width to events to make that explicit.">
+      <summary>The Sankey view is empty, or every band is the same width</summary>
+      <div class="qa-body"><p><strong>Empty</strong> usually means the columns it needs are not populated. Sankey requires an external and an internal address; if your zone CIDRs do not classify traffic correctly, nothing pairs up. Check <strong>Settings → Zones → internal CIDRs</strong>.</p><p><strong>Uniform width</strong> means there is no byte field to weigh the bands with. When <code>value_field</code> is missing from every message, each flow contributes <code>value_default</code> (1), so width equals event count. Either point <code>value_field</code> at the field that carries byte counts, or set <strong>Settings → Sankey width</strong> to <em>events</em> to make that explicit.</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="config">
+    <h2><span class="ts-ico" aria-hidden="true">🔧</span>Settings and configuration</h2>
+    <p class="ts-lede">Where things live and what the server will accept.</p>
+    <details class="qa" data-text="where is the configuration file? /opt/jt-gelflow/config.json # your settings (never tracked by git) /opt/jt-gelflow/config.example.json # shipped template since v1.5.5 the live file is mode 0600 . edit it directly only while the service is stopped, or use the settings panel — the server rewrites the whole file when it saves.">
+      <summary>Where is the configuration file?</summary>
+      <div class="qa-body"><pre><code>/opt/jt-gelflow/config.json          # your settings (never tracked by git)
+/opt/jt-gelflow/config.example.json  # shipped template</code></pre><p>Since v1.5.5 the live file is mode <code>0600</code>. Edit it directly only while the service is stopped, or use the Settings panel — the server rewrites the whole file when it saves.</p></div>
+    </details>
+    <details class="qa" data-text="saving settings returns invalid value for &#x27;x&#x27; working as intended, since v1.5.5. the named field received a value the server cannot run with — a port outside 1–65535, text where a number belongs, a latitude past the poles. nothing was written; correct that one field and save again. ranges are deliberately permissive: only genuinely impossible values are rejected, so an upgrade never silently rewrites a setting you rely on.">
+      <summary>Saving settings returns <code>Invalid value for 'X'</code></summary>
+      <div class="qa-body"><p>Working as intended, since v1.5.5. The named field received a value the server cannot run with — a port outside 1–65535, text where a number belongs, a latitude past the poles. Nothing was written; correct that one field and save again.</p><p>Ranges are deliberately permissive: only genuinely impossible values are rejected, so an upgrade never silently rewrites a setting you rely on.</p></div>
+    </details>
+    <details class="qa" data-text="how do i reset everything to defaults? sudo systemctl stop jt-gelflow.service sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.bak sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl start jt-gelflow.service the backup line is worth keeping — field mappings are tedious to reconstruct.">
+      <summary>How do I reset everything to defaults?</summary>
+      <div class="qa-body"><pre><code>sudo systemctl stop jt-gelflow.service
+sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.bak
+sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json
+sudo chmod 600 /opt/jt-gelflow/config.json
+sudo systemctl start jt-gelflow.service</code></pre><p>The backup line is worth keeping — field mappings are tedious to reconstruct.</p></div>
+    </details>
+    <details class="qa" data-text="how do i remove jt-gelflow completely? sudo jt-gelflow uninstall # keeps config.json sudo jt-gelflow uninstall --purge # removes everything, config included after a plain uninstall , re-running the installer later finds the surviving config.json and seeds the fresh checkout from it — removing and reinstalling is safe.">
+      <summary>How do I remove JT-GELFLOW completely?</summary>
+      <div class="qa-body"><pre><code>sudo jt-gelflow uninstall           # keeps config.json
+sudo jt-gelflow uninstall --purge   # removes everything, config included</code></pre><p>After a plain <code>uninstall</code>, re-running the installer later finds the surviving <code>config.json</code> and seeds the fresh checkout from it — removing and reinstalling is safe.</p></div>
+    </details>
+  </section>
+    <div class="ts-empty" id="ts-empty">
+      <p><strong>No match</strong></p>
+      <p>Try a shorter phrase, or paste the exact error text.</p>
+    </div>
+  </main>
+</div>
+
+<p class="ts-foot-note">Still stuck? Open an issue with the output of <code>sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code> and the version from <code>grep -m1 version /opt/jt-gelflow/package.json</code>.</p>
+
+<footer>
+  <div class="row">
+    <a href="https://github.com/jasoncheng7115/jt-gelflow">GitHub</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/issues">Report an issue</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">Changelog</a>
+    <a href="troubleshooting_zh-TW.html">繁體中文</a>
+  </div>
+  <div>JT-GELFLOW v1.5.7 · © 2026 Jason Cheng (Jason Tools)</div>
+</footer>
+
+<script>
+(function () {
+  var input = document.getElementById('ts-search');
+  var count = document.getElementById('ts-count');
+  var empty = document.getElementById('ts-empty');
+  var items = Array.prototype.slice.call(document.querySelectorAll('.qa'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.ts-section'));
+  var tocItems = Array.prototype.slice.call(document.querySelectorAll('#ts-toc-list li'));
+  var TOTAL = items.length;
+
+  function label(n, all) {
+    var w = n === 1 ? 'answer' : 'answers';
+    return all ? '{n} answers'.replace('{n}', n).replace('{word}', w).trim()
+               : '{n} matching {word}'.replace('{n}', n).replace('{word}', w).trim();
+  }
+
+  function apply() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    items.forEach(function (d) {
+      var hit = !q || d.getAttribute('data-text').indexOf(q) !== -1;
+      d.hidden = !hit;
+      d.open = !!(q && hit);
+      if (hit) shown++;
+    });
+    sections.forEach(function (s) {
+      var any = s.querySelector('.qa:not([hidden])') !== null;
+      s.hidden = !any;
+      var li = tocItems.filter(function (l) { return l.getAttribute('data-for') === s.id; })[0];
+      if (li) li.classList.toggle('hidden', !any);
+    });
+    empty.classList.toggle('show', shown === 0);
+    count.textContent = q ? label(shown, false) : label(TOTAL, true);
+  }
+
+  input.addEventListener('input', apply);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { input.value = ''; apply(); }
+  });
+  apply();
+
+  // Deep link: /troubleshooting.html?q=fast-forward pre-fills the search.
+  var pre = new URLSearchParams(location.search).get('q');
+  if (pre) { input.value = pre; apply(); }
+
+  // Highlight the section currently in view.
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        tocItems.forEach(function (l) {
+          var a = l.querySelector('a');
+          if (a) a.classList.toggle('active', l.getAttribute('data-for') === en.target.id);
+        });
+      });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>

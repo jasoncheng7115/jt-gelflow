@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](UPGRADE.md) | [繁體中文](UPGRADE_zh-TW.md)
 
-本文件為 **JT-GELFLOW v1.5.6+** 的 ops 等級升級流程。版本更新從公開 GitHub repo 拉取。
+本文件為 **JT-GELFLOW v1.5.7+** 的 ops 等級升級流程。版本更新從公開 GitHub repo 拉取。
 
 ---
 
@@ -119,18 +119,18 @@ curl -sI http://$(hostname -I | awk '{print $1}'):8099/ | head -1
 要鎖定某個 release（受規範環境不能自動跟 `main`）：
 
 ```bash
-JT_GELFLOW_BRANCH=v1.5.6 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.6/install.sh | sudo bash
+JT_GELFLOW_BRANCH=v1.5.7 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash
 ```
 
-（把 `v1.5.6` 換成你要的 tag。）
+（把 `v1.5.7` 換成你要的 tag。）
 
 要把既有 checkout 釘住：
 
 ```bash
 cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.6
+sudo git checkout v1.5.7
 sudo systemctl restart jt-gelflow.service
 ```
 
@@ -173,6 +173,8 @@ sudo jt-gelflow uninstall --purge  # 連 config.json 一併刪除
 ---
 
 ## 8. 升級常見地雷
+
+> **可搜尋的版本：**同樣的內容（還有更多）放在[安裝與升級疑難排解](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html)。`install.sh` 與 `jt-gelflow` 失敗時會自動印出這個連結。
 
 | 症狀 | 原因 | 解法 |
 |------|------|------|

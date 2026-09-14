@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>安裝與升級疑難排解 — JT-GELFLOW</title>
+  <meta name="description" content="JT-GELFLOW 安裝與升級失敗的解法：fast-forward 錯誤、安裝卡住、服務起不來、儀表板沒有資料。">
+  <meta property="og:title" content="安裝與升級疑難排解 — JT-GELFLOW">
+  <meta property="og:description" content="JT-GELFLOW 安裝與升級失敗的解法：fast-forward 錯誤、安裝卡住、服務起不來、儀表板沒有資料。">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
+  <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
+  <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css?v=1.5.7">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="index_zh-TW.html" class="brand">
+    <span class="logo-dot"></span>
+    <span>JT-GELFLOW</span>
+  </a>
+  <div class="links" id="nav-links">
+    <a href="index_zh-TW.html">首頁</a>
+    <a href="index_zh-TW.html#install">安裝</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow" target="_blank" rel="noopener">GitHub</a>
+    <a href="troubleshooting.html" class="lang">English</a>
+  </div>
+</nav>
+
+<header class="ts-hero">
+  <h1>安裝與升級疑難排解</h1>
+  <p class="ts-sub">安裝程式與升級指令可能印出的每一種錯誤、成因，以及可以直接複製執行的解法。</p>
+  <div class="ts-search-wrap">
+    <input id="ts-search" type="search" autocomplete="off" placeholder="搜尋錯誤訊息、症狀或指令…" aria-label="搜尋錯誤訊息、症狀或指令…">
+  </div>
+  <p class="ts-count" id="ts-count"></p>
+</header>
+
+<div class="ts-wrap">
+  <aside class="ts-toc">
+    <h2>目錄</h2>
+    <ol id="ts-toc-list">
+    <li data-for="install"><a href="#install">安裝失敗</a></li>
+    <li data-for="upgrade"><a href="#upgrade">升級失敗</a></li>
+    <li data-for="service"><a href="#service">服務起不來</a></li>
+    <li data-for="access"><a href="#access">連不上 Web 介面</a></li>
+    <li data-for="data"><a href="#data">沒有資料，或資料不對</a></li>
+    <li data-for="config"><a href="#config">設定與組態</a></li>
+    </ol>
+  </aside>
+
+  <main class="ts-content" id="ts-content">
+  <section class="ts-section" id="install">
+    <h2><span class="ts-ico" aria-hidden="true">📦</span>安裝失敗</h2>
+    <p class="ts-lede">在全新機器上執行一行安裝指令時遇到的問題。</p>
+    <details class="qa" data-text="安裝卡在 install + enable jt-gelflow.service via systemd? [y/n] ，按 enter 沒反應 原因。 curl | sudo bash 撞上 ubuntu 26 / debian 13 預設開啟的 sudo use_pty 。sudo 會另外配一個 pty 給子行程，腳本寫得進 /dev/tty ，但你的按鍵送到另一個 pty， read 永遠收不到。 解法。 改用非互動模式： curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash 從 v1.5.4 起這個提示也會在 60 秒後逾時並以預設值繼續，所以直接等也可以。">
+      <summary>安裝卡在 <code>Install + enable jt-gelflow.service via systemd? [Y/n]</code>，按 Enter 沒反應<span class="ts-tag ts-tag-fixed">v1.5.4+ 已修正</span></summary>
+      <div class="qa-body"><p><strong>原因。</strong><code>curl | sudo bash</code> 撞上 Ubuntu 26 / Debian 13 預設開啟的 sudo <code>use_pty</code>。sudo 會另外配一個 pty 給子行程，腳本寫得進 <code>/dev/tty</code>，但你的按鍵送到另一個 pty，<code>read</code> 永遠收不到。</p><p><strong>解法。</strong>改用非互動模式：</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre><p>從 v1.5.4 起這個提示也會在 60 秒後逾時並以預設值繼續，所以直接等也可以。</p></div>
+    </details>
+    <details class="qa" data-text="error: cannot reach https://github.com — check network / dns / proxy 有兩種原因，但錯誤訊息一模一樣。 v1.5.6 之前 的連線檢查在安裝程式裝好 curl 之前 就用了它，所以最小化映像（沒有 curl ）即使網路完全正常也會卡在這裡。升級到 v1.5.6+ 即可解決——檢查現在會退而使用 wget ，再退到 bash 的 tcp 連線測試。 否則就是網路真的不通。 在該機器上確認： getent hosts github.com curl -si https://github.com | head -1 若在公司 proxy 後面，執行安裝前先設定： export https_proxy=http://proxy.example:3128 export http_proxy=$https_proxy">
+      <summary><code>error: cannot reach https://github.com — check network / DNS / proxy</code><span class="ts-tag ts-tag-fixed">v1.5.6+ 已修正</span></summary>
+      <div class="qa-body"><p>有兩種原因，但錯誤訊息一模一樣。</p><p><strong>v1.5.6 之前</strong>的連線檢查在安裝程式裝好 <code>curl</code> <em>之前</em>就用了它，所以最小化映像（沒有 <code>curl</code>）即使網路完全正常也會卡在這裡。升級到 v1.5.6+ 即可解決——檢查現在會退而使用 <code>wget</code>，再退到 bash 的 TCP 連線測試。</p><p><strong>否則就是網路真的不通。</strong>在該機器上確認：</p><pre><code>getent hosts github.com
+curl -sI https://github.com | head -1</code></pre><p>若在公司 proxy 後面，執行安裝前先設定：</p><pre><code>export https_proxy=http://proxy.example:3128
+export http_proxy=$https_proxy</code></pre></div>
+    </details>
+    <details class="qa" data-text="error: no supported package manager found (apt/dnf/yum/pacman/zypper) 安裝程式透過發行版的套件管理員安裝相依套件，目前只認得這五種。其他發行版請先自行安裝前置需求，再執行安裝程式——已經存在的它會自動略過： git 、 curl 、 python3 （3.10 以上）與 python3-pip nodejs 18 以上為 選用 ——repo 已附上建置好的 dist/">
+      <summary><code>error: no supported package manager found (apt/dnf/yum/pacman/zypper)</code></summary>
+      <div class="qa-body"><p>安裝程式透過發行版的套件管理員安裝相依套件，目前只認得這五種。其他發行版請先自行安裝前置需求，再執行安裝程式——已經存在的它會自動略過：</p><ul><li><code>git</code>、<code>curl</code>、<code>python3</code>（3.10 以上）與 <code>python3-pip</code></li><li><code>nodejs</code> 18 以上為<em>選用</em>——repo 已附上建置好的 <code>dist/</code></li></ul></div>
+    </details>
+    <details class="qa" data-text="warn: node 18+ recommended, found 12.x — falling back to committed dist/ 這不是錯誤，不需要處理。 vite 5 需要 node 18 以上，而 ubuntu 22.04 的 apt 只有 node 12。repo 正是為此附上已建置的 dist/ ，安裝程式會直接使用，前端功能完全相同。 只有當你要修改前端原始碼並重新建置時，才需要更新的 node。">
+      <summary><code>warn: Node 18+ recommended, found 12.x — falling back to committed dist/</code></summary>
+      <div class="qa-body"><p><strong>這不是錯誤，不需要處理。</strong>Vite 5 需要 Node 18 以上，而 Ubuntu 22.04 的 apt 只有 Node 12。repo 正是為此附上已建置的 <code>dist/</code>，安裝程式會直接使用，前端功能完全相同。</p><p>只有當你要修改前端原始碼並重新建置時，才需要更新的 Node。</p></div>
+    </details>
+    <details class="qa" data-text="error: needs root ，或安裝因權限錯誤中止 安裝程式需要寫入 /opt 、 /usr/local/bin 與 /etc/systemd/system ，因此必須有 root 權限。注意 sudo 在管線中的位置——它要作用在 bash 上，不是 curl ： # 正確 curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash jt-gelflow 這個 cli 比較貼心——它會自動透過 sudo 重新執行自己，所以用一般帳號下 jt-gelflow restart 也能運作。">
+      <summary><code>error: needs root</code>，或安裝因權限錯誤中止</summary>
+      <div class="qa-body"><p>安裝程式需要寫入 <code>/opt</code>、<code>/usr/local/bin</code> 與 <code>/etc/systemd/system</code>，因此必須有 root 權限。注意 <code>sudo</code> 在管線中的位置——它要作用在 <code>bash</code> 上，不是 <code>curl</code>：</p><pre><code># 正確
+curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo bash</code></pre><p><code>jt-gelflow</code> 這個 CLI 比較貼心——它會自動透過 sudo 重新執行自己，所以用一般帳號下 <code>jt-gelflow restart</code> 也能運作。</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="upgrade">
+    <h2><span class="ts-ico" aria-hidden="true">⬆</span>升級失敗</h2>
+    <p class="ts-lede">執行 <code>jt-gelflow update</code> 或重跑安裝程式時遇到的問題。</p>
+    <details class="qa" data-text="fatal: not possible to fast-forward, aborting. 原因。 本地 checkout 與上游 repo 的歷史已經不在同一條直線上——通常是上游歷史被改寫，導致你的 head 停在一個上游已經不存在的 commit。 解法（任何版本皆適用）。 重新執行安裝程式。它會偵測到這個情況，搶救你的 config.json ，與上游重新對齊，再把設定放回去： curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash 你的設定不會遺失。 config.json 會在重新對齊前被搶救、之後再複製回來——升級永遠不會覆寫它。 v1.5.6 之前，cli 只跑裸的 git pull --ff-only 、沒有任何後備方案，所以 jt-gelflow update 就直接停在這裡。從 v1.5.6 起 cli 會自行復原，你會看到 warn: fast-forward refused — realigning with origin/main (settings preserved) 。">
+      <summary><code>fatal: Not possible to fast-forward, aborting.</code><span class="ts-tag ts-tag-fixed">v1.5.6+ 已修正</span></summary>
+      <div class="qa-body"><p><strong>原因。</strong>本地 checkout 與上游 repo 的歷史已經不在同一條直線上——通常是上游歷史被改寫，導致你的 <code>HEAD</code> 停在一個上游已經不存在的 commit。</p><p><strong>解法（任何版本皆適用）。</strong>重新執行安裝程式。它會偵測到這個情況，搶救你的 <code>config.json</code>，與上游重新對齊，再把設定放回去：</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre><p><strong>你的設定不會遺失。</strong><code>config.json</code> 會在重新對齊前被搶救、之後再複製回來——升級永遠不會覆寫它。</p><p>v1.5.6 之前，CLI 只跑裸的 <code>git pull --ff-only</code>、沒有任何後備方案，所以 <code>jt-gelflow update</code> 就直接停在這裡。從 v1.5.6 起 CLI 會自行復原，你會看到 <code>warn: fast-forward refused — realigning with origin/main (settings preserved)</code>。</p></div>
+    </details>
+    <details class="qa" data-text="error: /opt/jt-gelflow is not a git checkout. reinstall via install.sh. jt-gelflow update 是靠拉取 git 歷史來升級的，所以需要 .git 目錄。目錄是用複製而非 clone 產生、或 .git 被刪掉時就會出現這個錯誤。 重跑安裝程式即可修復，你的 config.json 會被偵測並保留： curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo jt_gelflow_yes=1 bash">
+      <summary><code>error: /opt/jt-gelflow is not a git checkout. Reinstall via install.sh.</code></summary>
+      <div class="qa-body"><p><code>jt-gelflow update</code> 是靠拉取 git 歷史來升級的，所以需要 <code>.git</code> 目錄。目錄是用複製而非 clone 產生、或 <code>.git</code> 被刪掉時就會出現這個錯誤。</p><p>重跑安裝程式即可修復，你的 <code>config.json</code> 會被偵測並保留：</p><pre><code>curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/install.sh | sudo JT_GELFLOW_YES=1 bash</code></pre></div>
+    </details>
+    <details class="qa" data-text="升級成功了，但瀏覽器還是顯示舊介面 瀏覽器用的是快取住的 javascript bundle。請強制重新整理頁面： windows / linux — ctrl+shift+r macos — cmd+shift+r 要確認實際執行的版本，打開 設定 面板，版號顯示在最下方。再與這個比對： grep -m1 version /opt/jt-gelflow/package.json">
+      <summary>升級成功了，但瀏覽器還是顯示舊介面</summary>
+      <div class="qa-body"><p>瀏覽器用的是快取住的 JavaScript bundle。請強制重新整理頁面：</p><ul><li>Windows / Linux — <code>Ctrl+Shift+R</code></li><li>macOS — <code>Cmd+Shift+R</code></li></ul><p>要確認實際執行的版本，打開<strong>設定</strong>面板，版號顯示在最下方。再與這個比對：</p><pre><code>grep -m1 version /opt/jt-gelflow/package.json</code></pre></div>
+    </details>
+    <details class="qa" data-text="升級會覆寫我的設定嗎？ 不會。 config.json 刻意不納入 git 追蹤；repo 提供 config.example.json 作為範本，安裝程式只在 config.json 不存在時才複製它。每個具破壞性的步驟都會先搶救這個檔案、事後再還原。 如果還是想在升級前留一份快照： sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%f) 從 v1.5.5 起這個檔案會以 0600 權限儲存，重跑安裝程式也會把舊的 0644 收緊，且不會更動內容。">
+      <summary>升級會覆寫我的設定嗎？</summary>
+      <div class="qa-body"><p><strong>不會。</strong><code>config.json</code> 刻意不納入 git 追蹤；repo 提供 <code>config.example.json</code> 作為範本，安裝程式只在 <code>config.json</code> 不存在時才複製它。每個具破壞性的步驟都會先搶救這個檔案、事後再還原。</p><p>如果還是想在升級前留一份快照：</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>從 v1.5.5 起這個檔案會以 <code>0600</code> 權限儲存，重跑安裝程式也會把舊的 <code>0644</code> 收緊，且不會更動內容。</p></div>
+    </details>
+    <details class="qa" data-text="如何釘選特定版本，或回退到舊版？ 設定 jt_gelflow_branch 即可安裝指定的 tag： jt_gelflow_branch=v1.5.7 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash 或是把既有的 checkout 切過去： cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.7 sudo systemctl restart jt-gelflow.service 釘選後的 checkout 會是 detached head 。從 v1.5.6 起， jt-gelflow update 會把它重新對齊到 main 而不是報錯——所以只在你想結束釘選時才執行它。">
+      <summary>如何釘選特定版本，或回退到舊版？</summary>
+      <div class="qa-body"><p>設定 <code>JT_GELFLOW_BRANCH</code> 即可安裝指定的 tag：</p><pre><code>JT_GELFLOW_BRANCH=v1.5.7 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash</code></pre><p>或是把既有的 checkout 切過去：</p><pre><code>cd /opt/jt-gelflow
+sudo git fetch --tags origin
+sudo git checkout v1.5.7
+sudo systemctl restart jt-gelflow.service</code></pre><p>釘選後的 checkout 會是 detached <code>HEAD</code>。從 v1.5.6 起，<code>jt-gelflow update</code> 會把它重新對齊到 <code>main</code> 而不是報錯——所以只在你想結束釘選時才執行它。</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="service">
+    <h2><span class="ts-ico" aria-hidden="true">⚙</span>服務起不來</h2>
+    <p class="ts-lede"><code>jt-gelflow status</code> 顯示 failed、inactive，或不斷重啟。</p>
+    <details class="qa" data-text="應該先看哪裡？ 這兩個指令幾乎可以回答所有啟動失敗的問題： sudo jt-gelflow status sudo journalctl -u jt-gelflow.service -n 200 --no-pager journal 裡會有 python 的 traceback，最後一行就是真正的原因。">
+      <summary>應該先看哪裡？</summary>
+      <div class="qa-body"><p>這兩個指令幾乎可以回答所有啟動失敗的問題：</p><pre><code>sudo jt-gelflow status
+sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code></pre><p>journal 裡會有 Python 的 traceback，最後一行就是真正的原因。</p></div>
+    </details>
+    <details class="qa" data-text="overflowerror: bind(): port must be 0-65535 或 oserror: int or string expected ，而且不斷重啟 原因。 config.json 裡的 port 值不是合法的通訊埠。v1.5.5 之前 api 會接受任何值並寫入磁碟，因此一個錯誤的請求就能造成；服務在下次啟動時失敗，再配上 restart=on-failure 就變成無限重啟。 解法。 編輯設定檔，填回合理的通訊埠： sudo nano /opt/jt-gelflow/config.json # &quot;http_port&quot;: 8099, &quot;gelf_udp_port&quot;: 12201, &quot;gelf_tcp_port&quot;: 12202 sudo systemctl restart jt-gelflow.service 若檔案已經無法修復，就從內附範本重來——這會捨棄你的設定： sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl restart jt-gelflow.service v1.5.5 從兩端堵住這個問題：api 現在會以 400 拒絕不合法的值，而啟動時超出範圍的欄位會退回預設值而不是當掉，所以中招的安裝在升級後會自行復原。">
+      <summary><code>OverflowError: bind(): port must be 0-65535</code> 或 <code>OSError: Int or String expected</code>，而且不斷重啟<span class="ts-tag ts-tag-fixed">v1.5.5+ 已修正</span></summary>
+      <div class="qa-body"><p><strong>原因。</strong><code>config.json</code> 裡的 port 值不是合法的通訊埠。v1.5.5 之前 API 會接受任何值並寫入磁碟，因此一個錯誤的請求就能造成；服務在下次啟動時失敗，再配上 <code>Restart=on-failure</code> 就變成無限重啟。</p><p><strong>解法。</strong>編輯設定檔，填回合理的通訊埠：</p><pre><code>sudo nano /opt/jt-gelflow/config.json
+# "http_port": 8099, "gelf_udp_port": 12201, "gelf_tcp_port": 12202
+sudo systemctl restart jt-gelflow.service</code></pre><p>若檔案已經無法修復，就從內附範本重來——這會捨棄你的設定：</p><pre><code>sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json
+sudo chmod 600 /opt/jt-gelflow/config.json
+sudo systemctl restart jt-gelflow.service</code></pre><p>v1.5.5 從兩端堵住這個問題：API 現在會以 <code>400</code> 拒絕不合法的值，而啟動時超出範圍的欄位會退回預設值而不是當掉，所以中招的安裝在升級後會自行復原。</p></div>
+    </details>
+    <details class="qa" data-text="oserror: [errno 98] address already in use 有其他行程占用 8099、12201 或 12202。先找出來： sudo ss -tulpn | grep -e &#x27;:8099|:12201|:12202&#x27; 接著要嘛停掉那個行程，要嘛改 /opt/jt-gelflow/config.json 裡的 http_port / gelf_udp_port / gelf_tcp_port 再重啟。若改的是 gelf 通訊埠，記得同步調整 graylog 的 gelf output。 最常見的元兇是 jt-gelflow 自己的殘留行程——手動啟動的 python3 run.py 還在跑，和服務並存。">
+      <summary><code>OSError: [Errno 98] Address already in use</code></summary>
+      <div class="qa-body"><p>有其他行程占用 8099、12201 或 12202。先找出來：</p><pre><code>sudo ss -tulpn | grep -E ':8099|:12201|:12202'</code></pre><p>接著要嘛停掉那個行程，要嘛改 <code>/opt/jt-gelflow/config.json</code> 裡的 <code>http_port</code> / <code>gelf_udp_port</code> / <code>gelf_tcp_port</code> 再重啟。若改的是 GELF 通訊埠，記得同步調整 Graylog 的 GELF Output。</p><p>最常見的元兇是 JT-GELFLOW 自己的殘留行程——手動啟動的 <code>python3 run.py</code> 還在跑，和服務並存。</p></div>
+    </details>
+    <details class="qa" data-text="服務明明在跑， jt-gelflow logs 卻什麼都沒有 v1.5.5 之前，unit 執行 python 時輸出導向 journal（那是一條 pipe），因此 python 對 stdout 採區塊緩衝，訊息會積在 4&amp;nbsp;kb 的緩衝區裡。在流量安靜的安裝上，要等緩衝區滿了或行程結束才會出現。 v1.5.5 在 unit 加上 environment=pythonunbuffered=1 。升級後可以這樣確認： systemctl show jt-gelflow.service -p environment">
+      <summary>服務明明在跑，<code>jt-gelflow logs</code> 卻什麼都沒有<span class="ts-tag ts-tag-fixed">v1.5.5+ 已修正</span></summary>
+      <div class="qa-body"><p>v1.5.5 之前，unit 執行 Python 時輸出導向 journal（那是一條 pipe），因此 Python 對 stdout 採區塊緩衝，訊息會積在 4&nbsp;KB 的緩衝區裡。在流量安靜的安裝上，要等緩衝區滿了或行程結束才會出現。</p><p>v1.5.5 在 unit 加上 <code>Environment=PYTHONUNBUFFERED=1</code>。升級後可以這樣確認：</p><pre><code>systemctl show jt-gelflow.service -p Environment</code></pre></div>
+    </details>
+    <details class="qa" data-text="我用 jt_gelflow_dir 安裝，但服務卻指向 /opt/jt-gelflow v1.5.7 之前，安裝程式是把 systemd unit 原封不動複製，而那個檔案在 workingdirectory 、 execstart 與 readwritepaths 三處寫死 /opt/jt-gelflow ——所以自訂目錄拿到的 unit 會指向別的地方。又因為 v1.5.5 把 unit 收緊成 protectsystem=strict ，錯誤的 readwritepaths 還會讓伺服器連自己的 config.json 都寫不進去。 升級到 v1.5.7+ 並重跑安裝程式就會改寫這三個指令。確認方式： grep -e &#x27;workingdirectory|execstart|readwritepaths&#x27; \ /etc/systemd/system/jt-gelflow.service 安裝在預設位置的從來不受影響。">
+      <summary>我用 <code>JT_GELFLOW_DIR</code> 安裝，但服務卻指向 <code>/opt/jt-gelflow</code><span class="ts-tag ts-tag-fixed">v1.5.7+ 已修正</span></summary>
+      <div class="qa-body"><p>v1.5.7 之前，安裝程式是把 systemd unit 原封不動複製，而那個檔案在 <code>WorkingDirectory</code>、<code>ExecStart</code> 與 <code>ReadWritePaths</code> 三處寫死 <code>/opt/jt-gelflow</code>——所以自訂目錄拿到的 unit 會指向別的地方。又因為 v1.5.5 把 unit 收緊成 <code>ProtectSystem=strict</code>，錯誤的 <code>ReadWritePaths</code> 還會讓伺服器連自己的 <code>config.json</code> 都寫不進去。</p><p>升級到 v1.5.7+ 並重跑安裝程式就會改寫這三個指令。確認方式：</p><pre><code>grep -E 'WorkingDirectory|ExecStart|ReadWritePaths' \
+  /etc/systemd/system/jt-gelflow.service</code></pre><p>安裝在預設位置的從來不受影響。</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="access">
+    <h2><span class="ts-ico" aria-hidden="true">🌐</span>連不上 Web 介面</h2>
+    <p class="ts-lede">服務在跑，但儀表板打不開。</p>
+    <details class="qa" data-text="連 8099 出現 connection refused 從機器本身往外逐層確認。首先，它到底有沒有在聽？ sudo ss -tlnp | grep 8099 curl -s -o /dev/null -w &#x27;%{http_code}\n&#x27; http://127.0.0.1:8099/api/config 本機回 200 代表伺服器正常，問題出在網路路徑——請看下一則。沒有監聽則代表服務其實沒起來，請查 sudo jt-gelflow status 。">
+      <summary>連 8099 出現 <code>connection refused</code></summary>
+      <div class="qa-body"><p>從機器本身往外逐層確認。首先，它到底有沒有在聽？</p><pre><code>sudo ss -tlnp | grep 8099
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8099/api/config</code></pre><p>本機回 <code>200</code> 代表伺服器正常，問題出在網路路徑——請看下一則。沒有監聽則代表服務其實沒起來，請查 <code>sudo jt-gelflow status</code>。</p></div>
+    </details>
+    <details class="qa" data-text="本機可以，從其他機器連不到 通常是防火牆。jt-gelflow 綁在 0.0.0.0 ，所以不是伺服器的問題。 # ufw sudo ufw allow 8099/tcp sudo ufw allow 12201/udp sudo ufw allow 12202/tcp # firewalld sudo firewall-cmd --permanent --add-port=8099/tcp sudo firewall-cmd --reload 開放前請想清楚。 這個 api 沒有身分驗證——任何連得到 8099 的人都能讀取你已觀測到的網路拓撲、並修改設定。請只在受信任的網路上開放，或放在有身分驗證的反向代理後面。">
+      <summary>本機可以，從其他機器連不到</summary>
+      <div class="qa-body"><p>通常是防火牆。JT-GELFLOW 綁在 <code>0.0.0.0</code>，所以不是伺服器的問題。</p><pre><code># ufw
+sudo ufw allow 8099/tcp
+sudo ufw allow 12201/udp
+sudo ufw allow 12202/tcp
+
+# firewalld
+sudo firewall-cmd --permanent --add-port=8099/tcp
+sudo firewall-cmd --reload</code></pre><p><strong>開放前請想清楚。</strong>這個 API 沒有身分驗證——任何連得到 8099 的人都能讀取你已觀測到的網路拓撲、並修改設定。請只在受信任的網路上開放，或放在有身分驗證的反向代理後面。</p></div>
+    </details>
+    <details class="qa" data-text="頁面載入了，但狀態燈一直是紅的（websocket 斷線） 在反向代理後面， /ws 的協定升級必須被正確轉發。nginx 設定如下： location / { proxy_pass http://127.0.0.1:8099; proxy_http_version 1.1; proxy_set_header upgrade $http_upgrade; proxy_set_header connection &quot;upgrade&quot;; proxy_set_header host $host; proxy_read_timeout 3600s; } proxy_read_timeout 設太短會讓閒置連線被切斷，症狀一模一樣。 從 v1.5.5 起 握手也會以 403 拒絕跨來源的連線。如果你的代理改寫了 host 、讓它與瀏覽器送出的 origin 不一致，連線就會被拒——請保留上面那行 proxy_set_header host $host; 。">
+      <summary>頁面載入了，但狀態燈一直是紅的（WebSocket 斷線）</summary>
+      <div class="qa-body"><p>在反向代理後面，<code>/ws</code> 的協定升級必須被正確轉發。nginx 設定如下：</p><pre><code>location / {
+    proxy_pass http://127.0.0.1:8099;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_read_timeout 3600s;
+}</code></pre><p><code>proxy_read_timeout</code> 設太短會讓閒置連線被切斷，症狀一模一樣。</p><p><strong>從 v1.5.5 起</strong>握手也會以 <code>403</code> 拒絕跨來源的連線。如果你的代理改寫了 <code>Host</code>、讓它與瀏覽器送出的 <code>Origin</code> 不一致，連線就會被拒——請保留上面那行 <code>proxy_set_header Host $host;</code>。</p></div>
+    </details>
+    <details class="qa" data-text="升級到 v1.5.5 後，瀏覽器 console 出現 cors 錯誤 v1.5.5 把 cors 整段移除了。它原本的設定會回放 任意 來源並同時允許夾帶憑證，這讓操作者瀏覽過的任何網站都能讀取全部 api 回應、並修改設定。 內建前端與 api 同源，本來就不需要 cors，所以一般安裝不受影響。如果你把前端另外架設（例如 vite 開發伺服器），請改用代理，不要跨來源直接呼叫： // vite.config.ts server: { proxy: { &#x27;/api&#x27;: &#x27;http://127.0.0.1:8099&#x27;, &#x27;/ws&#x27;: { target: &#x27;ws://127.0.0.1:8099&#x27;, ws: true }, }, }">
+      <summary>升級到 v1.5.5 後，瀏覽器 console 出現 CORS 錯誤<span class="ts-tag ts-tag-warn">行為變更</span></summary>
+      <div class="qa-body"><p>v1.5.5 把 CORS 整段移除了。它原本的設定會回放<em>任意</em>來源並同時允許夾帶憑證，這讓操作者瀏覽過的任何網站都能讀取全部 API 回應、並修改設定。</p><p>內建前端與 API 同源，本來就不需要 CORS，所以一般安裝不受影響。如果你把前端另外架設（例如 Vite 開發伺服器），請改用代理，不要跨來源直接呼叫：</p><pre><code>// vite.config.ts
+server: {
+  proxy: {
+    '/api': 'http://127.0.0.1:8099',
+    '/ws':  { target: 'ws://127.0.0.1:8099', ws: true },
+  },
+}</code></pre></div>
+    </details>
+    <details class="qa" data-text="升級到 v1.5.5 後，我的監控檢查開始回 404 不存在的 /api/* 路徑現在會回 404 與 json 內容，而不是落到單頁應用的 catch-all 回 200 加 html。附帶影響是 api 路由只回應自己的動詞，因此 head 探測會得到 404 。 健康檢查請改用 get ： curl -fss -o /dev/null http://127.0.0.1:8099/api/config">
+      <summary>升級到 v1.5.5 後，我的監控檢查開始回 404<span class="ts-tag ts-tag-warn">行為變更</span></summary>
+      <div class="qa-body"><p>不存在的 <code>/api/*</code> 路徑現在會回 <code>404</code> 與 JSON 內容，而不是落到單頁應用的 catch-all 回 <code>200</code> 加 HTML。附帶影響是 API 路由只回應自己的動詞，因此 <code>HEAD</code> 探測會得到 <code>404</code>。</p><p>健康檢查請改用 <code>GET</code>：</p><pre><code>curl -fsS -o /dev/null http://127.0.0.1:8099/api/config</code></pre></div>
+    </details>
+  </section>
+  <section class="ts-section" id="data">
+    <h2><span class="ts-ico" aria-hidden="true">📊</span>沒有資料，或資料不對</h2>
+    <p class="ts-lede">儀表板載入了，但檢視一片空白或畫面不對。</p>
+    <details class="qa" data-text="介面正常，但始終沒有任何流量出現 依序檢查。 1. gelf 訊息真的有送到嗎？ 在該機器上送一則測試訊息： printf &#x27;{&quot;version&quot;:&quot;1.1&quot;,&quot;host&quot;:&quot;test&quot;,&quot;short_message&quot;:&quot;t&quot;,&quot;source_ip&quot;:&quot;8.8.8.8&quot;,&quot;destination_ip&quot;:&quot;10.0.0.10&quot;,&quot;network_bytes&quot;:100}&#x27; \ | nc -u -w1 127.0.0.1 12201 如果節點出現了，代表接收端沒問題，是 graylog 沒送到——請檢查它的 gelf output 主機、通訊埠、協定，以及你的防火牆。 2. 欄位名稱對得上嗎？ 這是最常見的原因。打開 設定 → 欄位對應 ，確認 src_field 與 dst_field 就是你的日誌實際帶的欄位名稱。 設定 → 已探索欄位 會列出真正收到過的欄位與範例值。 3. 是不是被篩選條件擋掉了？ 內部篩選 ip 與 top-n 限制是逐檢視套用的，設得太嚴會讓整個檢視變空。">
+      <summary>介面正常，但始終沒有任何流量出現</summary>
+      <div class="qa-body"><p>依序檢查。</p><p><strong>1. GELF 訊息真的有送到嗎？</strong>在該機器上送一則測試訊息：</p><pre><code>printf '{"version":"1.1","host":"test","short_message":"t","source_ip":"8.8.8.8","destination_ip":"10.0.0.10","network_bytes":100}' \
+  | nc -u -w1 127.0.0.1 12201</code></pre><p>如果節點出現了，代表接收端沒問題，是 Graylog 沒送到——請檢查它的 GELF Output 主機、通訊埠、協定，以及你的防火牆。</p><p><strong>2. 欄位名稱對得上嗎？</strong>這是最常見的原因。打開<strong>設定 → 欄位對應</strong>，確認 <code>src_field</code> 與 <code>dst_field</code> 就是你的日誌實際帶的欄位名稱。<strong>設定 → 已探索欄位</strong>會列出真正收到過的欄位與範例值。</p><p><strong>3. 是不是被篩選條件擋掉了？</strong>內部篩選 IP 與 Top-N 限制是逐檢視套用的，設得太嚴會讓整個檢視變空。</p></div>
+    </details>
+    <details class="qa" data-text="2d 地圖和 3d 地球上，所有內部位址都疊在同一個點 這是預期行為。私有位址沒有公開的地理位置資訊，因此全部退回 設定 → geoip 裡那一組座標（ internal_fallback_lat / internal_fallback_lng ）。 多站點的網路請在上游先補資料，讓每個內部位址帶著自己的位置進來。graylog 的 pipeline rule 可以依子網路設定 source_ip_geolocation ，jt-gelflow 會優先採用它，而不是那組後備座標。">
+      <summary>2D 地圖和 3D 地球上，所有內部位址都疊在同一個點</summary>
+      <div class="qa-body"><p>這是預期行為。私有位址沒有公開的地理位置資訊，因此全部退回<strong>設定 → GeoIP</strong> 裡那一組座標（<code>internal_fallback_lat</code> / <code>internal_fallback_lng</code>）。</p><p>多站點的網路請在上游先補資料，讓每個內部位址帶著自己的位置進來。Graylog 的 pipeline rule 可以依子網路設定 <code>source_ip_geolocation</code>，JT-GELFLOW 會優先採用它，而不是那組後備座標。</p></div>
+    </details>
+    <details class="qa" data-text="桑基圖是空的，或每條流量帶粗細都一樣 空白 通常代表它需要的欄位沒有資料。桑基圖需要一個外部位址和一個內部位址；若區域 cidr 沒有正確分類流量，就配不成對。請檢查 設定 → 區域 → 內部 cidr 。 粗細一致 代表沒有可用來加權的位元組欄位。當每則訊息都沒有 value_field 時，每筆流量都以 value_default （1）計算，所以寬度等同事件數。你可以把 value_field 指向真正帶位元組數的欄位，或把 設定 → 桑基圖寬度 設為 events ，讓這件事變成明示的。">
+      <summary>桑基圖是空的，或每條流量帶粗細都一樣</summary>
+      <div class="qa-body"><p><strong>空白</strong>通常代表它需要的欄位沒有資料。桑基圖需要一個外部位址和一個內部位址；若區域 CIDR 沒有正確分類流量，就配不成對。請檢查<strong>設定 → 區域 → 內部 CIDR</strong>。</p><p><strong>粗細一致</strong>代表沒有可用來加權的位元組欄位。當每則訊息都沒有 <code>value_field</code> 時，每筆流量都以 <code>value_default</code>（1）計算，所以寬度等同事件數。你可以把 <code>value_field</code> 指向真正帶位元組數的欄位，或把<strong>設定 → 桑基圖寬度</strong>設為 <em>events</em>，讓這件事變成明示的。</p></div>
+    </details>
+  </section>
+  <section class="ts-section" id="config">
+    <h2><span class="ts-ico" aria-hidden="true">🔧</span>設定與組態</h2>
+    <p class="ts-lede">檔案位置，以及伺服器會接受什麼樣的值。</p>
+    <details class="qa" data-text="設定檔在哪裡？ /opt/jt-gelflow/config.json # 你的設定（git 從不追蹤） /opt/jt-gelflow/config.example.json # 內附範本 從 v1.5.5 起，實際使用的檔案權限為 0600 。要直接編輯請先停掉服務，否則請用設定面板——伺服器存檔時會整份重寫。">
+      <summary>設定檔在哪裡？</summary>
+      <div class="qa-body"><pre><code>/opt/jt-gelflow/config.json          # 你的設定（git 從不追蹤）
+/opt/jt-gelflow/config.example.json  # 內附範本</code></pre><p>從 v1.5.5 起，實際使用的檔案權限為 <code>0600</code>。要直接編輯請先停掉服務，否則請用設定面板——伺服器存檔時會整份重寫。</p></div>
+    </details>
+    <details class="qa" data-text="儲存設定時回報 invalid value for &#x27;x&#x27; 這是 v1.5.5 起的正常行為。訊息指名的那個欄位收到伺服器無法運作的值——通訊埠超出 1–65535、該填數字的地方填了文字、緯度超過極點等。這次沒有任何內容被寫入；修正那一個欄位再存一次即可。 範圍刻意放寬：只有真正不可能的值才會被拒絕，所以升級不會默默改寫你依賴的設定。">
+      <summary>儲存設定時回報 <code>Invalid value for 'X'</code></summary>
+      <div class="qa-body"><p>這是 v1.5.5 起的正常行為。訊息指名的那個欄位收到伺服器無法運作的值——通訊埠超出 1–65535、該填數字的地方填了文字、緯度超過極點等。這次沒有任何內容被寫入；修正那一個欄位再存一次即可。</p><p>範圍刻意放寬：只有真正不可能的值才會被拒絕，所以升級不會默默改寫你依賴的設定。</p></div>
+    </details>
+    <details class="qa" data-text="如何把所有設定還原成預設值？ sudo systemctl stop jt-gelflow.service sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.bak sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl start jt-gelflow.service 那行備份值得保留——欄位對應要重建很費工。">
+      <summary>如何把所有設定還原成預設值？</summary>
+      <div class="qa-body"><pre><code>sudo systemctl stop jt-gelflow.service
+sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.bak
+sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json
+sudo chmod 600 /opt/jt-gelflow/config.json
+sudo systemctl start jt-gelflow.service</code></pre><p>那行備份值得保留——欄位對應要重建很費工。</p></div>
+    </details>
+    <details class="qa" data-text="如何完整移除 jt-gelflow？ sudo jt-gelflow uninstall # 保留 config.json sudo jt-gelflow uninstall --purge # 全部移除，含設定檔 執行一般的 uninstall 之後，日後重跑安裝程式會找到倖存的 config.json 並用它初始化新的 checkout——移除再重裝是安全的。">
+      <summary>如何完整移除 JT-GELFLOW？</summary>
+      <div class="qa-body"><pre><code>sudo jt-gelflow uninstall           # 保留 config.json
+sudo jt-gelflow uninstall --purge   # 全部移除，含設定檔</code></pre><p>執行一般的 <code>uninstall</code> 之後，日後重跑安裝程式會找到倖存的 <code>config.json</code> 並用它初始化新的 checkout——移除再重裝是安全的。</p></div>
+    </details>
+  </section>
+    <div class="ts-empty" id="ts-empty">
+      <p><strong>找不到相符的項目</strong></p>
+      <p>試試更短的關鍵字，或直接貼上完整的錯誤訊息。</p>
+    </div>
+  </main>
+</div>
+
+<p class="ts-foot-note">還是卡住？請開一個 issue，附上 <code>sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code> 的輸出，以及 <code>grep -m1 version /opt/jt-gelflow/package.json</code> 顯示的版本。</p>
+
+<footer>
+  <div class="row">
+    <a href="https://github.com/jasoncheng7115/jt-gelflow">GitHub</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/issues">回報問題</a>
+    <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">變更紀錄</a>
+    <a href="troubleshooting.html">English</a>
+  </div>
+  <div>JT-GELFLOW v1.5.7 · © 2026 Jason Cheng (Jason Tools)</div>
+</footer>
+
+<script>
+(function () {
+  var input = document.getElementById('ts-search');
+  var count = document.getElementById('ts-count');
+  var empty = document.getElementById('ts-empty');
+  var items = Array.prototype.slice.call(document.querySelectorAll('.qa'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.ts-section'));
+  var tocItems = Array.prototype.slice.call(document.querySelectorAll('#ts-toc-list li'));
+  var TOTAL = items.length;
+
+  function label(n, all) {
+    var w = n === 1 ? '' : '';
+    return all ? '共 {n} 則'.replace('{n}', n).replace('{word}', w).trim()
+               : '符合 {n} 則'.replace('{n}', n).replace('{word}', w).trim();
+  }
+
+  function apply() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    items.forEach(function (d) {
+      var hit = !q || d.getAttribute('data-text').indexOf(q) !== -1;
+      d.hidden = !hit;
+      d.open = !!(q && hit);
+      if (hit) shown++;
+    });
+    sections.forEach(function (s) {
+      var any = s.querySelector('.qa:not([hidden])') !== null;
+      s.hidden = !any;
+      var li = tocItems.filter(function (l) { return l.getAttribute('data-for') === s.id; })[0];
+      if (li) li.classList.toggle('hidden', !any);
+    });
+    empty.classList.toggle('show', shown === 0);
+    count.textContent = q ? label(shown, false) : label(TOTAL, true);
+  }
+
+  input.addEventListener('input', apply);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { input.value = ''; apply(); }
+  });
+  apply();
+
+  // Deep link: /troubleshooting.html?q=fast-forward pre-fills the search.
+  var pre = new URLSearchParams(location.search).get('q');
+  if (pre) { input.value = pre; apply(); }
+
+  // Highlight the section currently in view.
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        tocItems.forEach(function (l) {
+          var a = l.querySelector('a');
+          if (a) a.classList.toggle('active', l.getAttribute('data-for') === en.target.id);
+        });
+      });
+    }, { rootMargin: '-80px 0px -70% 0px' });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>

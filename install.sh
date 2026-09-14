@@ -29,6 +29,46 @@ warn()  { printf '%swarn:%s %s\n' "$YELLOW" "$RESET" "$*" >&2; }
 err()   { printf '%serror:%s %s\n' "$RED" "$RESET" "$*" >&2; exit 1; }
 ok()    { printf '%s✓%s %s\n' "$GREEN" "$RESET" "$*"; }
 
+DOCS_BASE="https://jasoncheng7115.github.io/jt-gelflow"
+
+# Which language of the troubleshooting page to point at. Driven by the
+# machine's locale: Chinese systems get the zh-TW page, everything else the
+# English one. `curl | sudo bash` can arrive with a reset environment, so fall
+# back to the system-wide locale files before defaulting to English.
+_help_url() {
+  local loc="${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}"
+  local f
+  for f in /etc/default/locale /etc/locale.conf; do
+    [ -n "$loc" ] && break
+    [ -r "$f" ] || continue
+    loc="$(sed -n 's/^[[:space:]]*\(LANG\|LC_ALL\)=//p' "$f" 2>/dev/null | head -1 | tr -d '"')"
+  done
+  case "$loc" in
+    zh*) echo "$DOCS_BASE/troubleshooting_zh-TW.html" ;;
+    *)   echo "$DOCS_BASE/troubleshooting.html" ;;
+  esac
+}
+
+# Printed on any non-zero exit, so every failure path leads somewhere useful,
+# not just the ones that go through err().
+_help_hint() {
+  local url; url="$(_help_url)"
+  case "$url" in
+    *_zh-TW.html) printf '\n%s→ 遇到問題？安裝與升級疑難排解：%s %s\n' "$YELLOW" "$RESET" "$url" >&2 ;;
+    *)            printf '\n%s→ Stuck? Install & upgrade troubleshooting:%s %s\n' "$YELLOW" "$RESET" "$url" >&2 ;;
+  esac
+}
+
+_on_exit() {
+  local code=$?
+  # 130/143 are Ctrl+C and SIGTERM — the operator meant to stop; not a failure.
+  if [ "$code" -ne 0 ] && [ "$code" -ne 130 ] && [ "$code" -ne 143 ]; then
+    _help_hint
+  fi
+  return 0
+}
+trap _on_exit EXIT
+
 # Read interactive prompts from /dev/tty so `curl | bash` still works.
 # Read has a 60 s timeout so we don't hang forever when /dev/tty is writable
 # but unreadable — happens with `curl | sudo bash` on sudoers with `use_pty`

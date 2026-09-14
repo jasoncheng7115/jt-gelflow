@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](UPGRADE.md) | [繁體中文](UPGRADE_zh-TW.md)
 
-This is the operations-grade upgrade procedure for **JT-GELFLOW v1.5.6+**. Version updates pull from the public GitHub repo.
+This is the operations-grade upgrade procedure for **JT-GELFLOW v1.5.7+**. Version updates pull from the public GitHub repo.
 
 ---
 
@@ -119,18 +119,18 @@ If the browser already had the page open: **hard-refresh** (`Ctrl+Shift+R` / `Cm
 If you want to lock to a particular release (e.g., for a regulated environment that doesn't auto-track `main`):
 
 ```bash
-JT_GELFLOW_BRANCH=v1.5.6 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.6/install.sh | sudo bash
+JT_GELFLOW_BRANCH=v1.5.7 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash
 ```
 
-(Replace `v1.5.6` with the tag of your choice.)
+(Replace `v1.5.7` with the tag of your choice.)
 
 For an existing checkout you want to pin:
 
 ```bash
 cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.6
+sudo git checkout v1.5.7
 sudo systemctl restart jt-gelflow.service
 ```
 
@@ -173,6 +173,8 @@ After `uninstall` (without `--purge`), re-running `install.sh` later will rescue
 ---
 
 ## 8. Common upgrade pitfalls
+
+> **Searchable version:** the same answers, plus more, live at [Install & upgrade troubleshooting](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html). `install.sh` and `jt-gelflow` print that link automatically whenever they fail.
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|

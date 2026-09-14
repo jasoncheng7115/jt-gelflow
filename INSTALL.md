@@ -2,7 +2,7 @@
 
 > **Language / 語言切換：** [English](INSTALL.md) | [繁體中文](INSTALL_zh-TW.md)
 
-This is the operations-grade install procedure for **JT-GELFLOW v1.5.6+**. For a friendlier overview see [README.md](README.md).
+This is the operations-grade install procedure for **JT-GELFLOW v1.5.7+**. For a friendlier overview see [README.md](README.md).
 
 ---
 
@@ -220,6 +220,8 @@ Common gotchas:
 ---
 
 ## 7. Troubleshooting
+
+> **Searchable version:** the same answers, plus more, live at [Install & upgrade troubleshooting](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html). `install.sh` and `jt-gelflow` print that link automatically whenever they fail.
 
 | Symptom | First check |
 |---------|-------------|

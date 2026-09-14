@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.7] — 2026-09-14
+
+Adds a troubleshooting page to the project site and makes every install / upgrade failure point at it.
+
+### Added
+
+- **Install & upgrade troubleshooting page**, in English and Traditional Chinese — [troubleshooting.html](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html) / [troubleshooting_zh-TW.html](https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html). 27 entries across six sections covering install failures, upgrade failures, services that will not start, unreachable interfaces, empty dashboards, and configuration. Each entry states the symptom as it is actually printed, the cause, and a command that can be copied as-is. The page has a live search over question and answer text, a clickable table of contents that tracks the section in view, and a language toggle; `?q=` in the URL pre-fills the search.
+- **`install.sh` and `jt-gelflow` now print that URL on any failure.** Both scripts install an `EXIT` trap, so the pointer appears on every non-zero exit rather than only on the paths that call `err()`. `Ctrl+C` and `SIGTERM` are excluded — quitting `jt-gelflow logs` is not a failure. **The language follows the machine's locale**: `LC_ALL` / `LC_MESSAGES` / `LANG` beginning with `zh` gets the Traditional Chinese page, everything else the English one. Because `curl | sudo bash` can arrive with a reset environment, the check falls back to `/etc/default/locale` and `/etc/locale.conf` before defaulting to English.
+
+---
+
 ## [1.5.6] — 2026-09-13
 
 Follow-up to the v1.5.5 security release. Two defects on the upgrade path, both found while verifying that release rather than reported by an operator.
