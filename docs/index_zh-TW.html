@@ -21,14 +21,16 @@
   <meta name="twitter:title" content="JT-GELFLOW">
   <meta name="twitter:description" content="自架即時 GELF 網路流量視覺化 — 流量圖 / 2D 地圖 / 3D 地球 / 桑基圖。">
   <meta name="twitter:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.7">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.7">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.7">
   <link rel="stylesheet" href="style.css?v=1.5.7">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="#top" class="brand">
-    <span class="logo-dot"></span>
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.7" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <button class="nav-toggle" aria-label="選單" aria-expanded="false" aria-controls="nav-links">
@@ -49,7 +51,8 @@
 </nav>
 
 <header class="hero" id="top">
-  <h1>看見你的網路在呼吸。</h1>
+  <img class="hero-mark" src="logo-mark.svg?v=1.5.7" width="96" height="96" alt="JT-GELFLOW">
+  <h1>看見你的網路在呼吸</h1>
   <p class="tagline">
     即時 GELF 網路流量視覺化：流量圖、2D 地圖、3D 地球、桑基圖 四種檢視。
   </p>
@@ -68,7 +71,7 @@
 </header>
 
 <section id="demo" style="padding-top: 20px;">
-  <h2>看它跑起來。</h2>
+  <h2>看它跑起來</h2>
   <p class="subhead">即時流量在多種檢視間流動的真實畫面。</p>
   <div class="video-wrap">
     <button class="video-facade" type="button" data-video="demo.mp4" aria-label="播放影片">
@@ -123,7 +126,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="modes">
-  <h2>四種檢視，一條資料管線。</h2>
+  <h2>四種檢視，一條資料管線</h2>
   <p class="subhead">可用 <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span> 快速鍵切換，同樣的資料、不同的視角。</p>
   <div class="modes">
     <div class="mode">
@@ -172,7 +175,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="features">
-  <h2>給網管 / Ops 用的工具。</h2>
+  <h2>給網管 / Ops 用的工具</h2>
   <p class="subhead">把 Graylog 的 firehose 變成一眼看懂的畫面。</p>
   <div class="features">
     <div class="feature"><h4>GELF UDP + TCP</h4><p>標準 GELF 接收器，UDP 12201 / TCP 12202，支援 chunked 與 gzip。</p></div>
@@ -188,7 +191,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="mapping">
-  <h2>欄位名稱不一樣？對應就好。</h2>
+  <h2>欄位名稱不一樣？對應就好</h2>
   <p class="subhead">Pipeline 沒用標準 GELF 欄位名（Suricata、自家加工、廠商輸出）— 在五個設定區塊裡對應過去。改其中一個常常要連帶改另一個。</p>
   <div class="mapping-grid">
     <div class="mapping-card">

@@ -21,14 +21,16 @@
   <meta name="twitter:title" content="JT-GELFLOW">
   <meta name="twitter:description" content="Self-hosted real-time GELF network traffic visualization — Flow / 2D Map / 3D Globe / Sankey.">
   <meta name="twitter:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.7">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.7">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.7">
   <link rel="stylesheet" href="style.css?v=1.5.7">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="#top" class="brand">
-    <span class="logo-dot"></span>
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.7" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
@@ -49,7 +51,8 @@
 </nav>
 
 <header class="hero" id="top">
-  <h1>Watch your network breathe.</h1>
+  <img class="hero-mark" src="logo-mark.svg?v=1.5.7" width="96" height="96" alt="JT-GELFLOW">
+  <h1>Watch your network breathe</h1>
   <p class="tagline">
     Real-time GELF network traffic visualization across four views — Flow, 2D Map, 3D Globe, Sankey.
   </p>
@@ -68,7 +71,7 @@
 </header>
 
 <section id="demo" style="padding-top: 20px;">
-  <h2>See it move.</h2>
+  <h2>See it move</h2>
   <p class="subhead">Live network traffic flowing across the four views.</p>
   <div class="video-wrap">
     <button class="video-facade" type="button" data-video="demo.mp4" aria-label="Play demo">
@@ -123,7 +126,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="modes">
-  <h2>Four views, one pipeline.</h2>
+  <h2>Four views, one pipeline</h2>
   <p class="subhead">Switch with <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span>. Same data, different perspective.</p>
   <div class="modes">
     <div class="mode">
@@ -172,7 +175,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="features">
-  <h2>Built for ops.</h2>
+  <h2>Built for ops</h2>
   <p class="subhead">Everything you need to make a Graylog / Logstash / Filebeat firehose comprehensible at a glance.</p>
   <div class="features">
     <div class="feature"><h4>GELF UDP + TCP</h4><p>Standard GELF input on UDP 12201 / TCP 12202 with chunked &amp; gzip decoding.</p></div>
@@ -188,7 +191,7 @@ python3 run.py</code></pre>
 </section>
 
 <section id="mapping">
-  <h2>Bring your own field names.</h2>
+  <h2>Bring your own field names</h2>
   <p class="subhead">Pipelines that don't ship canonical GELF names — Suricata, custom enrichment, vendor exports — map through five settings sections. Change one and you usually need to revisit another.</p>
   <div class="mapping-grid">
     <div class="mapping-card">
