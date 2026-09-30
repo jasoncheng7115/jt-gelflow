@@ -554,7 +554,7 @@ function AppContent() {
       <div className="main-content">
         <header className="header">
           <h1>
-            <a href="https://github.com/jasoncheng7115/it-scripts" target="_blank" rel="noopener noreferrer" className="project-link">
+            <a href="https://jasoncheng7115.github.io/jt-gelflow/" target="_blank" rel="noopener noreferrer" className="project-link">
               <img src="/logo.png" alt="JT-GELFLOW" className="header-logo" />
             </a>
           </h1>
