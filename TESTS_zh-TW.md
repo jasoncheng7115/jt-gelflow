@@ -32,7 +32,8 @@
 | B4 | 客戶 config 在重跑 `install.sh` 後保留 | 同 B3 但用安裝程式觸發 |
 | B5 | 向前相容：v1.5 之前帶 `sankey_stages` 的 config 不會炸 load | 把 `"sankey_stages": "ext_proto_int"` 注入 config.json、重啟服務、port 仍是 8099（沒掉回 8080），警告無害 |
 | B6 | ff-only 失敗時走韌性路徑 | 變動本地 git 歷史（`git reset --hard $(git rev-parse HEAD~1)` 後重新 init upstream 為不同歷史），重跑 install.sh — 應該救援 config + reset --hard + 還原 |
-| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.7 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.7` |
+| B7 | 釘住特定 tag | 乾淨 checkout 後 `JT_GELFLOW_BRANCH=v1.5.8 curl -fsSL …/install.sh \| sudo bash` — 本地 HEAD 指向 `v1.5.8` |
+| B8 | 系統升級後 Python 版本改變 | 在 Ubuntu 22.04 安裝後，用 24.04 的 Python 搭配只剩舊的 `/usr/local/lib/python3.10` 執行（或實際 `do-release-upgrade` 加重新開機）。`python3 run.py` 必須以 exit 1 結束，印出 `JT-GELFLOW cannot start: Python module 'aiohttp' is not installed for Python 3.12`，以及依系統語系選語言的 `troubleshooting…html?q=aiohttp` 連結，而不是只有 traceback。接著 `sudo jt-gelflow update` 讓服務恢復，`config.json` md5 不變 |
 
 ## C. 移除
 

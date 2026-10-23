@@ -15,7 +15,7 @@ import { useWebSocket } from './useWebSocket';
 import { getStats, clearData, getConfig, updateConfig } from './api';
 import type { GraphData, ZoneGraphData, ZoneConfig, FlowData, NodeData, Config, ViewMode, GeoIPConfig, SankeyColumn } from './types';
 
-const VERSION = '1.5.7';
+const VERSION = '1.5.8';
 
 // Iconoir SVG icons (https://iconoir.com/) - embedded inline
 const SettingsIcon = () => (

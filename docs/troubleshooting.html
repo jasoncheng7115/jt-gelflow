@@ -9,19 +9,19 @@
   <meta property="og:description" content="Fixes for JT-GELFLOW install and upgrade failures: fast-forward errors, hung prompts, services that will not start, and empty dashboards.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
-  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.8">
   <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.7">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.7">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.7">
-  <link rel="stylesheet" href="style.css?v=1.5.7">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.8">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.8">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.8">
+  <link rel="stylesheet" href="style.css?v=1.5.8">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="index.html" class="brand">
-    <img class="logo-mark" src="logo-mark.svg?v=1.5.7" width="28" height="28" alt="">
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.8" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <div class="links" id="nav-links">
@@ -101,12 +101,12 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
       <summary>Will upgrading overwrite my settings?</summary>
       <div class="qa-body"><p><strong>No.</strong> <code>config.json</code> is deliberately untracked by git; the repository ships <code>config.example.json</code> as the template, and the installer only copies it when no <code>config.json</code> exists. Every destructive step rescues the file first and restores it afterwards.</p><p>If you want a snapshot before upgrading anyway:</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>Since v1.5.5 the file is stored with <code>0600</code> permissions, and re-running the installer tightens an older <code>0644</code> file without touching its contents.</p></div>
     </details>
-    <details class="qa" data-text="how do i pin to a specific version, or go back to an older one? install a tagged release by setting jt_gelflow_branch : jt_gelflow_branch=v1.5.7 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash or move an existing checkout: cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.7 sudo systemctl restart jt-gelflow.service a pinned checkout has a detached head . from v1.5.6, jt-gelflow update realigns it onto main rather than failing — so run it only when you want to stop tracking that tag.">
+    <details class="qa" data-text="how do i pin to a specific version, or go back to an older one? install a tagged release by setting jt_gelflow_branch : jt_gelflow_branch=v1.5.8 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash or move an existing checkout: cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.8 sudo systemctl restart jt-gelflow.service a pinned checkout has a detached head . from v1.5.6, jt-gelflow update realigns it onto main rather than failing — so run it only when you want to stop tracking that tag.">
       <summary>How do I pin to a specific version, or go back to an older one?</summary>
-      <div class="qa-body"><p>Install a tagged release by setting <code>JT_GELFLOW_BRANCH</code>:</p><pre><code>JT_GELFLOW_BRANCH=v1.5.7 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash</code></pre><p>Or move an existing checkout:</p><pre><code>cd /opt/jt-gelflow
+      <div class="qa-body"><p>Install a tagged release by setting <code>JT_GELFLOW_BRANCH</code>:</p><pre><code>JT_GELFLOW_BRANCH=v1.5.8 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash</code></pre><p>Or move an existing checkout:</p><pre><code>cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.7
+sudo git checkout v1.5.8
 sudo systemctl restart jt-gelflow.service</code></pre><p>A pinned checkout has a detached <code>HEAD</code>. From v1.5.6, <code>jt-gelflow update</code> realigns it onto <code>main</code> rather than failing — so run it only when you want to stop tracking that tag.</p></div>
     </details>
   </section>
@@ -117,6 +117,10 @@ sudo systemctl restart jt-gelflow.service</code></pre><p>A pinned checkout has a
       <summary>Where do I look first?</summary>
       <div class="qa-body"><p>These two commands answer almost every start-up failure:</p><pre><code>sudo jt-gelflow status
 sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code></pre><p>The journal carries the Python traceback, which names the actual cause on its last line.</p></div>
+    </details>
+    <details class="qa" data-text="modulenotfounderror: no module named &#x27;aiohttp&#x27; after upgrading ubuntu, restarting every 5 seconds cause. the os upgrade moved the system to a new python — ubuntu 22.04 → 24.04 goes from 3.10 to 3.12, and 24.04 → 26.04 to 3.14. jt-gelflow&#x27;s dependencies were installed with pip for the old version, under /usr/local/lib/python3.10/, and the new interpreter does not look there. the service fails at import, and restart=on-failure retries it every five seconds. it is easy to miss at first. until the machine reboots, the old process keeps running from memory, so the dashboard still works right after the upgrade and only breaks at the next reboot. fix. reinstall the dependencies for the new python and restart — one command: sudo jt-gelflow update your config.json is not touched. re-running the installer works too. a plain pip install -r requirements.txt is refused on ubuntu 24.04+ with externally-managed-environment ; jt-gelflow update already passes the flag that lets it through. the old /usr/local/lib/python3.10/ directory is no longer used — leave it or delete it. from v1.5.8 the journal names this directly instead of showing a bare traceback: jt-gelflow cannot start: python module &#x27;aiohttp&#x27; is not installed for python 3.12, followed by the fix.">
+      <summary><code>ModuleNotFoundError: No module named 'aiohttp'</code> after upgrading Ubuntu, restarting every 5 seconds<span class="ts-tag ts-tag-warn">after an OS upgrade</span></summary>
+      <div class="qa-body"><p><strong>Cause.</strong> The OS upgrade moved the system to a new Python — Ubuntu 22.04 → 24.04 goes from 3.10 to 3.12, and 24.04 → 26.04 to 3.14. JT-GELFLOW's dependencies were installed with pip for the old version, under <code>/usr/local/lib/python3.10/</code>, and the new interpreter does not look there. The service fails at import, and <code>Restart=on-failure</code> retries it every five seconds.</p><p>It is easy to miss at first. Until the machine reboots, the old process keeps running from memory, so the dashboard still works right after the upgrade and only breaks at the next reboot.</p><p><strong>Fix.</strong> Reinstall the dependencies for the new Python and restart — one command:</p><pre><code>sudo jt-gelflow update</code></pre><p>Your <code>config.json</code> is not touched. Re-running the installer works too. A plain <code>pip install -r requirements.txt</code> is refused on Ubuntu 24.04+ with <code>externally-managed-environment</code>; <code>jt-gelflow update</code> already passes the flag that lets it through.</p><p>The old <code>/usr/local/lib/python3.10/</code> directory is no longer used — leave it or delete it.</p><p>From v1.5.8 the journal names this directly instead of showing a bare traceback: <code>JT-GELFLOW cannot start: Python module 'aiohttp' is not installed for Python 3.12</code>, followed by the fix.</p></div>
     </details>
     <details class="qa" data-text="overflowerror: bind(): port must be 0-65535 or oserror: int or string expected , restarting forever cause. config.json holds a port value that is not a usable port. before v1.5.5 the api accepted any value and wrote it to disk, so this could be triggered by a single bad request; the service then failed at the next start and, under restart=on-failure , looped. fix. edit the file and set sane ports: sudo nano /opt/jt-gelflow/config.json # &quot;http_port&quot;: 8099, &quot;gelf_udp_port&quot;: 12201, &quot;gelf_tcp_port&quot;: 12202 sudo systemctl restart jt-gelflow.service if the file is beyond repair, start over from the shipped template — this discards your settings: sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl restart jt-gelflow.service v1.5.5 closes the hole at both ends: the api now refuses an invalid value with 400 , and on start-up an out-of-range field falls back to its default instead of crashing, so an affected install recovers by itself on upgrade.">
       <summary><code>OverflowError: bind(): port must be 0-65535</code> or <code>OSError: Int or String expected</code>, restarting forever<span class="ts-tag ts-tag-fixed">fixed in v1.5.5+</span></summary>
@@ -244,7 +248,7 @@ sudo jt-gelflow uninstall --purge   # removes everything, config included</code>
     <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">Changelog</a>
     <a href="troubleshooting_zh-TW.html">繁體中文</a>
   </div>
-  <div>JT-GELFLOW v1.5.7 · © 2026 Jason Cheng (Jason Tools)</div>
+  <div>JT-GELFLOW v1.5.8 · © 2026 Jason Cheng (Jason Tools)</div>
 </footer>
 
 <script>

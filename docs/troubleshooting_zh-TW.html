@@ -9,19 +9,19 @@
   <meta property="og:description" content="JT-GELFLOW 安裝與升級失敗的解法：fast-forward 錯誤、安裝卡住、服務起不來、儀表板沒有資料。">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.7">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.8">
   <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.7">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.7">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.7">
-  <link rel="stylesheet" href="style.css?v=1.5.7">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.8">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.8">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.8">
+  <link rel="stylesheet" href="style.css?v=1.5.8">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="index_zh-TW.html" class="brand">
-    <img class="logo-mark" src="logo-mark.svg?v=1.5.7" width="28" height="28" alt="">
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.8" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <div class="links" id="nav-links">
@@ -101,12 +101,12 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
       <summary>升級會覆寫我的設定嗎？</summary>
       <div class="qa-body"><p><strong>不會。</strong><code>config.json</code> 刻意不納入 git 追蹤；repo 提供 <code>config.example.json</code> 作為範本，安裝程式只在 <code>config.json</code> 不存在時才複製它。每個具破壞性的步驟都會先搶救這個檔案、事後再還原。</p><p>如果還是想在升級前留一份快照：</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>從 v1.5.5 起這個檔案會以 <code>0600</code> 權限儲存，重跑安裝程式也會把舊的 <code>0644</code> 收緊，且不會更動內容。</p></div>
     </details>
-    <details class="qa" data-text="如何釘選特定版本，或回退到舊版？ 設定 jt_gelflow_branch 即可安裝指定的 tag： jt_gelflow_branch=v1.5.7 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash 或是把既有的 checkout 切過去： cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.7 sudo systemctl restart jt-gelflow.service 釘選後的 checkout 會是 detached head 。從 v1.5.6 起， jt-gelflow update 會把它重新對齊到 main 而不是報錯——所以只在你想結束釘選時才執行它。">
+    <details class="qa" data-text="如何釘選特定版本，或回退到舊版？ 設定 jt_gelflow_branch 即可安裝指定的 tag： jt_gelflow_branch=v1.5.8 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash 或是把既有的 checkout 切過去： cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.8 sudo systemctl restart jt-gelflow.service 釘選後的 checkout 會是 detached head 。從 v1.5.6 起， jt-gelflow update 會把它重新對齊到 main 而不是報錯——所以只在你想結束釘選時才執行它。">
       <summary>如何釘選特定版本，或回退到舊版？</summary>
-      <div class="qa-body"><p>設定 <code>JT_GELFLOW_BRANCH</code> 即可安裝指定的 tag：</p><pre><code>JT_GELFLOW_BRANCH=v1.5.7 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.7/install.sh | sudo bash</code></pre><p>或是把既有的 checkout 切過去：</p><pre><code>cd /opt/jt-gelflow
+      <div class="qa-body"><p>設定 <code>JT_GELFLOW_BRANCH</code> 即可安裝指定的 tag：</p><pre><code>JT_GELFLOW_BRANCH=v1.5.8 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash</code></pre><p>或是把既有的 checkout 切過去：</p><pre><code>cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.7
+sudo git checkout v1.5.8
 sudo systemctl restart jt-gelflow.service</code></pre><p>釘選後的 checkout 會是 detached <code>HEAD</code>。從 v1.5.6 起，<code>jt-gelflow update</code> 會把它重新對齊到 <code>main</code> 而不是報錯——所以只在你想結束釘選時才執行它。</p></div>
     </details>
   </section>
@@ -117,6 +117,10 @@ sudo systemctl restart jt-gelflow.service</code></pre><p>釘選後的 checkout �
       <summary>應該先看哪裡？</summary>
       <div class="qa-body"><p>這兩個指令幾乎可以回答所有啟動失敗的問題：</p><pre><code>sudo jt-gelflow status
 sudo journalctl -u jt-gelflow.service -n 200 --no-pager</code></pre><p>journal 裡會有 Python 的 traceback，最後一行就是真正的原因。</p></div>
+    </details>
+    <details class="qa" data-text="升級 ubuntu 後出現 modulenotfounderror: no module named &#x27;aiohttp&#x27;，每 5 秒重啟一次 原因。 系統升級換了新版 python——ubuntu 22.04 → 24.04 是 3.10 換成 3.12，24.04 → 26.04 則換成 3.14。jt-gelflow 的相依套件當初是用 pip 裝給舊版 python，放在 /usr/local/lib/python3.10/，新版 python 不會去那裡找。服務在載入套件時就失敗，再配上 restart=on-failure，每五秒重試一次。 這個問題一開始很容易沒發現。重新開機之前，舊的程序仍在記憶體裡執行，所以升級完畫面看起來一切正常，要到下次重新開機才會壞掉。 解法。 替新版 python 重新安裝相依套件並重啟，一個指令就好： sudo jt-gelflow update 不會動到你的 config.json。重新執行安裝程式也可以。直接執行 pip install -r requirements.txt 在 ubuntu 24.04 以上會被 externally-managed-environment 擋下； jt-gelflow update 已經帶了允許安裝的參數。 舊的 /usr/local/lib/python3.10/ 已經用不到，留著或刪除都可以。 從 v1.5.8 起，journal 會直接說明原因，而不是只丟出 traceback： jt-gelflow cannot start: python module &#x27;aiohttp&#x27; is not installed for python 3.12，後面接著修復方法。">
+      <summary>升級 Ubuntu 後出現 <code>ModuleNotFoundError: No module named 'aiohttp'</code>，每 5 秒重啟一次<span class="ts-tag ts-tag-warn">系統升級後</span></summary>
+      <div class="qa-body"><p><strong>原因。</strong>系統升級換了新版 Python——Ubuntu 22.04 → 24.04 是 3.10 換成 3.12，24.04 → 26.04 則換成 3.14。JT-GELFLOW 的相依套件當初是用 pip 裝給舊版 Python，放在 <code>/usr/local/lib/python3.10/</code>，新版 Python 不會去那裡找。服務在載入套件時就失敗，再配上 <code>Restart=on-failure</code>，每五秒重試一次。</p><p>這個問題一開始很容易沒發現。重新開機之前，舊的程序仍在記憶體裡執行，所以升級完畫面看起來一切正常，要到下次重新開機才會壞掉。</p><p><strong>解法。</strong>替新版 Python 重新安裝相依套件並重啟，一個指令就好：</p><pre><code>sudo jt-gelflow update</code></pre><p>不會動到你的 <code>config.json</code>。重新執行安裝程式也可以。直接執行 <code>pip install -r requirements.txt</code> 在 Ubuntu 24.04 以上會被 <code>externally-managed-environment</code> 擋下；<code>jt-gelflow update</code> 已經帶了允許安裝的參數。</p><p>舊的 <code>/usr/local/lib/python3.10/</code> 已經用不到，留著或刪除都可以。</p><p>從 v1.5.8 起，journal 會直接說明原因，而不是只丟出 traceback：<code>JT-GELFLOW cannot start: Python module 'aiohttp' is not installed for Python 3.12</code>，後面接著修復方法。</p></div>
     </details>
     <details class="qa" data-text="overflowerror: bind(): port must be 0-65535 或 oserror: int or string expected ，而且不斷重啟 原因。 config.json 裡的 port 值不是合法的通訊埠。v1.5.5 之前 api 會接受任何值並寫入磁碟，因此一個錯誤的請求就能造成；服務在下次啟動時失敗，再配上 restart=on-failure 就變成無限重啟。 解法。 編輯設定檔，填回合理的通訊埠： sudo nano /opt/jt-gelflow/config.json # &quot;http_port&quot;: 8099, &quot;gelf_udp_port&quot;: 12201, &quot;gelf_tcp_port&quot;: 12202 sudo systemctl restart jt-gelflow.service 若檔案已經無法修復，就從內附範本重來——這會捨棄你的設定： sudo cp /opt/jt-gelflow/config.example.json /opt/jt-gelflow/config.json sudo chmod 600 /opt/jt-gelflow/config.json sudo systemctl restart jt-gelflow.service v1.5.5 從兩端堵住這個問題：api 現在會以 400 拒絕不合法的值，而啟動時超出範圍的欄位會退回預設值而不是當掉，所以中招的安裝在升級後會自行復原。">
       <summary><code>OverflowError: bind(): port must be 0-65535</code> 或 <code>OSError: Int or String expected</code>，而且不斷重啟<span class="ts-tag ts-tag-fixed">v1.5.5+ 已修正</span></summary>
@@ -244,7 +248,7 @@ sudo jt-gelflow uninstall --purge   # 全部移除，含設定檔</code></pre><p
     <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">變更紀錄</a>
     <a href="troubleshooting.html">English</a>
   </div>
-  <div>JT-GELFLOW v1.5.7 · © 2026 Jason Cheng (Jason Tools)</div>
+  <div>JT-GELFLOW v1.5.8 · © 2026 Jason Cheng (Jason Tools)</div>
 </footer>
 
 <script>

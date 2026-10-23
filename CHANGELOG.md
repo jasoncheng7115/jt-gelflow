@@ -6,6 +6,26 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.8] — 2026-10-23
+
+Makes an OS upgrade that changes the system Python version self-explaining, and gives the project its own logo.
+
+### Fixed
+
+- **After an OS upgrade the service crash-looped with a bare `ModuleNotFoundError: No module named 'aiohttp'` and nothing said how to recover.** Dependencies are installed with pip for the system Python of the day — on Ubuntu 22.04 that is 3.10, under `/usr/local/lib/python3.10/`. `do-release-upgrade` to 24.04 moves the system to Python 3.12 (and 26.04 to 3.14), which does not look in that directory, so the service fails at import and `Restart=on-failure` retries it every five seconds. The obvious manual fix, `pip install -r requirements.txt`, is refused there with `externally-managed-environment`. The failure also surfaces late: the pre-upgrade process keeps running from memory until the next reboot. `run.py` now catches a missing third-party module and prints what happened, the one-line fix (`sudo jt-gelflow update`, which already reinstalls the dependencies with the flag that gets past that refusal), and a link to the matching troubleshooting entry in the machine's language — `/etc/default/locale` is consulted because the unit sets no `LANG`. A missing module inside the project itself still raises the original traceback. *Verified: a 24.04 container carrying only a 22.04 install's `/usr/local/lib/python3.10` reproduces the crash, prints the new message with the zh-TW link when only `/etc/default/locale` says `zh_TW`, and serves `/api/config` again after the repair. The code itself runs warning-free under `-W error` on Python 3.10, 3.12 and 3.14 (Ubuntu 22.04 / 24.04 / 26.04), with GELF over UDP and TCP reaching `/api/graph`.*
+- **The app's top-left logo linked to an unrelated repository** (`it-scripts`). It now opens the project site.
+
+### Added
+
+- **Troubleshooting entry for the OS-upgrade case**, in English and Traditional Chinese, under *Service will not start* — symptom, cause, the one-line fix, and why plain `pip` is refused. The startup message links straight to it via `?q=aiohttp`, which opens the page filtered to that single entry, already expanded. The pages now hold 28 entries.
+- **Project logo.** A mark of three sources streaming into one collector, in the site's cyan-to-green accent, used in the site navigation and above the landing-page headline. A heavier variant serves as the favicon for both the site and the app, as SVG with 32 px and 180 px (Apple touch) PNG fallbacks; it replaces the generic cube that was there before.
+
+### Changed
+
+- Landing-page headings no longer end with a full stop, in either language.
+
+---
+
 ## [1.5.7] — 2026-09-14
 
 Adds a troubleshooting page to the project site and makes every install / upgrade failure point at it.

@@ -3,7 +3,7 @@ import type { MappingConfig, FieldInfo, ZoneConfig, GeoIPConfig, ViewMode } from
 import { getMapping, updateMapping, getFields, clearFields, previewTemplate, getConfig, updateConfig, detectLocation } from './api';
 import { useTranslation } from './i18n';
 
-const VERSION = '1.5.7';
+const VERSION = '1.5.8';
 
 // Chevron icon for collapsible sections
 const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
