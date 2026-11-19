@@ -9,19 +9,19 @@
   <meta property="og:description" content="Fixes for JT-GELFLOW install and upgrade failures: fast-forward errors, hung prompts, services that will not start, and empty dashboards.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
-  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.8">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.9">
   <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.8">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.8">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.8">
-  <link rel="stylesheet" href="style.css?v=1.5.8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.9">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.9">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.9">
+  <link rel="stylesheet" href="style.css?v=1.5.9">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="index.html" class="brand">
-    <img class="logo-mark" src="logo-mark.svg?v=1.5.8" width="28" height="28" alt="">
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.9" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <div class="links" id="nav-links">
@@ -101,12 +101,12 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
       <summary>Will upgrading overwrite my settings?</summary>
       <div class="qa-body"><p><strong>No.</strong> <code>config.json</code> is deliberately untracked by git; the repository ships <code>config.example.json</code> as the template, and the installer only copies it when no <code>config.json</code> exists. Every destructive step rescues the file first and restores it afterwards.</p><p>If you want a snapshot before upgrading anyway:</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>Since v1.5.5 the file is stored with <code>0600</code> permissions, and re-running the installer tightens an older <code>0644</code> file without touching its contents.</p></div>
     </details>
-    <details class="qa" data-text="how do i pin to a specific version, or go back to an older one? install a tagged release by setting jt_gelflow_branch : jt_gelflow_branch=v1.5.8 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash or move an existing checkout: cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.8 sudo systemctl restart jt-gelflow.service a pinned checkout has a detached head . from v1.5.6, jt-gelflow update realigns it onto main rather than failing — so run it only when you want to stop tracking that tag.">
+    <details class="qa" data-text="how do i pin to a specific version, or go back to an older one? install a tagged release by setting jt_gelflow_branch : jt_gelflow_branch=v1.5.9 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.9/install.sh | sudo bash or move an existing checkout: cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.9 sudo systemctl restart jt-gelflow.service a pinned checkout has a detached head . from v1.5.6, jt-gelflow update realigns it onto main rather than failing — so run it only when you want to stop tracking that tag.">
       <summary>How do I pin to a specific version, or go back to an older one?</summary>
-      <div class="qa-body"><p>Install a tagged release by setting <code>JT_GELFLOW_BRANCH</code>:</p><pre><code>JT_GELFLOW_BRANCH=v1.5.8 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash</code></pre><p>Or move an existing checkout:</p><pre><code>cd /opt/jt-gelflow
+      <div class="qa-body"><p>Install a tagged release by setting <code>JT_GELFLOW_BRANCH</code>:</p><pre><code>JT_GELFLOW_BRANCH=v1.5.9 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.9/install.sh | sudo bash</code></pre><p>Or move an existing checkout:</p><pre><code>cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.8
+sudo git checkout v1.5.9
 sudo systemctl restart jt-gelflow.service</code></pre><p>A pinned checkout has a detached <code>HEAD</code>. From v1.5.6, <code>jt-gelflow update</code> realigns it onto <code>main</code> rather than failing — so run it only when you want to stop tracking that tag.</p></div>
     </details>
   </section>
@@ -248,7 +248,7 @@ sudo jt-gelflow uninstall --purge   # removes everything, config included</code>
     <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">Changelog</a>
     <a href="troubleshooting_zh-TW.html">繁體中文</a>
   </div>
-  <div>JT-GELFLOW v1.5.8 · © 2026 Jason Cheng (Jason Tools)</div>
+  <div>JT-GELFLOW v1.5.9 · © 2026 Jason Cheng (Jason Tools)</div>
 </footer>
 
 <script>

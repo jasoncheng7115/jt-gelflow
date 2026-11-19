@@ -32,7 +32,7 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | B4 | Customer config survives `install.sh` re-run | same as B3 but trigger via re-running installer |
 | B5 | Forward-compat: pre-v1.5 config with `sankey_stages` doesn't break load | inject `"sankey_stages": "ext_proto_int"` into config.json, restart service, server still binds port 8099 (no fallback to 8080), and warning is benign |
 | B6 | Resilient path takes over when ff-only fails | mutate local git history (`git reset --hard $(git rev-parse HEAD~1)` then re-init upstream as different history), re-run installer — should rescue config + reset --hard + restore |
-| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.8 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.8` |
+| B7 | Pin to a specific tag | `JT_GELFLOW_BRANCH=v1.5.9 curl -fsSL …/install.sh \| sudo bash` after fresh checkout — local HEAD points at `v1.5.9` |
 | B8 | OS upgrade that changes the Python version | install on Ubuntu 22.04, then run the 24.04 interpreter with only the old `/usr/local/lib/python3.10` present (or a real `do-release-upgrade` + reboot). `python3 run.py` must exit 1 with `JT-GELFLOW cannot start: Python module 'aiohttp' is not installed for Python 3.12` and a `troubleshooting…html?q=aiohttp` link in the system locale's language — not a bare traceback. `sudo jt-gelflow update` then restores the service, `config.json` md5 unchanged |
 
 ## C. Uninstall
@@ -139,6 +139,7 @@ Recommended target: a Linux VM ≥ Ubuntu 22.04 with `systemd`, on which jt-gelf
 | J5 | No mainland-CN-only words in zh-TW docs | targeted grep for `信息`/`軟件`/`默認`/`用戶`/`數據`/`服務器`/`緩存`/`屏幕`/`回滾`/`容忍`/`高亮`/`帶寬`/`全局`/`函數`/`模塊`/`操作系統`/`硬重新整理` returns nothing in `*_zh-TW.md` and `index_zh-TW.html` |
 | J6 | `package.json`, `App.tsx:VERSION`, `SettingsPanel.tsx:VERSION`, README headers, landing footers all on the same version | grep all five and diff |
 | J7 | CHANGELOG has an entry for this release | `grep "^## \[$(jq -r .version package.json)\]" CHANGELOG.md` |
+| J8 | SBOM regenerated for this release | `python3 scripts/make_sbom.py --check` prints `sbom.cdx.json is current for vX.Y.Z` (needs `node_modules` and a Python with `requirements.txt` installed). Validates against the CycloneDX 1.5 schema |
 
 ## K. Build / bundle
 

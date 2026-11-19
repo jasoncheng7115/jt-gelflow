@@ -6,6 +6,22 @@
 
 ---
 
+## [1.5.9] — 2026-11-19
+
+從這一版起，每次發版都附上軟體物料清單（SBOM）。
+
+### 新增
+
+- **`sbom.cdx.json`——CycloneDX 1.5 格式的 SBOM，每次發版都重新產生**，放在 repo 根目錄一起 commit，因為 JT-GELFLOW 是用 `git clone` 安裝，沒有 release 壓縮檔。內容分三類：預先建置的 `dist/` 裡實際含有程式碼的所有 npm 套件（版本、授權與 SHA-512 取自 `package-lock.json`）；aiohttp 及其所有相依套件；以及 2D 地圖與 3D 地球執行時從 unpkg.com 載入的 world-atlas 國界資料。npm 清單取自實際建置結果，而不是從 lockfile 推算，因為 lockfile 兩個方向都會錯：會漏掉 React（被歸在開發用相依套件，見「修正」），又會多列 27 個對打包結果沒有貢獻任何程式碼的套件——被 tree-shaking 移除的 d3 模組，以及 `commander`、`iconv-lite` 這類只有命令列工具才用到的套件。Python 相依套件是在目標主機上由 pip 決定版本，所以 SBOM 記錄的是這一版建置與測試時使用的版本，並附上 `requirements.txt` 的版本範圍。*驗證：通過 CycloneDX 1.5 JSON schema 嚴格驗證；相依關係圖沒有懸空參照，每個元件都能從專案本身連到；未變動的程式重新產生時，檔案逐位元組相同。*
+- **`scripts/make_sbom.py`** 負責產生，加上 `--check` 時若已 commit 的檔案過期就以非零狀態結束。發版檢查清單新增 J8 這一列。
+
+### 修正
+
+- **React 與 React DOM 在 `package.json` 被宣告為開發用相依套件**，但它們其實打包進 `dist/`，在每個瀏覽器裡執行。現在改為一般相依套件。實際安裝與建置的內容不變——lockfile 的差異只是拿掉 React、React DOM 及其三個輔助套件的 `dev` 標記。
+- **`THIRD-PARTY-NOTICES.md` 還列著 v1.5.5 已移除的 `aiohttp-cors`**。現已移除，並改為指向 SBOM 查看確切版本。
+
+---
+
 ## [1.5.8] — 2026-10-23
 
 讓「系統升級換了 Python 版本」這種狀況能自己說明原因，並讓專案有了自己的 logo。

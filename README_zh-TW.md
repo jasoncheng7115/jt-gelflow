@@ -1,4 +1,4 @@
-# JT-GELFLOW v1.5.8
+# JT-GELFLOW v1.5.9
 
 > **Language / 語言切換：** [English](README.md) | [繁體中文](README_zh-TW.md)
 
@@ -440,6 +440,7 @@ jt-gelflow/
 
 Apache License 2.0 — 詳見 [LICENSE](LICENSE)。
 第三方相依授權清單：[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+軟體物料清單（SBOM）：[`sbom.cdx.json`](sbom.cdx.json)（CycloneDX 1.5），每次發版都會重新產生。
 
 ## 作者
 

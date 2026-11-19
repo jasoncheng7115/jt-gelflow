@@ -9,19 +9,19 @@
   <meta property="og:description" content="JT-GELFLOW 安裝與升級失敗的解法：fast-forward 錯誤、安裝卡住、服務起不來、儀表板沒有資料。">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.8">
+  <meta property="og:image" content="https://jasoncheng7115.github.io/jt-gelflow/og-image.jpg?v=1.5.9">
   <link rel="alternate" hreflang="en" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://jasoncheng7115.github.io/jt-gelflow/troubleshooting_zh-TW.html">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.8">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.8">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.8">
-  <link rel="stylesheet" href="style.css?v=1.5.8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1.5.9">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1.5.9">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1.5.9">
+  <link rel="stylesheet" href="style.css?v=1.5.9">
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <a href="index_zh-TW.html" class="brand">
-    <img class="logo-mark" src="logo-mark.svg?v=1.5.8" width="28" height="28" alt="">
+    <img class="logo-mark" src="logo-mark.svg?v=1.5.9" width="28" height="28" alt="">
     <span>JT-GELFLOW</span>
   </a>
   <div class="links" id="nav-links">
@@ -101,12 +101,12 @@ curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/main/inst
       <summary>升級會覆寫我的設定嗎？</summary>
       <div class="qa-body"><p><strong>不會。</strong><code>config.json</code> 刻意不納入 git 追蹤；repo 提供 <code>config.example.json</code> 作為範本，安裝程式只在 <code>config.json</code> 不存在時才複製它。每個具破壞性的步驟都會先搶救這個檔案、事後再還原。</p><p>如果還是想在升級前留一份快照：</p><pre><code>sudo cp -a /opt/jt-gelflow/config.json /opt/jt-gelflow/config.json.before-$(date +%F)</code></pre><p>從 v1.5.5 起這個檔案會以 <code>0600</code> 權限儲存，重跑安裝程式也會把舊的 <code>0644</code> 收緊，且不會更動內容。</p></div>
     </details>
-    <details class="qa" data-text="如何釘選特定版本，或回退到舊版？ 設定 jt_gelflow_branch 即可安裝指定的 tag： jt_gelflow_branch=v1.5.8 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash 或是把既有的 checkout 切過去： cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.8 sudo systemctl restart jt-gelflow.service 釘選後的 checkout 會是 detached head 。從 v1.5.6 起， jt-gelflow update 會把它重新對齊到 main 而不是報錯——所以只在你想結束釘選時才執行它。">
+    <details class="qa" data-text="如何釘選特定版本，或回退到舊版？ 設定 jt_gelflow_branch 即可安裝指定的 tag： jt_gelflow_branch=v1.5.9 \ curl -fssl https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.9/install.sh | sudo bash 或是把既有的 checkout 切過去： cd /opt/jt-gelflow sudo git fetch --tags origin sudo git checkout v1.5.9 sudo systemctl restart jt-gelflow.service 釘選後的 checkout 會是 detached head 。從 v1.5.6 起， jt-gelflow update 會把它重新對齊到 main 而不是報錯——所以只在你想結束釘選時才執行它。">
       <summary>如何釘選特定版本，或回退到舊版？</summary>
-      <div class="qa-body"><p>設定 <code>JT_GELFLOW_BRANCH</code> 即可安裝指定的 tag：</p><pre><code>JT_GELFLOW_BRANCH=v1.5.8 \
-  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.8/install.sh | sudo bash</code></pre><p>或是把既有的 checkout 切過去：</p><pre><code>cd /opt/jt-gelflow
+      <div class="qa-body"><p>設定 <code>JT_GELFLOW_BRANCH</code> 即可安裝指定的 tag：</p><pre><code>JT_GELFLOW_BRANCH=v1.5.9 \
+  curl -fsSL https://raw.githubusercontent.com/jasoncheng7115/jt-gelflow/v1.5.9/install.sh | sudo bash</code></pre><p>或是把既有的 checkout 切過去：</p><pre><code>cd /opt/jt-gelflow
 sudo git fetch --tags origin
-sudo git checkout v1.5.8
+sudo git checkout v1.5.9
 sudo systemctl restart jt-gelflow.service</code></pre><p>釘選後的 checkout 會是 detached <code>HEAD</code>。從 v1.5.6 起，<code>jt-gelflow update</code> 會把它重新對齊到 <code>main</code> 而不是報錯——所以只在你想結束釘選時才執行它。</p></div>
     </details>
   </section>
@@ -248,7 +248,7 @@ sudo jt-gelflow uninstall --purge   # 全部移除，含設定檔</code></pre><p
     <a href="https://github.com/jasoncheng7115/jt-gelflow/blob/main/CHANGELOG.md">變更紀錄</a>
     <a href="troubleshooting.html">English</a>
   </div>
-  <div>JT-GELFLOW v1.5.8 · © 2026 Jason Cheng (Jason Tools)</div>
+  <div>JT-GELFLOW v1.5.9 · © 2026 Jason Cheng (Jason Tools)</div>
 </footer>
 
 <script>

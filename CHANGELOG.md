@@ -6,6 +6,22 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## [1.5.9] — 2026-11-19
+
+Every release now ships a software bill of materials.
+
+### Added
+
+- **`sbom.cdx.json` — a CycloneDX 1.5 SBOM, regenerated for every release** and committed at the repository root, since JT-GELFLOW is installed by `git clone` rather than from a release archive. It lists three groups of components: every npm package whose code is in the pre-built `dist/` (with version, licence and SHA-512 from `package-lock.json`); aiohttp and its transitive dependencies; and the world-atlas boundary data the 2D Map and 3D Globe fetch from unpkg.com at runtime. The npm list is taken from the build itself rather than inferred from the lockfile, because the lockfile is wrong in both directions: it would have omitted React (filed under development dependencies, see *Fixed*) and listed 27 packages that contribute no code to the bundle — d3 modules removed by tree-shaking, and command-line-only helpers such as `commander` and `iconv-lite`. Python dependencies are resolved by pip on the target host, so the SBOM records the versions this release was built and tested with alongside the `requirements.txt` range. *Verified: passes strict validation against the CycloneDX 1.5 JSON schema; the dependency graph has no dangling references and every component is reachable from the project; regenerating an unchanged tree produces a byte-identical file.*
+- **`scripts/make_sbom.py`** generates it, and `--check` exits non-zero when the committed file is stale. The release checklist gains row J8 for it.
+
+### Fixed
+
+- **React and React DOM were declared as development dependencies** in `package.json`, although they are bundled into `dist/` and run in every browser. They are now regular dependencies. Nothing changes in what is installed or built — the lockfile diff only drops the `dev` flag from React, React DOM and their three helper packages.
+- **`THIRD-PARTY-NOTICES.md` still listed `aiohttp-cors`**, removed in v1.5.5. It now points to the SBOM for exact versions.
+
+---
+
 ## [1.5.8] — 2026-10-23
 
 Makes an OS upgrade that changes the system Python version self-explaining, and gives the project its own logo.

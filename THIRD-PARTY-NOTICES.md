@@ -14,7 +14,6 @@ Apache 2.0 授權不變更上游條款。
 | Package | License | Project |
 |---------|---------|---------|
 | [aiohttp](https://pypi.org/project/aiohttp/) | Apache-2.0 | https://github.com/aio-libs/aiohttp |
-| [aiohttp-cors](https://pypi.org/project/aiohttp-cors/) | Apache-2.0 | https://github.com/aio-libs/aiohttp-cors |
 
 ## JavaScript / TypeScript (runtime)
 
@@ -60,5 +59,14 @@ is opt-in via the settings panel and is not invoked unless the user enables
 ---
 
 For full license texts, see each project's repository linked above. Apache 2.0
-contributors are noted in the respective NOTICE files of `aiohttp`,
-`aiohttp-cors`, and `typescript`.
+contributors are noted in the respective NOTICE files of `aiohttp` and
+`typescript`.
+
+The exact versions shipped in each release — every package bundled into
+`dist/`, aiohttp with its transitive dependencies, and the runtime map data —
+are listed in the CycloneDX software bill of materials
+[`sbom.cdx.json`](sbom.cdx.json), regenerated for every release.
+
+每一版實際隨附的套件與版本（打包進 `dist/` 的所有套件、aiohttp 及其相依套件，
+以及執行時載入的地圖資料）列於 CycloneDX 格式的軟體物料清單
+[`sbom.cdx.json`](sbom.cdx.json)，每次發版都會重新產生。

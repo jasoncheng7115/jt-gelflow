@@ -1,0 +1,1058 @@
+{
+ "bomFormat": "CycloneDX",
+ "specVersion": "1.5",
+ "serialNumber": "urn:uuid:854b9025-a7ad-560f-8ac1-d08ff3f4f9de",
+ "version": 1,
+ "metadata": {
+  "timestamp": "2026-11-19T00:00:00Z",
+  "tools": {
+   "components": [
+    {
+     "type": "application",
+     "name": "jt-gelflow scripts/make_sbom.py"
+    }
+   ]
+  },
+  "component": {
+   "type": "application",
+   "name": "jt-gelflow",
+   "version": "1.5.9",
+   "bom-ref": "pkg:github/jasoncheng7115/jt-gelflow@v1.5.9",
+   "purl": "pkg:github/jasoncheng7115/jt-gelflow@v1.5.9",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "supplier": {
+    "name": "Jason Cheng (Jason Tools)"
+   },
+   "externalReferences": [
+    {
+     "type": "vcs",
+     "url": "https://github.com/jasoncheng7115/jt-gelflow"
+    },
+    {
+     "type": "website",
+     "url": "https://jasoncheng7115.github.io/jt-gelflow/"
+    }
+   ]
+  },
+  "properties": [
+   {
+    "name": "jt-gelflow:built-with-python",
+    "value": "3.12"
+   },
+   {
+    "name": "jt-gelflow:built-with-node",
+    "value": "v22.23.4"
+   },
+   {
+    "name": "jt-gelflow:python-requires",
+    "value": "3.10+"
+   }
+  ]
+ },
+ "components": [
+  {
+   "type": "library",
+   "name": "d3-array",
+   "version": "2.12.1",
+   "purl": "pkg:npm/d3-array@2.12.1",
+   "bom-ref": "pkg:npm/d3-array@2.12.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "07412b64affaea61ed12c4754e43c4124c1dcbe5837ac8a690ce60a59af90ec839e01893039457b585b9a932c801c7a4692f717d9af304b17f380901dd09f561"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-array",
+   "version": "3.2.4",
+   "purl": "pkg:npm/d3-array@3.2.4",
+   "bom-ref": "pkg:npm/d3-array@3.2.4",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "b5d4009b2035f22e09ef0a6ba58abc0a5731672dd20b7d5031e072c8217246dec1547751110679969ce87b998511865459efa8abc1c1be4f498e989bc8457826"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-color",
+   "version": "3.1.0",
+   "purl": "pkg:npm/d3-color@3.1.0",
+   "bom-ref": "pkg:npm/d3-color@3.1.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "ce0fdc85b5f2781b4c4352db0ff592a16d83a42dc8d26a663dd5beca74538ffc760c0598ac863ba9e6481e2768cf0576e26e226afaf5e653702302f14663b184"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-dispatch",
+   "version": "3.0.1",
+   "purl": "pkg:npm/d3-dispatch@3.0.1",
+   "bom-ref": "pkg:npm/d3-dispatch@3.0.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "af35323d4fd2eebc147e53322dcd444c37818f4351b8728a01cbee928cf086c86bea0e9ce5df338787368108d8d9b6747577862d67353c5d7be0fdad56f2a17e"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-drag",
+   "version": "3.0.0",
+   "purl": "pkg:npm/d3-drag@3.0.0",
+   "bom-ref": "pkg:npm/d3-drag@3.0.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "a566d424b7444d503c95034979c331a177c7eb1fa63b6510a3cad2999f90ab171bc80de17dea6b160213fff1d6da79470a159e2083304b616afa010046485392"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-ease",
+   "version": "3.0.1",
+   "purl": "pkg:npm/d3-ease@3.0.1",
+   "bom-ref": "pkg:npm/d3-ease@3.0.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "c11fd72b70f75dc2c8670a5bbd0c10e5f2bef1891db358a9ec0d93c5ed32c6771749dab52fdb24706edb95c79d90e5fe65c83118098b5f516b4466c00f0ce2d3"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-geo",
+   "version": "3.1.1",
+   "purl": "pkg:npm/d3-geo@3.1.1",
+   "bom-ref": "pkg:npm/d3-geo@3.1.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "eb7ee59f78172973b085a943ce29d4818f372b335665129b62e6da1be7c656e73f7713bae114658ed0939dfe5e70cc84d5121db6aa6455cab421bb54d92f23d9"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-interpolate",
+   "version": "3.0.1",
+   "purl": "pkg:npm/d3-interpolate@3.0.1",
+   "bom-ref": "pkg:npm/d3-interpolate@3.0.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "ddb62cd6b383df7ba8f1aa897ca3f72563c089b830f199b6f8bf6f04a107276460faf89347ba39326bf999972278df854586803965f94890135fa9353d6cfbda"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-path",
+   "version": "1.0.9",
+   "purl": "pkg:npm/d3-path@1.0.9",
+   "bom-ref": "pkg:npm/d3-path@1.0.9",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "54b698727f3576d1d54e310777c07ea5b7bdc875a95ca6540bcecfce8166b05ac9aa01700defeac5fa793257ec7ccd55e44fe256dd0c9846d643b15521787f6e"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-path",
+   "version": "3.1.0",
+   "purl": "pkg:npm/d3-path@3.1.0",
+   "bom-ref": "pkg:npm/d3-path@3.1.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "a7728fe4709ffdbbe305248ab9789de99aa28f1ef021f356f89fe668fb3e8b0477e5ab792426cb513d0bcc5d5c9e36c21d686acd04c83762697bca5179b20415"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-sankey",
+   "version": "0.12.3",
+   "purl": "pkg:npm/d3-sankey@0.12.3",
+   "bom-ref": "pkg:npm/d3-sankey@0.12.3",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "9d086c05198cd7d031e711083cb318f59989fdc0ef775046dd456fb79877591c4a839cc645bbe7b5e4f25806f3792be5877b56ed9126ab8570479981dedbad99"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-selection",
+   "version": "3.0.0",
+   "purl": "pkg:npm/d3-selection@3.0.0",
+   "bom-ref": "pkg:npm/d3-selection@3.0.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "7e64d159b34c9ac996abac4957c0f5f54fe0c3f6f0ac77cd5f1ac837e1df6609f3a931e9f633a628c86c4d48d73899d939d658f50dbccb8c9e6cacea0ca97195"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-shape",
+   "version": "1.3.7",
+   "purl": "pkg:npm/d3-shape@1.3.7",
+   "bom-ref": "pkg:npm/d3-shape@1.3.7",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "11492f2a3a8f154019c8e9616398330b109e23401ea74e0bc08469b19fe62c57a526251f9cae7a8e8e49303484ef2c8fda42d26fa2ed17e4b9721324eeea8fab"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-shape",
+   "version": "3.2.0",
+   "purl": "pkg:npm/d3-shape@3.2.0",
+   "bom-ref": "pkg:npm/d3-shape@3.2.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "49a2c1bb01a6dcc395891ab600193778ba31c1910ba47eb3865dc56c0a09ed59b58287cac7a125d486f9cf6dcd504845f40b0697bcbe7732dee42c36000ac64c"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-timer",
+   "version": "3.0.1",
+   "purl": "pkg:npm/d3-timer@3.0.1",
+   "bom-ref": "pkg:npm/d3-timer@3.0.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "9dd7c9fc9c7131dde7c37d6ec8aa18da76a2bc5fabdbd57e2dcd2cbd9c5ed49bef2119a2f2152caccbdd3b0812d68eae0479a2cfdd60790d3294f3f46a3d5550"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-transition",
+   "version": "3.0.1",
+   "purl": "pkg:npm/d3-transition@3.0.1",
+   "bom-ref": "pkg:npm/d3-transition@3.0.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "0292af7e3b1247ab60d3ac6b2f8df80b45b274bafb25ec0107757eff7f51307b1a5d3386d339adfce0177a78393392c19b4a239b126ba68990559d5a3ef04be3"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "d3-zoom",
+   "version": "3.0.0",
+   "purl": "pkg:npm/d3-zoom@3.0.0",
+   "bom-ref": "pkg:npm/d3-zoom@3.0.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "6fc02657791f41aa9602e69c6cfb8d6cbeaf6a19ce25f94e85ec4bccc30d2e06badbefe7874273bc9d1a3bfe5ae4c560505192ec7bb53fd3f4de8ddf2640c2cb"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "react-dom",
+   "version": "18.3.1",
+   "purl": "pkg:npm/react-dom@18.3.1",
+   "bom-ref": "pkg:npm/react-dom@18.3.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "MIT"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "e66e2740aa7ead945bd3d2cd1f9f463380714e1f76e75ff295b2886e97bb4e91b17c9fbd92fe812e42c15c88e3b296e06e720136a948db7b519d3593d2c9d423"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "react",
+   "version": "18.3.1",
+   "purl": "pkg:npm/react@18.3.1",
+   "bom-ref": "pkg:npm/react@18.3.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "MIT"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "c12fa1020252851d0a844bcf240adfb8f54dd7e1f3d6dd18ea7e632eb1906e46f8bab80f13fd11bdefb590c075bffa16807826e1621c57e8bb176a53563fb689"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "scheduler",
+   "version": "0.23.2",
+   "purl": "pkg:npm/scheduler@0.23.2",
+   "bom-ref": "pkg:npm/scheduler@0.23.2",
+   "licenses": [
+    {
+     "license": {
+      "id": "MIT"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "50e4a1b0fc33ecdacc52a851eadd215a315dbaf3b36edbfbb680c7d7f848adf44d2030679c159dd02c094c6bd3a67815966c0609d3fdfd997fb55ac3a9cb98cd"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "topojson-client",
+   "version": "3.1.0",
+   "purl": "pkg:npm/topojson-client@3.1.0",
+   "bom-ref": "pkg:npm/topojson-client@3.1.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "dist/client (frontend bundle)"
+    }
+   ],
+   "hashes": [
+    {
+     "alg": "SHA-512",
+     "content": "eb4e6ec52e9b718c465f0f6a8bad97cab57a437c706e776369c866371bbc1d64ed54fc597c424df5f77f4994b5439e129f6cb44ccc8cc458ff70920da861eb2b"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "aiohappyeyeballs",
+   "version": "2.7.1",
+   "purl": "pkg:pypi/aiohappyeyeballs@2.7.1",
+   "bom-ref": "pkg:pypi/aiohappyeyeballs@2.7.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "PSF-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "aiohttp",
+   "version": "3.14.3",
+   "purl": "pkg:pypi/aiohttp@3.14.3",
+   "bom-ref": "pkg:pypi/aiohttp@3.14.3",
+   "licenses": [
+    {
+     "expression": "Apache-2.0 AND MIT"
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    },
+    {
+     "name": "jt-gelflow:requirement",
+     "value": "aiohttp>=3.9.0"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "aiosignal",
+   "version": "1.4.0",
+   "purl": "pkg:pypi/aiosignal@1.4.0",
+   "bom-ref": "pkg:pypi/aiosignal@1.4.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "attrs",
+   "version": "26.1.0",
+   "purl": "pkg:pypi/attrs@26.1.0",
+   "bom-ref": "pkg:pypi/attrs@26.1.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "MIT"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "frozenlist",
+   "version": "1.8.0",
+   "purl": "pkg:pypi/frozenlist@1.8.0",
+   "bom-ref": "pkg:pypi/frozenlist@1.8.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "idna",
+   "version": "3.19",
+   "purl": "pkg:pypi/idna@3.19",
+   "bom-ref": "pkg:pypi/idna@3.19",
+   "licenses": [
+    {
+     "license": {
+      "id": "BSD-3-Clause"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "multidict",
+   "version": "6.7.1",
+   "purl": "pkg:pypi/multidict@6.7.1",
+   "bom-ref": "pkg:pypi/multidict@6.7.1",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "propcache",
+   "version": "0.5.2",
+   "purl": "pkg:pypi/propcache@0.5.2",
+   "bom-ref": "pkg:pypi/propcache@0.5.2",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "typing_extensions",
+   "version": "4.16.0",
+   "purl": "pkg:pypi/typing-extensions@4.16.0",
+   "bom-ref": "pkg:pypi/typing-extensions@4.16.0",
+   "licenses": [
+    {
+     "license": {
+      "id": "PSF-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "name": "yarl",
+   "version": "1.24.5",
+   "purl": "pkg:pypi/yarl@1.24.5",
+   "bom-ref": "pkg:pypi/yarl@1.24.5",
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "server runtime (installed by pip at install time)"
+    },
+    {
+     "name": "jt-gelflow:version-note",
+     "value": "resolved by pip on the target host; this is the version the release was built and tested with"
+    }
+   ]
+  },
+  {
+   "type": "data",
+   "name": "world-atlas",
+   "version": "2",
+   "bom-ref": "data:world-atlas@2",
+   "licenses": [
+    {
+     "license": {
+      "id": "ISC"
+     }
+    }
+   ],
+   "description": "Country boundaries (Natural Earth, public domain) fetched by the browser at runtime for the 2D Map and 3D Globe views; not bundled",
+   "externalReferences": [
+    {
+     "type": "distribution",
+     "url": "https://unpkg.com/world-atlas@2/countries-110m.json"
+    }
+   ],
+   "properties": [
+    {
+     "name": "jt-gelflow:location",
+     "value": "fetched at runtime from unpkg.com"
+    }
+   ]
+  }
+ ],
+ "dependencies": [
+  {
+   "ref": "pkg:github/jasoncheng7115/jt-gelflow@v1.5.9",
+   "dependsOn": [
+    "data:world-atlas@2",
+    "pkg:npm/d3-geo@3.1.1",
+    "pkg:npm/d3-sankey@0.12.3",
+    "pkg:npm/d3-shape@3.2.0",
+    "pkg:npm/d3-zoom@3.0.0",
+    "pkg:npm/react-dom@18.3.1",
+    "pkg:npm/react@18.3.1",
+    "pkg:npm/topojson-client@3.1.0",
+    "pkg:pypi/aiohttp@3.14.3"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-array@2.12.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-array@3.2.4",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-color@3.1.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-dispatch@3.0.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-drag@3.0.0",
+   "dependsOn": [
+    "pkg:npm/d3-dispatch@3.0.1",
+    "pkg:npm/d3-selection@3.0.0"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-ease@3.0.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-geo@3.1.1",
+   "dependsOn": [
+    "pkg:npm/d3-array@3.2.4"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-interpolate@3.0.1",
+   "dependsOn": [
+    "pkg:npm/d3-color@3.1.0"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-path@1.0.9",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-path@3.1.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-sankey@0.12.3",
+   "dependsOn": [
+    "pkg:npm/d3-array@2.12.1",
+    "pkg:npm/d3-shape@1.3.7"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-selection@3.0.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-shape@1.3.7",
+   "dependsOn": [
+    "pkg:npm/d3-path@1.0.9"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-shape@3.2.0",
+   "dependsOn": [
+    "pkg:npm/d3-path@3.1.0"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-timer@3.0.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/d3-transition@3.0.1",
+   "dependsOn": [
+    "pkg:npm/d3-color@3.1.0",
+    "pkg:npm/d3-dispatch@3.0.1",
+    "pkg:npm/d3-ease@3.0.1",
+    "pkg:npm/d3-interpolate@3.0.1",
+    "pkg:npm/d3-timer@3.0.1"
+   ]
+  },
+  {
+   "ref": "pkg:npm/d3-zoom@3.0.0",
+   "dependsOn": [
+    "pkg:npm/d3-dispatch@3.0.1",
+    "pkg:npm/d3-drag@3.0.0",
+    "pkg:npm/d3-interpolate@3.0.1",
+    "pkg:npm/d3-selection@3.0.0",
+    "pkg:npm/d3-transition@3.0.1"
+   ]
+  },
+  {
+   "ref": "pkg:npm/react-dom@18.3.1",
+   "dependsOn": [
+    "pkg:npm/scheduler@0.23.2"
+   ]
+  },
+  {
+   "ref": "pkg:npm/react@18.3.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/scheduler@0.23.2",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:npm/topojson-client@3.1.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/aiohappyeyeballs@2.7.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/aiohttp@3.14.3",
+   "dependsOn": [
+    "pkg:pypi/aiohappyeyeballs@2.7.1",
+    "pkg:pypi/aiosignal@1.4.0",
+    "pkg:pypi/attrs@26.1.0",
+    "pkg:pypi/frozenlist@1.8.0",
+    "pkg:pypi/multidict@6.7.1",
+    "pkg:pypi/propcache@0.5.2",
+    "pkg:pypi/typing-extensions@4.16.0",
+    "pkg:pypi/yarl@1.24.5"
+   ]
+  },
+  {
+   "ref": "pkg:pypi/aiosignal@1.4.0",
+   "dependsOn": [
+    "pkg:pypi/frozenlist@1.8.0",
+    "pkg:pypi/typing-extensions@4.16.0"
+   ]
+  },
+  {
+   "ref": "pkg:pypi/attrs@26.1.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/frozenlist@1.8.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/idna@3.19",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/multidict@6.7.1",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/propcache@0.5.2",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/typing-extensions@4.16.0",
+   "dependsOn": []
+  },
+  {
+   "ref": "pkg:pypi/yarl@1.24.5",
+   "dependsOn": [
+    "pkg:pypi/idna@3.19",
+    "pkg:pypi/multidict@6.7.1",
+    "pkg:pypi/propcache@0.5.2"
+   ]
+  }
+ ]
+}
